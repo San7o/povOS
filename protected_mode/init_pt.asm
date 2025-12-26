@@ -136,7 +136,7 @@ init_pt_protected:
     ;; a = address, x = index of page table, falgs are entry flags
     mov dword[edi], ebx           ; Write ebx to PT[x] = a.append(flags)
     add ebx, 0x1000               ; Increment address of ebx (a+1)
-    add edi, 0                    ; Increment page table location (since
+    add edi, 8                    ; Increment page table location (since
                                   ; entries are 8 bytes)
                                   ; x++
     loop add_page_entry_protected ; Decrement ecx and loop again
