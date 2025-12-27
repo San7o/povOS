@@ -11,6 +11,7 @@
   ;;  - Go to protected mode
   ;;  - Setup GDT again
   ;;  - Setup the page table
+  ;;  - Enable A20 line
   ;;  - Enable long mode
   ;;  - Call the main routine
   ;;
@@ -39,8 +40,8 @@
   ;; Note: Only bl will be used
   mov bx, 0x0002
 
-  ;; Load 2 sectors to load our entire bootloader.
-  mov cx, 0x0002
+  ;; Load 3 sectors to load our entire bootloader.
+  mov cx, 0x0003
 
   ;; Finally, we want to store the new sector immediately after the
   ;; first loaded sector, at address 0x7E00. This will help a lot with
@@ -67,10 +68,6 @@ bootsector_hold:
   %include "real_mode/gdt.asm"
   %include "real_mode/elevate.asm"
 
-  ;;
-  ;; Data storage area
-  ;;
-  
 msg_hello_world:    db `\r\nHello World, from the BIOS!\r\n`, 0
   
   ;; Boot drive storage
@@ -84,6 +81,10 @@ boot_drive: db 0x00
   ;;
   ;; Begin second sector. This one contains 32-bit code only
   ;;
+
+  ;;
+  ;; Protected mode
+  ;; 
 
 bootsector_extended:
 begin_protected:
@@ -104,10 +105,23 @@ begin_protected:
   ;; Initialize the page table
   call init_pt_protected
 
+  ;; Enable the A20 line
+  call enable_A20_protected
+  call is_A20_on
+  cmp eax, 1
+  jne .error_enabling_A20
+  
   call elevate_protected
+
+  .hang:
   
   jmp $                         ; Infinite loop
 
+  .error_enabling_A20:
+    mov esi, error_enabling_A20_string
+    call print_protected
+    jmp .hang
+  
   ;; Include
 
   %include "protected_mode/clear.asm"
@@ -115,16 +129,19 @@ begin_protected:
   %include "protected_mode/detect_lm.asm"
   %include "protected_mode/init_pt.asm"
   %include "protected_mode/gdt.asm"
+  %include "protected_mode/enable_A20.asm"
   %include "protected_mode/elevate.asm"
 
   ;; Define necessary constants
 
 kernel_start:  equ 0x00100000
 
+error_enabling_A20_string:  db `Error enabling A20 line`, 0
 protected_alert:  db `64-bit long mode supported`, 0
-  
-  ;; Fill with zeros to the end of the sector
-  times 512 - ($ - bootsector_extended) db 0x00
+
+  ;; 
+  ;; Long mode
+  ;;
   
 begin_long_mode:
 

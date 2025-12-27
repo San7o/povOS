@@ -4,7 +4,7 @@
   ;; =============
   ;;
   ;; The bootloader just slapped you in x86_64 long (protected) mode
-  ;; with a flat memroy layout. You are ring 0, you can do
+  ;; with a flat memory layout. You are ring 0, you can do
   ;; anything. You don't have access to the fancy BIOS routines
   ;; anymore, so you will have to get creative and implement your own
   ;; drivers, but you have a full 64-bit address space and the power
