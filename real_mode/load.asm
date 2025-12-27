@@ -50,7 +50,7 @@ load_bios:
   ;; the BIOS function will set the `carry` bit in the 8090 special
   ;; register. We can use the `jc` command to `jump if the carry bit
   ;; is set`. We'll jump to the error handling function defined below
-  jc bios_disk_error
+  jc .bios_disk_error
 
   ;; Now, sometimes the BIOS will not read the requested amount, but
   ;; will return without error. We need to check the actual read amount
@@ -58,7 +58,7 @@ load_bios:
   ;; we'll pop it into bx for comparison
   pop bx
   cmp al, bl
-  jne bios_disk_error
+  jne .bios_disk_error
 
   ;; If all goes well, we can now print the success message and return
   mov bx, success_msg
@@ -73,7 +73,7 @@ load_bios:
   ;; Return
   ret
 
-bios_disk_error:
+  .bios_disk_error:
   ;; Print out the error code and hand, since the program didn't
   ;; work correctly
   mov bx, error_msg

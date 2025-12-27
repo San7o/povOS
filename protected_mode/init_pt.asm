@@ -132,14 +132,14 @@ init_pt_protected:
                                 ; 0x0003
   mov ecx, 512                  ; Do the operating 512 times
 
-  add_page_entry_protected:
+  .add_page_entry_protected:
     ;; a = address, x = index of page table, falgs are entry flags
     mov dword[edi], ebx           ; Write ebx to PT[x] = a.append(flags)
     add ebx, 0x1000               ; Increment address of ebx (a+1)
     add edi, 8                    ; Increment page table location (since
                                   ; entries are 8 bytes)
                                   ; x++
-    loop add_page_entry_protected ; Decrement ecx and loop again
+    loop .add_page_entry_protected ; Decrement ecx and loop again
 
   ;; Set up PAE paging, but don't enable it quite yet
   ;;

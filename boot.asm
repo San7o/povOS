@@ -1,3 +1,20 @@
+  ;; -----------------------------------------------------------------
+  ;;
+  ;; Bootloader
+  ;; ==========
+  ;;
+  ;; The classic boot sequence looks like this:
+  ;;
+  ;;  - CPU starts executing in 16-bit real mode, with BIOS access
+  ;;  - Use the bios to load the rest of the bootloader
+  ;;  - Setup and load the GDT with a flat memory layout
+  ;;  - Go to protected mode
+  ;;  - Setup GDT again
+  ;;  - Setup the page table
+  ;;  - Enable long mode
+  ;;  - Call the main routine
+  ;;
+  
   [org 0x7C00]                    ; Set program origin
   [bits 16]                       ; 16-bit Mode
 
@@ -64,7 +81,7 @@ boot_drive: db 0x00
   dw 0xAA55                     ; Magic number
 
 
-  ;; 
+  ;;
   ;; Begin second sector. This one contains 32-bit code only
   ;;
 
@@ -101,33 +118,35 @@ begin_protected:
   %include "protected_mode/elevate.asm"
 
   ;; Define necessary constants
-vga_start:   equ 0x000B8000
-  ;; vga memory is 80 chars wide by 25 chars tall (one char is 2 bytes)
-vga_extent: equ 80 * 25 * 2
+
 kernel_start:  equ 0x00100000
-style_wb: equ 0x0F
 
 protected_alert:  db `64-bit long mode supported`, 0
   
   ;; Fill with zeros to the end of the sector
   times 512 - ($ - bootsector_extended) db 0x00
+  
 begin_long_mode:
 
   [bits 64]
-  
-  mov rdi, style_blue
+
+  ;; Clean the screen
+  mov rdi, vga_style_bw
   call clear_long
 
-  mov rdi, style_blue
+  ;; Long mode message
+  mov rdi, vga_style_bw
   mov rsi, long_mode_note
   call print_long
-
+  
+  call main
+  
   jmp $
 
   %include "long_mode/clear.asm"
   %include "long_mode/print.asm"
+  %include "long_mode/print_hex.asm"
+  %include "vga.asm"
+  %include "main.asm"
 
 long_mode_note:  db `Now running in fully-enabled, 64-bit long mode!`, 0
-style_blue:  equ 0x1F
-
-  times 512 - ($ - begin_long_mode) db 0x00

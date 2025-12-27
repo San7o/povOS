@@ -61,7 +61,7 @@ detect_lm_protected:
   ;; If equal, the the bit got flipped back during copy, and CPUID is
   ;; not supported
   cmp eax, ecx
-  je cpuid_not_found_protected  ; Print error and hand if CPUID unsupported
+  je .cpuid_not_found_protected  ; Print error and hand if CPUID unsupported
 
   ;; Check for extended functions of CPUID
   ;;
@@ -75,7 +75,7 @@ detect_lm_protected:
   mov eax, 0x80000000           ; CPUID argument 0x80000000
   cpuid                         ; Run the command
   cmp eax, 0x80000001           ; See if result is larget than 0x80000001
-  jb cpuid_not_found_protected  ; If not, error and hang
+  jb .cpuid_not_found_protected  ; If not, error and hang
 
   ;; Actually check for long mode
   ;;
@@ -85,22 +85,21 @@ detect_lm_protected:
   mov eax, 0x80000001           ; Set CPUID argument
   cpuid                         ; Run CPUID
   test edx, 1 << 29             ; See if bit 29 set in edx
-  jz lm_not_found_protected     ; If it is not, then error and hang
+  jz .lm_not_found_protected     ; If it is not, then error and hang
 
   ;; Return from the function
   popad
   ret
-
-  
+ 
   ;; Print and error message and hang
-cpuid_not_found_protected:
+  .cpuid_not_found_protected:
   call clear_protected
   mov esi, cpuid_not_found_str
   call print_protected
   jmp $
 
   ;; Print and error message and hang
-lm_not_found_protected: 
+  .lm_not_found_protected: 
   call clear_protected
   mov esi, lm_not_found_str
   call print_protected

@@ -20,10 +20,10 @@ print_hex_bios:
   mov cx, 4
 
   ;; Begin loop
-  print_hex_bios_loop:
+  .print_hex_bios_loop:
     ;; if cx==0 goto end
     cmp cx, 0
-    je print_hex_bios_end
+    je .print_hex_bios_end
 
     ;; Save bx again
     push bx
@@ -33,7 +33,7 @@ print_hex_bios:
 
     ;; Check to see if ge 10
     cmp bx, 10
-    jge print_hex_bios_alpha
+    jge .print_hex_bios_alpha
 
       ;; Byte in bx now < 10
       ;; Set the zero char in al, add bl
@@ -41,9 +41,9 @@ print_hex_bios:
       add al, bl
 
       ;; Jump to end of loop
-      jmp print_hex_bios_loop_end
+      jmp .print_hex_bios_loop_end
 
-  print_hex_bios_alpha:
+  .print_hex_bios_alpha:
 
     ;; Bit is now greater than or equal to 10
     ;; Subtract 1- from bl to get add amount
@@ -53,7 +53,7 @@ print_hex_bios:
     mov al, 'A'
     add al, bl
 
-  print_hex_bios_loop_end:
+  .print_hex_bios_loop_end:
 
     ;; Print character
     int 0x10
@@ -67,9 +67,9 @@ print_hex_bios:
     dec cx
 
     ;; Jump to beginning of loop
-    jmp print_hex_bios_loop
+    jmp .print_hex_bios_loop
 
-print_hex_bios_end:
+  .print_hex_bios_end:
   pop cx
   pop bx
   pop ax

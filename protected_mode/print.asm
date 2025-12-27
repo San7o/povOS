@@ -12,14 +12,14 @@ print_protected:
   mov edx, vga_start
 
   ;; Do main loop
-  print_protected_loop:
+  .print_protected_loop:
     ;; if char == \0, string is done
     cmp byte[esi], 0
-    je print_protected_done
+    je .print_protected_done
 
     ;; Move character to al, style to ah
     mov al, byte[esi]
-    mov ah, style_wb
+    mov ah, vga_style_bw
 
     ;; Print character to vga memory location
     mov word[edx], ax
@@ -29,9 +29,9 @@ print_protected:
     add edx, 2
 
     ;; Redo loop
-    jmp print_protected_loop
+    jmp .print_protected_loop
 
-print_protected_done:
+  .print_protected_done:
   ;; Popa does the opposite of pusha, and restores all the registers
   popa
   ret

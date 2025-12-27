@@ -1,7 +1,7 @@
   ;; 
   ;; The GDT
   ;;
-
+ 
   ;; Define the Flat Mode Configuration Global Descriptor Table (GDT)
   ;; The flat mode table allows us to read and write code anywhere,
   ;; without restriction

@@ -13,33 +13,33 @@ clear_protected:
   mov edx, 0
 
   ;; Do main loop
-  clear_protected_loop:
+  .clear_protected_loop:
 
-  ;; While edx < ebx
-  cmp edx, ebx
-  jge clear_protected_done
+    ;; While edx < ebx
+    cmp edx, ebx
+    jge .clear_protected_done
 
-  ;; Free edx to use later
-  push edx
+    ;; Free edx to use later
+    push edx
 
-  ;; Move character to al, style to ah
-  mov al, space_char
-  mov ah, style_wb
+    ;; Move character to al, style to ah
+    mov al, space_char
+    mov ah, vga_style_bw
 
-  ;; Print character to VGA memory
-  add edx, ecx
-  mov word[edx], ax
+    ;; Print character to VGA memory
+    add edx, ecx
+    mov word[edx], ax
 
-  ;; Restore edx
-  pop edx
+    ;; Restore edx
+    pop edx
 
-  ;; Increment counter
-  add edx, 2
+    ;; Increment counter
+    add edx, 2
 
-  ;; GOTO beginning of loop
-  jmp clear_protected_loop
+    ;; GOTO beginning of loop
+    jmp .clear_protected_loop
 
-clear_protected_done:
+.clear_protected_done:
   ;; Restore all registers and return
   popa
   ret
