@@ -3,12 +3,12 @@
   ;; OS entrypoint
   ;; =============
   ;;
-  ;; The bootloader just loaded you in x86_64 long (protected) mode
+  ;; The bootloader just slapped you in x86_64 long (protected) mode
   ;; with a flat memroy layout. You are ring 0, you can do
   ;; anything. You don't have access to the fancy BIOS routines
-  ;; anymore, so you will have to to get creative and implement your
-  ;; own drivers, but you have a full 64-bit address space to play
-  ;; with.
+  ;; anymore, so you will have to get creative and implement your own
+  ;; drivers, but you have a full 64-bit address space and the power
+  ;; of CISC to play with.
   ;;
   ;; Check out vga.asm for an example driver.
   ;; 
