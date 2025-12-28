@@ -3,11 +3,11 @@
   ;; VGA driver
   ;; ==========
   ;; 
-  ;; 
-  ;; By writing a byte to the Address Register equal to the index of
-  ;; the particular sub-register you wish to access, one can address
-  ;; the data pointed to by that index by reading and writing the Data
-  ;; Register.
+  ;; You use I/O ports to interact with the registers in an indexed
+  ;; style (base + offset). By writing a byte to the Address Register
+  ;; equal to the index of the particular sub-register you wish to
+  ;; access, one can address the data pointed to by that index by
+  ;; reading and writing the Data Register.
   ;; 
   ;; Really useful reference for registers:
   ;; 
@@ -17,18 +17,18 @@
   ;; Graphics controller registers
   ;; ------------------------------
   ;; 
-  %define VGA_GRAPHICS_ADDRESS_REGISTER 0x3CE
-  %define VGA_GRAPHICS_DATA_REGISTER 0x3CF
+  %define VGA_GRAPHICS_ADDRESS_REGISTER     0x3CE
+  %define VGA_GRAPHICS_DATA_REGISTER        0x3CF
   ;;
-  %define VGA_GRAPHICS_SET_RESET_REGISTER_INDEX 0x00
-  %define VGA_GRAPHICS_ENABLE SET_RESET_REGISTER_INDEX 0x01
-  %define VGA_GRAPHICS_COLOR_COMPARE_REGISTER_INDEX 0x02
-  %define VGA_GRAPHICS_DATA_ROTATE_REGISTER_INDEX 0x03
-  %define VGA_GRAPHICS_READ_MAP_SELECT_REGISTER_INDEX 0x04
-  %define VGA_GRAPHICS_MODE_REGISTER_INDEX 0x05
-  %define VGA_GRAPHICS_MISC_REGISTER_INDEX 0x06
-  %define VGA_GRAPHICS_COLOR_DONT_CARE_REGISTER_INDEX 0x07
-  %define VGA_GRAPHICS_BIT_MASK_REGISTER_INDEX 0x08
+  %define VGA_GRAPHICS_SET_RESET_REGISTER_INDEX        0x00
+  %define VGA_GRAPHICS_ENABLE_SET_RESET_REGISTER_INDEX 0x01
+  %define VGA_GRAPHICS_COLOR_COMPARE_REGISTER_INDEX    0x02
+  %define VGA_GRAPHICS_DATA_ROTATE_REGISTER_INDEX      0x03
+  %define VGA_GRAPHICS_READ_MAP_SELECT_REGISTER_INDEX  0x04
+  %define VGA_GRAPHICS_MODE_REGISTER_INDEX             0x05
+  %define VGA_GRAPHICS_MISC_REGISTER_INDEX             0x06
+  %define VGA_GRAPHICS_COLOR_DONT_CARE_REGISTER_INDEX  0x07
+  %define VGA_GRAPHICS_BIT_MASK_REGISTER_INDEX         0x08
   ;; 
   ;; Masks
   ;; -----
