@@ -26,7 +26,7 @@ main:
   ;; Sanity checks
   ;;
   
-  call vga_get_memory_map       ; Check VGA memory map value is 01
+  call vga_get_memory_map       ; Check VGA memory map value is 11
   cmp rax, 0b11
   jne .main_vga_memory_map_error
   
@@ -34,7 +34,7 @@ main:
   cmp rax, 0
   jne .main_vga_alphanumeric_error
 
-  mov r8w, UART_COM1
+  mov r8w, UART_COM1            ; Initialize UART port COM1
   call uart_init_port
   cmp rax, 0
   jne .main_uart_init_error
