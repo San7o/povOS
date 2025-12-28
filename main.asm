@@ -15,7 +15,7 @@
 
   [bits 64]
 
-  %include "uart.asm"
+  %include "drivers/uart.asm"
   
   section .text
   

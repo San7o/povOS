@@ -62,11 +62,11 @@ bootsector_hold:
   ;; Includes
   ;;
 
-  %include "real_mode/print.asm"
-  %include "real_mode/print_hex.asm"
-  %include "real_mode/load.asm"
-  %include "real_mode/gdt.asm"
-  %include "real_mode/elevate.asm"
+  %include "bootloader/real_mode/print.asm"
+  %include "bootloader/real_mode/print_hex.asm"
+  %include "bootloader/real_mode/load.asm"
+  %include "bootloader/real_mode/gdt.asm"
+  %include "bootloader/real_mode/elevate.asm"
 
 msg_hello_world:    db `\r\nHello World, from the BIOS!\r\n`, 0
   
@@ -124,13 +124,13 @@ begin_protected:
   
   ;; Include
 
-  %include "protected_mode/clear.asm"
-  %include "protected_mode/print.asm"
-  %include "protected_mode/detect_lm.asm"
-  %include "protected_mode/init_pt.asm"
-  %include "protected_mode/gdt.asm"
-  %include "protected_mode/enable_A20.asm"
-  %include "protected_mode/elevate.asm"
+  %include "bootloader/protected_mode/clear.asm"
+  %include "bootloader/protected_mode/print.asm"
+  %include "bootloader/protected_mode/detect_lm.asm"
+  %include "bootloader/protected_mode/init_pt.asm"
+  %include "bootloader/protected_mode/gdt.asm"
+  %include "bootloader/protected_mode/enable_A20.asm"
+  %include "bootloader/protected_mode/elevate.asm"
 
   ;; Define necessary constants
 
@@ -160,10 +160,10 @@ begin_long_mode:
   
   jmp $
 
-  %include "long_mode/clear.asm"
-  %include "long_mode/print.asm"
-  %include "long_mode/print_hex.asm"
-  %include "vga.asm"
+  %include "bootloader/long_mode/clear.asm"
+  %include "bootloader/long_mode/print.asm"
+  %include "bootloader/long_mode/print_hex.asm"
+  %include "drivers/vga.asm"
   %include "main.asm"
 
 long_mode_note:  db `Now running in fully-enabled, 64-bit long mode!`, 0
