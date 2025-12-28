@@ -15,7 +15,12 @@
   ;;  - Enable long mode
   ;;  - Call the main routine
   ;;
-  
+
+  ;;
+  ;; Real mode
+  ;; ---------
+  ;;
+
   [org 0x7C00]                    ; Set program origin
   [bits 16]                       ; 16-bit Mode
 
@@ -84,6 +89,7 @@ boot_drive: db 0x00
 
   ;;
   ;; Protected mode
+  ;; --------------
   ;; 
 
 bootsector_extended:
@@ -141,6 +147,7 @@ protected_alert:  db `64-bit long mode supported`, 0
 
   ;; 
   ;; Long mode
+  ;; ---------
   ;;
   
 begin_long_mode:

@@ -60,8 +60,11 @@
   ;;
 
   section .text
-  
+
+  ;; -----------------------------------------------------------------
   ;; Draw a pixel in vga graphics
+  ;;
+  ;; Args:
   ;;   r8: x coordinate
   ;;   r9: y coordinate
   ;;   r10: color
@@ -71,6 +74,7 @@ vga_draw_pixel:
   
   ret
 
+  ;; -----------------------------------------------------------------
   ;; Returns the range of host memory addresses decoded by the VGA
   ;; in rax, which can be one of the following values:
   ;;
@@ -99,8 +103,9 @@ vga_get_memory_map:
   pop rdx
   ret
 
-  ;; Set rax to 0b1 if alphanumeric mode is disabled, 0x0 otherwise
-vga_get_alpha_disabled:
+  ;; -----------------------------------------------------------------
+  ;; Set rax to 1 if alphanumeric mode is disabled, 0 otherwise
+vga_is_alpha_disabled:
   push rdx
 
   ;; Select Graphics Controller Misc Register
@@ -119,6 +124,30 @@ vga_get_alpha_disabled:
   pop rdx
   ret
 
+vga_print_char:
+
+  ;; TODO
+
+  ret
+
+vga_clear:
+
+  ;; TODO
+
+  ret
+  
+vga_print:
+
+  ;; TODO
+
+  ret
+
+vga_print_hex:
+
+  ;; TODO
+
+  ret
+  
   ;; 
   ;; Constants
   ;;

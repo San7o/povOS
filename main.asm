@@ -10,7 +10,7 @@
   ;; drivers, but you have a full 64-bit address space and the power
   ;; of CISC to play with.
   ;;
-  ;; Check out uart.asm for an example driver.
+  ;; Check out drivers/uart.asm for an example driver.
   ;; 
 
   [bits 64]
@@ -30,7 +30,7 @@ main:
   cmp rax, 0b11
   jne .main_vga_memory_map_error
   
-  call vga_get_alpha_disabled   ; Check VGA mode is alphanumeric
+  call vga_is_alpha_disabled    ; Check VGA mode is alphanumeric
   cmp rax, 0
   jne .main_vga_alphanumeric_error
 

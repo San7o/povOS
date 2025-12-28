@@ -7,7 +7,7 @@ have access to the fancy BIOS routines anymore, so you will have to
 get creative and implement your own drivers, but you have a full
 64-bit address space and the power of CISC to play with. Have fun.
 
-Check out uart.asm for an example driver.
+Check out drivers/uart.asm for an example driver.
 
 Author:  Giovanni Santini
 Mail:    giovanni.santini@proton.me

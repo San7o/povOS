@@ -1,6 +1,6 @@
   [bits 64]
 
-  ;; Simple 32-bit protected print routine
+  ;; Simple 64-bit protected print routine
   ;; Style stored in rdi, message stored in rsi
 print_long:
   push rax
