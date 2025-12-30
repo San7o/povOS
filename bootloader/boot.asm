@@ -9,9 +9,9 @@
   ;;  - Use the bios to load the rest of the bootloader
   ;;  - Setup and load the GDT with a flat memory layout
   ;;  - Go to protected mode
+  ;;  - Enable A20 line
   ;;  - Setup GDT again
   ;;  - Setup the page table
-  ;;  - Enable A20 line
   ;;  - Enable long mode
   ;;  - Call the main routine
   ;;
