@@ -2,7 +2,7 @@ all: boot
 
 .PHONY: boot
 boot:
-	nasm bootloader/boot.asm
+	nasm bootloader/boot.asm -o boot
 
 .PHONY: qemu
 qemu:

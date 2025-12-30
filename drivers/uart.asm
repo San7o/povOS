@@ -7,18 +7,19 @@
   ;; a base port + an offset that specifies the register. Each
   ;; register can allow read, write, or both.
   ;;
+  
   [bits 64]
+  
   ;; 
-  ;; 
-  ;; Base ports
-  ;; ---------------
+  ;; I/O Ports
+  ;; ----------
   ;; 
   %define UART_COM1 0x3F8
   %define UART_COM2 0x2F8
   ;; 
   ;; The following addresses are not fully reliable as they depend
   ;; on how the ports are connected to the machine and how the BIOS
-  ;; is configures. COM1 and COM2 are mostly reliable.
+  ;; is configured. COM1 and COM2 are mostly reliable.
   ;; 
   %define UART_COM3 0x3E8
   %define UART_COM4 0x2E8
@@ -26,6 +27,7 @@
   %define UART_COM6 0x4F9
   %define UART_COM7 0x5E8
   %define UART_COM8 0x4E8
+  
   ;; 
   ;; Register index (offset from port)
   ;; ---------------------------------
@@ -49,6 +51,10 @@
   %define UART_REGISTER_MODEM_STATUS_INDEX       0x6       ; r
   %define UART_REGISTER_SCRATCH_INDEX            0x7       ; r/w
 
+  ;;
+  ;; Functions
+  ;; 
+  
   ;; -----------------------------------------------------------------
   ;; Initialize port
   ;;

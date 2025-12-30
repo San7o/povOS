@@ -22,8 +22,8 @@
   ;;   - https://aeb.win.tue.nl/linux/kbd/A20.html
   
 [bits 32]
-[section .text]
 
+  ;; -----------------------------------------------------------------
   ;; Set rax to 1 if A20 is on, or 0 otherwise
 is_A20_on:
   pushad
@@ -46,48 +46,52 @@ is_A20_on:
   .A20_on:
     mov eax, 1                  ; return 1
     ret
-  
+
+  ;; -----------------------------------------------------------------
   ;; Enable the A20 line
   ;; Implementation from OSdev https://wiki.osdev.org/A20_Line
 enable_A20_protected:
-  cli
+  cli                           ; Disable interrupts
   
   call .a20wait
-  mov al,0xAD
-  out 0x64,al
+  mov al, 0xAD
+  out 0x64, al                  ; Disable keyboard
 
   call .a20wait
-  mov al,0xD0
-  out 0x64,al
+  mov al, 0xD0
+  out 0x64, al                  ; Read from input
 
   call .a20wait2
-  in al,0x60
+  in al, 0x60
   push eax
 
   call .a20wait
-  mov al,0xD1
-  out 0x64,al
+  mov al, 0xD1
+  out 0x64, al                  ; Write to output
 
   call .a20wait
-  pop  eax
-  or al,2
-  out 0x60,al
+  pop  eax                      ; Restore the saved state of the output port
+  or al, 2                      ; Set the A20 enable bit (bit 1) in
+                                ; the output port value
+  out 0x60, al                  ; Write the modified value back to the
+                                ; output port
 
   call .a20wait
-  mov al,0xAE
-  out 0x64,al
+  mov al, 0xAE
+  out 0x64, al                  ; Enable keyboard
 
-  sti
+  call .a20wait
+  sti                           ; Enable interrupts
   ret
 
   .a20wait:
-  in al,0x64
-  test al,2
+  in al, 0x64
+  test al, 2
   jnz .a20wait
   ret
 
   .a20wait2:
-  in al,0x64
-  test al,1
+  in al, 0x64
+  test al, 1
   jz .a20wait2
   ret

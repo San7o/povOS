@@ -1,5 +1,6 @@
   [bits 32]
 
+  ;; -----------------------------------------------------------------
   ;; Detecting long mode
   ;;
   ;; Long mode is supported on all 64-bit CPUs, but not on 32-bit CPUS.

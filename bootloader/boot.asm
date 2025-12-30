@@ -60,7 +60,7 @@
   call elevate_bios
 
   ;; Infinite Loop
-bootsector_hold:
+  .hang:
   jmp $
 
   ;; 
@@ -97,6 +97,20 @@ begin_protected:
 
 [bits 32]
 
+  ;; Enable the A20 line
+  call is_A20_on
+  cmp eax, 1
+  je .a20_enabled
+
+  ;; The A20 line should be automatically enabled in modern BIOS,
+  ;; Enable_A20_protected is untested
+  call enable_A20_protected     ; Enable the A20 line
+  call is_A20_on
+  cmp eax, 1
+  jne .error_enabling_A20
+
+  .a20_enabled:
+
   ;; Clear vga memory output
   call clear_protected
 
@@ -105,25 +119,19 @@ begin_protected:
   call detect_lm_protected
   
   ;; Test vga-style print function
-  mov esi, protected_alert
+  mov esi, protected_message
   call print_protected
 
   ;; Initialize the page table
   call init_pt_protected
 
-  ;; Enable the A20 line
-  call enable_A20_protected
-  call is_A20_on
-  cmp eax, 1
-  jne .error_enabling_A20
-  
   call elevate_protected
 
   .hang:
-  
   jmp $                         ; Infinite loop
 
   .error_enabling_A20:
+    call clear_protected
     mov esi, error_enabling_A20_string
     call print_protected
     jmp .hang
@@ -143,7 +151,7 @@ begin_protected:
 kernel_start:  equ 0x00100000
 
 error_enabling_A20_string:  db `Error enabling A20 line`, 0
-protected_alert:  db `64-bit long mode supported`, 0
+protected_message:  db `64-bit long mode supported`, 0
 
   ;; 
   ;; Long mode
@@ -155,22 +163,22 @@ begin_long_mode:
   [bits 64]
 
   ;; Clean the screen
-  mov rdi, vga_style_bw
-  call clear_long
+  mov r9b, vga_style_bw
+  call vga_clear
 
   ;; Long mode message
-  mov rdi, vga_style_bw
-  mov rsi, long_mode_note
-  call print_long
-  
+  mov r8, 0                     ; Offset from start
+  mov r9, long_mode_message     ; String
+  mov r10b, vga_style_bw        ; Style
+  call vga_print
+
   call main
-  
+
+  .hang:
   jmp $
 
-  %include "bootloader/long_mode/clear.asm"
-  %include "bootloader/long_mode/print.asm"
   %include "bootloader/long_mode/print_hex.asm"
   %include "drivers/vga.asm"
-  %include "main.asm"
+  %include "kernel/main.asm"
 
-long_mode_note:  db `Now running in fully-enabled, 64-bit long mode!`, 0
+long_mode_message:  db `Now running in fully-enabled, 64-bit long mode!`, 0

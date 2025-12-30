@@ -42,13 +42,14 @@ main:
   ;; Checks succesfull
   
   ;; Clean the screen
-  mov rdi, vga_style_blue
-  call clear_long
+  mov r8b, vga_style_blue
+  call vga_clear
   
   ;; Success message
-  mov rdi, vga_style_blue
-  mov rsi, greet_string
-  call print_long
+  mov r10b, vga_style_blue      ; style
+  mov r9, greet_string          ; string
+  mov r8, 0                     ; position
+  call vga_print
 
   ;; Uart message
   mov r8w, UART_COM1
@@ -61,34 +62,37 @@ main:
   .main_vga_memory_map_error:
   
   ;; Clean the screen
-  mov rdi, vga_style_red
-  call clear_long
+  mov r8b, vga_style_red        ; style
+  call vga_clear
   
-  mov rdi, vga_style_bw
-  mov rsi, vga_memory_map_error_string
-  call print_long
+  mov r10b, vga_style_bw        ; style
+  mov r9, vga_memory_map_error_string ; string
+  mov r8, 0                     ; position
+  call vga_print
   jmp .main_exit
   
   .main_vga_alphanumeric_error:
   
   ;; Clean the screen
-  mov rdi, vga_style_red
-  call clear_long
+  mov r8b, vga_style_red
+  call vga_clear
 
-  mov rdi, vga_style_bw
-  mov rsi, vga_alphanumeric_error_string
-  call print_long
+  mov r10b, vga_style_bw        ; style
+  mov r9, vga_alphanumeric_error_string ; string
+  mov r8, 0                     ; position
+  call vga_print
   jmp .main_exit
 
   .main_uart_init_error:
 
   ;; Clean the screen
-  mov rdi, vga_style_red
-  call clear_long
+  mov r8b, vga_style_red
+  call vga_clear
 
-  mov rdi, vga_style_bw
-  mov rsi, vga_uart_init_error_string
-  call print_long
+  mov r10b, vga_style_bw        ; style
+  mov r9, vga_uart_init_error_string ; string
+  mov r8, 0                     ; position
+  call vga_print
   jmp .main_exit
   
   

@@ -23,7 +23,7 @@ clear_protected:
     push edx
 
     ;; Move character to al, style to ah
-    mov al, space_char
+    mov al, ' '
     mov ah, vga_style_bw
 
     ;; Print character to VGA memory
@@ -43,5 +43,3 @@ clear_protected:
   ;; Restore all registers and return
   popa
   ret
-
-space_char: equ ` `

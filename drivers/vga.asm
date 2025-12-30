@@ -14,11 +14,19 @@
   ;; - http://www.osdever.net/FreeVGA/vga/vga.htm
   ;;
   ;; 
-  ;; Graphics controller registers
-  ;; ------------------------------
+
+  [bits 64]
+  
+  ;;
+  ;; I/O Ports
+  ;; ---------
   ;; 
   %define VGA_GRAPHICS_ADDRESS_REGISTER     0x3CE
   %define VGA_GRAPHICS_DATA_REGISTER        0x3CF
+  
+  ;; 
+  ;; Graphics controller registers
+  ;; ------------------------------
   ;;
   %define VGA_GRAPHICS_SET_RESET_REGISTER_INDEX        0x00
   %define VGA_GRAPHICS_ENABLE_SET_RESET_REGISTER_INDEX 0x01
@@ -124,22 +132,94 @@ vga_is_alpha_disabled:
   pop rdx
   ret
 
+  ;; -----------------------------------------------------------------
+  ;; Print character to screen
+  ;;
+  ;; Args:
+  ;;   - r8: offset from start of vga framebuffer (aka character position)
+  ;;   - r9b: character byte
+  ;;   - r10b: character style
 vga_print_char:
+  push rdx
+  push rax
 
-  ;; TODO
+  mov rdx, vga_start            ; Base address of VGA framebuffer
+  add rdx, r8                   ; Calculate final address
+  mov ax, r10w                  ; Save style in ah
+  shl ax, 8
+  mov al, r9b                   ; Save char in al
+  mov word[rdx], ax
 
+  pop rax
+  pop rdx
   ret
 
+  ;; -----------------------------------------------------------------
+  ;; Clear the screen with color
+  ;;
+  ;; Args:
+  ;;   r8b: style, should be one of vga_style_*
 vga_clear:
+  push rdi
+  push rax
+  push rcx
 
-  ;; TODO
-
-  ret
+  ;; Move style to ah
+  mov di, r8w
+  shl di, 8
+  mov ax, di
   
+  mov al, ' '                   ; character to write
+  mov rdi, vga_start            ; Starting address
+  mov rcx, vga_extent / 2       ; Ending position
+
+  rep stosw                     ; Repeats stosw the number of times
+                                ; specified in the count register
+                                ; stosw copies a character
+
+
+  pop rcx
+  pop rax
+  pop rdi
+  ret
+
+  ;; -----------------------------------------------------------------
+  ;; Print NULL-terminated string at offset with style
+  ;;
+  ;; Args:
+  ;;   - r8: offset from start of vga framebuffer (aka character position)
+  ;;   - r9: string address
+  ;;   - r10b: style
 vga_print:
+  push r8
+  push r9
+  push r10
+  push rax
 
-  ;; TODO
+  .print_long_loop:
+    ;; if char == \0, string is done
+    cmp byte[r9], 0
+    je .print_long_done
 
+    ;; Handle strings that are too long
+    cmp r9, vga_start + vga_extent
+    je .print_long_done
+
+    push r9
+    mov r9b, byte[r9]
+    call vga_print_char
+    pop r9
+
+    add r9, 1                   ; Increment string address
+    add r8, 2                   ; Increment VGA memory offset
+
+    jmp .print_long_loop        ; Loop again
+
+  .print_long_done:
+  pop rax
+  pop r10
+  pop r9
+  pop r8
   ret
 
 vga_print_hex:
