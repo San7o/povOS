@@ -1,13 +1,19 @@
-  [bits 32]
-
   ;; -----------------------------------------------------------------
+  ;; 
   ;; Detecting long mode
+  ;; ===================
   ;;
   ;; Long mode is supported on all 64-bit CPUs, but not on 32-bit CPUS.
   ;; However, since we've bee in protected mode, we have no idea which
   ;; type of system we're running on. We need to figure out if we can
   ;; even use long mode so that we don't cause a ton of errors when
   ;; trying to activate it.
+
+  [bits 32]
+
+  ;; -----------------------------------------------------------------
+  ;; Detect if long mode is available
+  ;; Set eax to 1 if available, 0 otherwise
 detect_lm_protected:
   pushad
 
@@ -62,7 +68,7 @@ detect_lm_protected:
   ;; If equal, the the bit got flipped back during copy, and CPUID is
   ;; not supported
   cmp eax, ecx
-  je .cpuid_not_found_protected  ; Print error and hand if CPUID unsupported
+  je .cpuid_not_found           ; Print error and hand if CPUID unsupported
 
   ;; Check for extended functions of CPUID
   ;;
@@ -76,7 +82,7 @@ detect_lm_protected:
   mov eax, 0x80000000           ; CPUID argument 0x80000000
   cpuid                         ; Run the command
   cmp eax, 0x80000001           ; See if result is larget than 0x80000001
-  jb .cpuid_not_found_protected  ; If not, error and hang
+  jb .cpuid_not_found           ; If not, error and hang
 
   ;; Actually check for long mode
   ;;
@@ -86,25 +92,31 @@ detect_lm_protected:
   mov eax, 0x80000001           ; Set CPUID argument
   cpuid                         ; Run CPUID
   test edx, 1 << 29             ; See if bit 29 set in edx
-  jz .lm_not_found_protected     ; If it is not, then error and hang
+  jz .lm_not_found              ; If it is not, then error and hang
 
   ;; Return from the function
+  .exit:
   popad
+  mov eax, 1                    ; long mode available
   ret
  
   ;; Print and error message and hang
-  .cpuid_not_found_protected:
+  .cpuid_not_found:
   call clear_protected
   mov esi, cpuid_not_found_str
   call print_protected
-  jmp $
+  jmp .exit_failure
 
   ;; Print and error message and hang
-  .lm_not_found_protected: 
+  .lm_not_found: 
   call clear_protected
   mov esi, lm_not_found_str
   call print_protected
-  jmp $
 
+  .exit_failure:
+  popad
+  mov eax, 0
+  ret
+  
 lm_not_found_str: db `ERROR: Long mode not supported. Exiting...`, 0
 cpuid_not_found_str:  db `ERROR: CPUID unsupported, but required for long mode`, 0

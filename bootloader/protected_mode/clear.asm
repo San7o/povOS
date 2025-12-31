@@ -1,5 +1,6 @@
   [bits 32]
 
+  ;; -----------------------------------------------------------------
   ;; Clear the VGA memory. (AKA write blank spaces to every character
   ;; slot). This function takes no arguments.
 clear_protected:
@@ -13,11 +14,11 @@ clear_protected:
   mov edx, 0
 
   ;; Do main loop
-  .clear_protected_loop:
+  .loop:
 
     ;; While edx < ebx
     cmp edx, ebx
-    jge .clear_protected_done
+    jge .done
 
     ;; Free edx to use later
     push edx
@@ -37,9 +38,9 @@ clear_protected:
     add edx, 2
 
     ;; GOTO beginning of loop
-    jmp .clear_protected_loop
+    jmp .loop
 
-.clear_protected_done:
+  .done:
   ;; Restore all registers and return
   popa
   ret

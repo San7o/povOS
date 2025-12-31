@@ -1,25 +1,26 @@
   [bits 16]
 
+  ;; -----------------------------------------------------------------
+  ;; Print a string in BIOS
   ;; Input pointer to string in bx
-print_bios:
-  ;; Save state
+bios_print:
   push ax
   push bx
 
   ;; Enter Print Mode
-  mov ah, 0x0E
+  mov ah, 0x0E                  ; enter print mode
 
-  .print_bios_loop:
+  .loop:
     cmp byte[bx], 0
-    je .print_bios_end
+    je .end
 
     mov al, byte[bx]
     int 0x10
 
     inc bx
-    jmp .print_bios_loop
+    jmp .loop
 
-  .print_bios_end:
+  .end:
   pop bx
   pop ax
   ret

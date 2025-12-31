@@ -1,5 +1,5 @@
-  ;; Since we no longer have access to BIOS utilities, this function
-  ;; takes advantage of the VGA area.
+  ;; Since we no longer have access to BIOS utilities, we use VGA
+  ;; instead.
 
   [bits 32]
 
@@ -7,31 +7,24 @@
   ;; Message address stores in esi
 print_protected:
   ;; The pusha command stores the values of all registers so we don't
-  ;; have to worry about them
+  ;; have to worry about them. Use 'popa' to pop them before exiting.
   pusha
   mov edx, vga_start
 
-  ;; Do main loop
-  .print_protected_loop:
-    ;; if char == \0, string is done
-    cmp byte[esi], 0
-    je .print_protected_done
+  .loop:
+    cmp byte[esi], 0            ; Check for NULL terminator
+    je .done
 
-    ;; Move character to al, style to ah
-    mov al, byte[esi]
-    mov ah, vga_style_bw
+    mov al, byte[esi]           ; Move character to al
+    mov ah, vga_style_bw        ; Move style to ah
 
-    ;; Print character to vga memory location
-    mov word[edx], ax
+    mov word[edx], ax           ; Copy character to VGA framebuffer
 
-    ;; Increment counter registers
-    add esi, 1
-    add edx, 2
+    add esi, 1                  ; Increment string
+    add edx, 2                  ; Increment VGA framebuffer cursor
 
-    ;; Redo loop
-    jmp .print_protected_loop
+    jmp .loop                   ; loop
 
-  .print_protected_done:
-  ;; Popa does the opposite of pusha, and restores all the registers
+  .done:
   popa
   ret

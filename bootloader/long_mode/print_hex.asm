@@ -21,14 +21,14 @@ print_hex_long:
   mov word[rdx], r8w            ; Print char to VGA memory location
   add rdx, 2                    ; Increment VGA cursor
   
-  .print_hex_long_loop:
+  .loop:
     ;; if rsi == 0 we are done
     cmp rsi, 0
-    je .print_hex_long_done
+    je .done
 
     ;; Handle numbers that are too long
     cmp rdx, vga_start + vga_extent
-    je .print_hex_long_done
+    je .done
 
     ;; Load high 4 bits of rsi into rax
     mov rax, rsi
@@ -36,7 +36,7 @@ print_hex_long:
     shl rsi, 4                  ; Discard the high 4 bits
 
     cmp rax, 10                 ; Check if number is alpha or numeric
-    jge .print_hex_long_alpha
+    jge .alpha
   
       ;; Move character to r8l, style to r8h
       mov r8, rdi
@@ -46,9 +46,9 @@ print_hex_long:
       ;; Print character to vga memory location
       mov word[rdx], r8w
   
-      jmp .print_hex_long_increment
+      jmp .increment
   
-    .print_hex_long_alpha:
+    .alpha:
  
       ;; Move character to r8l, style to r8h
       mov r8, rdi
@@ -59,15 +59,15 @@ print_hex_long:
       ;; Print character to vga memory location
       mov word[rdx], r8w
  
-    .print_hex_long_increment:
+    .increment:
 
     ;; Increment vga cursor
     add rdx, 2
 
     ;; Redo loop
-    jmp .print_hex_long_loop
+    jmp .loop
 
-  .print_hex_long_done:
+  .done:
   pop rsi
   pop rdi
   pop rdx

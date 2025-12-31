@@ -1,7 +1,8 @@
   [bits 16]
 
+  ;; -----------------------------------------------------------------
   ;; This function will raise our CPU to the 32-bit protected mode
-elevate_bios:
+real_elevate:
   ;; We need to disable interrupts because elevating to 32-bit mode
   ;; causes the CPU to go a little crazy. We do this with the `cli`
   ;; command
@@ -21,10 +22,13 @@ elevate_bios:
   ;; Now we need to clear the pipeline of all 16-bit intructions,
   ;; which we do with a far jump. The address doesn't actually need
   ;; to be far away, but the type of jump needs to be specified as `far`
-  jmp code_seg:init_pm
+  jmp code_seg:real_init_pm
 
   [bits 32]
-init_pm:
+
+  ;; -----------------------------------------------------------------
+  ;; Initialize protected mode
+real_init_pm:
   
   ;; You are not in 32-bit mode!
 
@@ -43,4 +47,4 @@ init_pm:
   mov esp, ebp
 
   ;; Go to the second section with 32-bit code
-  jmp begin_protected
+  jmp begin_protected_mode

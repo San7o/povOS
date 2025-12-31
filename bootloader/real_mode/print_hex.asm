@@ -1,7 +1,9 @@
   [bits 16]
-
+  
+  ;; -----------------------------------------------------------------
+  ;; Print hex string in BIOS
   ;; Input in bx
-print_hex_bios:
+bios_print_hex:
   push ax
   push bx
   push cx
@@ -20,10 +22,10 @@ print_hex_bios:
   mov cx, 4
 
   ;; Begin loop
-  .print_hex_bios_loop:
+  .loop:
     ;; if cx==0 goto end
     cmp cx, 0
-    je .print_hex_bios_end
+    je .end
 
     ;; Save bx again
     push bx
@@ -33,17 +35,16 @@ print_hex_bios:
 
     ;; Check to see if ge 10
     cmp bx, 10
-    jge .print_hex_bios_alpha
+    jge .alpha
 
       ;; Byte in bx now < 10
       ;; Set the zero char in al, add bl
       mov al, '0'
       add al, bl
 
-      ;; Jump to end of loop
-      jmp .print_hex_bios_loop_end
+      jmp .loop_end
 
-  .print_hex_bios_alpha:
+  .alpha:
 
     ;; Bit is now greater than or equal to 10
     ;; Subtract 1- from bl to get add amount
@@ -53,23 +54,19 @@ print_hex_bios:
     mov al, 'A'
     add al, bl
 
-  .print_hex_bios_loop_end:
+  .loop_end:
 
-    ;; Print character
-    int 0x10
+    int 0x10                    ; print character
 
     ;; Restore bx
     ;; Shift to next 4 bits
     pop bx
     shl bx, 4
 
-    ;; Decrement cx counter
-    dec cx
+    dec cx                      ; decrement counter
+    jmp .loop                   ; loop
 
-    ;; Jump to beginning of loop
-    jmp .print_hex_bios_loop
-
-  .print_hex_bios_end:
+  .end:
   pop cx
   pop bx
   pop ax

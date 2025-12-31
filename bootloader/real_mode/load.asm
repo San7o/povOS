@@ -1,4 +1,8 @@
+  ;; -----------------------------------------------------------------
+  ;; 
   ;; Load more code
+  ;; ==============
+  ;; 
 
   [bits 16]
 
@@ -6,7 +10,7 @@
   ;;   Sector start point in bx
   ;;   Number of sectors to read in cx
   ;;   Destination address in dx
-load_bios:
+bios_load:
   ;;  Save the registers
   push ax
   push bx
@@ -61,8 +65,8 @@ load_bios:
   jne .bios_disk_error
 
   ;; If all goes well, we can now print the success message and return
-  mov bx, success_msg
-  call print_bios
+  mov bx, bios_load_success_str
+  call bios_print
 
   ;; Restore the registers
   pop dx
@@ -76,16 +80,16 @@ load_bios:
   .bios_disk_error:
   ;; Print out the error code and hand, since the program didn't
   ;; work correctly
-  mov bx, error_msg
-  call print_bios
+  mov bx, bios_load_error_str
+  call bios_print
 
   ;; The error code is in ah, so shitf it down to mask out al
   shr ax, 8
   mov bx, ax
-  call print_hex_bios
+  call bios_print_hex
 
   ;; Infinite loop to hang
   jmp $
 
-error_msg:  db `\r\nERROR Loading Sectors. Code: `, 0
-success_msg:  db `\r\nAdditional Sectors Loaded Succesfully!\r\n`, 0
+bios_load_error_str:  db `\r\nERROR Loading Sectors. Code: `, 0
+bios_load_success_str:  db `\r\nAdditional Sectors Loaded Succesfully!\r\n`, 0

@@ -1,7 +1,8 @@
   [bits 32]
 
-elevate_protected:
+  ;; -----------------------------------------------------------------
   ;; Elevate to 64-bit mode
+elevate_protected:
   mov ecx, 0xC0000080
   rdmsr
   or eax, 1 << 8
@@ -16,6 +17,8 @@ elevate_protected:
   jmp code_seg_64:init_lm
 
   [bits 64]
+  ;; -----------------------------------------------------------------
+  ;; Initialize long mode
 init_lm:
   cli
   mov ax, data_seg_64           ; Set the A-register to the data descriptor

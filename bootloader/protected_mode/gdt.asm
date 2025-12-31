@@ -1,6 +1,12 @@
-  ;; Define the Flat Mode Configuration Global Descriptor Table (GDT)
+  ;; -----------------------------------------------------------------
+  ;;
+  ;; Global Descriptor Table
+  ;; =======================
+  ;; 
+  ;; Define the Flat Mode Configuration Global Descriptor Table (GDT).
   ;; The flat mode table allows us to read and write code anywhere,
   ;; without restriction
+  ;; 
 
   align 4
 
@@ -76,5 +82,5 @@ gdt_64_descriptor:
   dd gdt_64_start                 ; Start of the 64 bit gdt
 
   ;; Define helpers to find pointers to Code and Data segments
-code_seg_64:   equ gdt_64_code - gdt_64_start
+code_seg_64:  equ gdt_64_code - gdt_64_start
 data_seg_64:  equ gdt_64_data - gdt_64_start

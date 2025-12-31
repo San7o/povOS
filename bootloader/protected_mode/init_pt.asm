@@ -1,4 +1,7 @@
+  ;; -----------------------------------------------------------------
+  ;; 
   ;; Initialize the page table
+  ;; =========================
   ;;
   ;; The page Table has 4 components which will be mapped as follows:
   ;;
@@ -11,7 +14,7 @@
   ;; structure
 
   ;; Each table in the page table has 512 entries, all of which are 8
-  ;; bytes (one quadword or 64 bytes) long. In this step, we'll be
+  ;; bytes (one quadword or 64 bits) long. In this step, we'll be
   ;; identity mapping ONLY the lowest 2 MB of memory, since this is
   ;; all we need for now. Note that this only requires one page table,
   ;; so the upper 511 entries in the PML4T, PDPT and PDT will all be

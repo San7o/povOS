@@ -28,16 +28,16 @@ main:
   
   call vga_get_memory_map       ; Check VGA memory map value is 11
   cmp rax, 0b11
-  jne .main_vga_memory_map_error
+  jne .vga_memory_map_error
   
   call vga_is_alpha_disabled    ; Check VGA mode is alphanumeric
   cmp rax, 0
-  jne .main_vga_alphanumeric_error
+  jne .vga_alphanumeric_error
 
   mov r8w, UART_COM1            ; Initialize UART port COM1
   call uart_init_port
   cmp rax, 0
-  jne .main_uart_init_error
+  jne .uart_init_error
   
   ;; Checks succesfull
   
@@ -56,10 +56,10 @@ main:
   mov r9, greet_string
   call uart_write_string
   
-  .main_exit:
+  .exit:
   ret
  
-  .main_vga_memory_map_error:
+  .vga_memory_map_error:
   
   ;; Clean the screen
   mov r8b, vga_style_red        ; style
@@ -69,9 +69,9 @@ main:
   mov r9, vga_memory_map_error_string ; string
   mov r8, 0                     ; position
   call vga_print
-  jmp .main_exit
+  jmp .exit
   
-  .main_vga_alphanumeric_error:
+  .vga_alphanumeric_error:
   
   ;; Clean the screen
   mov r8b, vga_style_red
@@ -81,9 +81,9 @@ main:
   mov r9, vga_alphanumeric_error_string ; string
   mov r8, 0                     ; position
   call vga_print
-  jmp .main_exit
+  jmp .exit
 
-  .main_uart_init_error:
+  .uart_init_error:
 
   ;; Clean the screen
   mov r8b, vga_style_red
@@ -93,7 +93,7 @@ main:
   mov r9, vga_uart_init_error_string ; string
   mov r8, 0                     ; position
   call vga_print
-  jmp .main_exit
+  jmp .exit
   
   
   section .data
