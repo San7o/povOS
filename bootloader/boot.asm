@@ -85,7 +85,7 @@ boot_drive: db 0x00           ; boot drive storage, initialized at startup
 
 
   ;;
-  ;; Begin second sector. This one contains 32-bit code only
+  ;; Begin second sector
   ;;
 
   ;;
