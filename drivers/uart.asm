@@ -149,7 +149,7 @@ uart_init_port:
   ;; Retrun 1 if transmisison buffer is ready to transmit (empty)
   ;;
   ;; Args:
-  ;;   r8w: serial port, should be one of UART_COMM*
+  ;;   r8w: serial port, should be one of UART_COM*
   ;;
   ;; Returns:
   ;;   rax: 1 if buffer is ready, or 0 otherwise
@@ -178,7 +178,7 @@ uart_is_transmit_ready:
   ;; Write a char to serial port
   ;;
   ;; Args:
-  ;;   r8w: serial port, should be one of UART_COMM*
+  ;;   r8w: serial port, should be one of UART_COM*
   ;;   r9b: byte to write
   ;; 
 uart_write_char:
@@ -204,7 +204,7 @@ uart_write_char:
   ;; Write a NULL terminated string to serial port
   ;;
   ;; Args:
-  ;;   r8w: serial port, should be one of UART_COMM*
+  ;;   r8w: serial port, should be one of UART_COM*
   ;;   r9: address of NULL terminated string to write
   ;;
 uart_write_string:
@@ -225,4 +225,14 @@ uart_write_string:
   
   .done:
   pop rax
+  ret
+
+  ;; -----------------------------------------------------------------
+  ;; Write a number as hex using ASCII
+  ;;
+  ;; Args:
+  ;;   r8w: serial port, should be one of UART_COM*
+  ;;   r9: the number to write
+uart_write_hex:
+  ;; TODO
   ret

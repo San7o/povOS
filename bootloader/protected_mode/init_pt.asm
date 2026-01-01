@@ -122,7 +122,7 @@ init_pt_protected:
   ;; The "loop" commands is essentially equivalent to the following
   ;; pseudocode:
   ;; 
-  ;;     while (ecx > 0 {
+  ;;     while (ecx > 0) {
   ;;      {instructions}
   ;;      ecx--
   ;;     }
