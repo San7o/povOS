@@ -171,10 +171,7 @@ begin_long_mode:
 
   [bits 64]
 
-  cli                           ; disable interrupts. TODO: They
-                                ; should be re-enabled once the IDT
-                                ; has beed filled.
-  call load_idt                 ; Load the interrupt descriptor table
+  ;;   call idt_load                 ; Load the interrupt descriptor table
   
   mov r9b, vga_style_bw         ; style
   call vga_clear                ; clean the screen

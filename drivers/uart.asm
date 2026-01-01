@@ -204,7 +204,7 @@ uart_write_char:
   ;; Write a NULL terminated string to serial port
   ;;
   ;; Args:
-  ;;   r8b: serial port, should be one of UART_COMM*
+  ;;   r8w: serial port, should be one of UART_COMM*
   ;;   r9: address of NULL terminated string to write
   ;;
 uart_write_string:

@@ -163,9 +163,6 @@ idt_end:
 
   section .data
   
-gate:
-  dq 2
-  
 idt_register:
     dw idt_end - idt_start - 1  ; limit (16 bits)
     dq idt_start                ; base  (64 bits)
@@ -173,7 +170,473 @@ idt_register:
   section .text
   
   ;; -----------------------------------------------------------------
-  ;; Load the IDT, disabled interrupts
-load_idt:
-  lidt [idt_register]
+  ;; Set a gate in the IDT
+  ;;
+  ;; Args:
+  ;;   - r8b:  interrupt number
+  ;;   - r9:   ISR address
+  ;;   - r10w: code segment selector in GDT or LDT
+  ;;   - r11b: gate type. 0 = interrupt gate, 1 = trap gate
+  ;;   - r12b: DLP, a 2 bit value which defines the CPU privilege levels
+  ;;           which are allowed to access this interrupt via INT instr.
+  ;;   - r13b: IST: A 3-bit value which is an offset into the Interrupt
+  ;;           Stack Table (can be 0)                  
+idt_set_gate:
+  push rax
+  push rbx
+
+  mov rax, idt_start            ; start of IDT
+  mov rbx, r8                   ; interrupt number
+  and rbx, 0xFF
+  imul rbx, 16                  ; offset from idt_start
+  add rax, rbx                  ; rax = gate address
+
+  ;; Clean gate
+  mov qword[rax], 0
+  mov qword[rax + 8], 0
+  
+  mov rbx, r9                   ; offset_1
+  and rbx, 0xFFFF
+  or [rax], rbx
+
+  mov rbx, r10                  ; selector
+  and rbx, 0xFFFF
+  shl rbx, 16
+  or [rax], rbx
+
+  mov rbx, r13                  ; ist
+  and rbx, 0b111
+  shl rbx, 32
+  or [rax], rbx
+
+  cmp r11b, 0                   ; gate type
+  je .interrupt_gate
+
+  mov rbx, 0b1111
+  shl rbx, 40
+  or [rax], rbx
+  jmp .continue
+  
+  .interrupt_gate:
+
+  mov rbx, 0b1110
+  shl rbx, 40
+  or [rax], rbx
+
+  .continue:
+
+  mov rbx, r12                  ; DLP
+  and rbx, 0b11
+  shl rbx, 45
+  or [rax], rbx
+
+  mov rbx, 1                    ; P bit
+  shl rbx, 47
+  or [rax], rbx
+
+  mov rbx, r9                   ; offset_2
+  shr rbx, 16
+  and rbx, 0xFFFF
+  shl rbx, 48
+  or [rax], rbx
+
+  mov rbx, r9                   ; offset_3
+  shr rbx, 32
+  or [rax + 8], rbx
+
+  pop rbx
+  pop rax
   ret
+  
+  ;; -----------------------------------------------------------------
+  ;; Load the IDT
+idt_load:
+
+  cli
+  
+  mov r8b, 0                    ; interrupt number
+  mov r9, isr0                  ; ISR address
+  mov r10w, 0x8                 ; code segment selector in GDT
+  mov r11b, 1                   ; 0 = interrupt, 1 = trap
+  mov r12b, 0                   ; DLP
+  mov r13b, 0                   ; IST
+  call idt_set_gate
+
+  mov r8b, 1
+  mov r9, isr1
+  call idt_set_gate
+
+  mov r8b, 2
+  mov r9, isr2
+  mov r11b, 0                   ; 0 = interrupt, 1 = trap
+  call idt_set_gate
+  
+  mov r8b, 3
+  mov r9, isr3
+  mov r11b, 1                   ; 0 = interrupt, 1 = trap
+  call idt_set_gate
+  
+  mov r8b, 4
+  mov r9, isr4
+  call idt_set_gate
+  
+  mov r8b, 5
+  mov r9, isr5
+  call idt_set_gate
+  
+  mov r8b, 6
+  mov r9, isr6
+  call idt_set_gate
+  
+  mov r8b, 7
+  mov r9, isr7
+  call idt_set_gate
+  
+  mov r8b, 8
+  mov r9, isr8
+  call idt_set_gate
+  
+  mov r8b, 9
+  mov r9, isr9
+  call idt_set_gate
+  
+  mov r8b, 10
+  mov r9, isr10
+  call idt_set_gate
+  
+  mov r8b, 11
+  mov r9, isr11
+  call idt_set_gate
+  
+  mov r8b, 12
+  mov r9, isr12
+  call idt_set_gate
+  
+  mov r8b, 13
+  mov r9, isr13
+  call idt_set_gate
+  
+  mov r8b, 14
+  mov r9, isr14
+  call idt_set_gate
+  
+  mov r8b, 15
+  mov r9, isr15
+  call idt_set_gate
+  
+  mov r8b, 16
+  mov r9, isr16
+  call idt_set_gate
+  
+  mov r8b, 17
+  mov r9, isr17
+  call idt_set_gate
+  
+  mov r8b, 18
+  mov r9, isr18
+  call idt_set_gate
+  
+  mov r8b, 19
+  mov r9, isr19
+  call idt_set_gate
+  
+  mov r8b, 20
+  mov r9, isr20
+  call idt_set_gate
+  
+  mov r8b, 21
+  mov r9, isr21
+  call idt_set_gate
+  
+  mov r8b, 22
+  mov r9, isr22
+  call idt_set_gate
+  
+  mov r8b, 23
+  mov r9, isr23
+  call idt_set_gate
+  
+  mov r8b, 24
+  mov r9, isr24
+  call idt_set_gate
+  
+  mov r8b, 25
+  mov r9, isr25
+  call idt_set_gate
+  
+  mov r8b, 26
+  mov r9, isr26
+  call idt_set_gate
+  
+  mov r8b, 27
+  mov r9, isr27
+  call idt_set_gate
+  
+  mov r8b, 28
+  mov r9, isr28
+  call idt_set_gate
+  
+  mov r8b, 29
+  mov r9, isr29
+  call idt_set_gate
+  
+  mov r8b, 30
+  mov r9, isr30
+  call idt_set_gate
+  
+  mov r8b, 31
+  mov r9, isr31
+  call idt_set_gate
+
+  lidt [idt_register]
+
+  sti
+  ret
+
+  ;;
+  ;; Interrupt service routines
+  ;;
+
+  ;; -----------------------------------------------------------------
+  ;; This gets called by all ISR
+  ;; Prints the interrupt service number. Used for debugging
+fault_handler:
+  mov rsi, [rdi + 120]          ; ISR number
+
+  mov r8w, 0x3F8
+  mov r9, fault_message
+  call uart_write_string
+  ret
+
+fault_message:  db `Interrupt called`, 0
+  
+  ;; This is a common ISR stub. It saves the processor state, sets up
+  ;; for kernel mode segments, calls the C-level fault handler, and
+  ;; finally restores the stack frame.
+isr_common_stub:
+  cli
+  
+  ;; save all
+  push r15
+  push r14
+  push r13
+  push r12
+  push r11
+  push r10
+  push r9
+  push r8
+  push rdi
+  push rsi
+  push rbp
+  push rbx
+  push rdx
+  push rcx
+  push rax
+  
+  mov rdi, rsp   ; pass stack frame
+  call fault_handler
+  
+  pop rax
+  pop rcx
+  pop rdx
+  pop rbx
+  pop rbp
+  pop rsi
+  pop rdi
+  pop r8
+  pop r9
+  pop r10
+  pop r11
+  pop r12
+  pop r13
+  pop r14
+  pop r15
+  
+  add rsp, 16     ; Cleans up the pushed error code and pushed ISR number
+  iretq
+		
+  
+  ;;  0: Divide Error fault
+isr0:
+  push qword 0    ; push a dummy error code to keep a uniform stack frame
+  push qword 0    ; isr number
+  jmp isr_common_stub
+
+  ;;  1: Debug exception fault / trap
+isr1:
+  push qword 0                   ; dummy value
+  push qword 1                   ; isr number
+  jmp isr_common_stub
+
+  ;; 2: Non maskable external interrupt
+isr2:
+  push qword 0                   ; dummy value
+  push qword 2                   ; isr number
+  jmp isr_common_stub
+  
+  ;; 3: Breakpoint trap
+isr3:
+  push qword 0                   ; dummy value
+  push qword 3                   ; isr number
+  jmp isr_common_stub
+  
+  ;; 4: Overflow trap
+isr4:
+  push qword 0                   ; dummy value
+  push qword 4                   ; isr number
+  jmp isr_common_stub
+
+  ;; 5: BOUND range exceeded fault
+isr5:
+  push qword 0                   ; dummy value
+  push qword 5                   ; isr number
+  jmp isr_common_stub
+
+  ;; 6: Invalid Opcode fault
+isr6:
+  push qword 0                   ; dummy value
+  push qword 6                   ; isr number
+  jmp isr_common_stub
+
+  ;; 7: Device not available (no main coprocessor) fault
+isr7:
+  push qword 0                   ; dummy value
+  push qword 7                   ; isr number
+  jmp isr_common_stub
+
+  ;; 8: Double fault abort
+isr8:
+  push qword 8                   ; isr number
+  jmp isr_common_stub
+
+  ;; 9: Coprocessor Segment Overrun (reserved) fault
+isr9:
+  push qword 0                   ; dummy value
+  push qword 9                   ; isr number
+  jmp isr_common_stub
+
+  ;; 10: Invalid TSS fault
+isr10:
+  push qword 10                   ; isr number
+  jmp isr_common_stub
+
+  ;; 11: Segment not present fault
+isr11:
+  push qword 11                   ; isr number
+  jmp isr_common_stub
+
+  ;; 12: Stack-segment fault
+isr12:
+  push qword 12                   ; isr number
+  jmp isr_common_stub
+
+  ;; 13: General Protection fault
+isr13:
+  push qword 13                   ; isr number
+  jmp isr_common_stub
+
+  ;; 14: Page fault
+isr14:
+  push qword 14                   ; isr number
+  jmp isr_common_stub
+
+  ;; 15: (intel reserved, do not use)
+isr15:
+  push 0                         ; dummy value
+  push qword 15                   ; isr number
+  jmp isr_common_stub
+
+  ;; 16: x87 FPU Floating-point error (math fault)
+isr16:
+  push 0                         ; dummy value
+  push qword 16                   ; isr number
+  jmp isr_common_stub
+
+  ;; 17: Alignment Check fault
+isr17:
+  push qword 17                   ; isr number
+  jmp isr_common_stub
+
+  ;; 18: Machine Check Abort
+isr18:
+  push 0                         ; dummy value
+  push qword 18                   ; isr number
+  jmp isr_common_stub
+
+  ;; 19: SIMD Floating-point exception fault
+isr19:
+  push 0                         ; dummy value
+  push qword 19                   ; isr number
+  jmp isr_common_stub
+
+  ;; 20: virtualization exception fault
+isr20:
+  push 0                         ; dummy value
+  push qword 20                   ; isr number
+  jmp isr_common_stub
+
+  ;; 21: Control Protection Exception fault
+isr21:
+  push qword 21                   ; isr number
+  jmp isr_common_stub
+
+  ;; 22: Intel reserved. Do not use.
+isr22:
+  push qword 0
+  push qword 22                   ; isr number
+  jmp isr_common_stub
+
+  ;; 23: Intel reserved. Do not use.
+isr23:
+  push qword 0
+  push qword 23                   ; isr number
+  jmp isr_common_stub
+
+  ;; 24: Intel reserved. Do not use.
+isr24:
+  push qword 0
+  push qword 24                   ; isr number
+  jmp isr_common_stub
+
+  ;; 25: Intel reserved. Do not use.
+isr25:
+  push qword 0
+  push qword 25                   ; isr number
+  jmp isr_common_stub
+
+  ;; 26: Intel reserved. Do not use.
+isr26:
+  push qword 0
+  push qword 26                   ; isr number
+  jmp isr_common_stub
+
+  ;; 27: Intel reserved. Do not use.
+isr27:
+  push qword 0
+  push qword 27                   ; isr number
+  jmp isr_common_stub
+
+  ;; 28: Intel reserved. Do not use.
+isr28:
+  push qword 0
+  push qword 28                   ; isr number
+  jmp isr_common_stub
+  
+  ;; 29: Intel reserved. Do not use.
+isr29:
+  push qword 0
+  push qword 29                   ; isr number
+  jmp isr_common_stub
+  
+  ;; 30: Intel reserved. Do not use.
+isr30:
+  push qword 0
+  push qword 30                   ; isr number
+  jmp isr_common_stub
+
+  ;; 31: Intel reserved. Do not use.
+isr31:
+  push qword 0
+  push qword 31                   ; isr number
+  jmp isr_common_stub
+  

@@ -55,6 +55,15 @@ main:
   mov r8w, UART_COM1
   mov r9, greet_string
   call uart_write_string
+
+  ;; Divide by zero exception test
+  ;;   mov rax, 10
+  ;;   xor rdx, rdx
+  ;;   mov rcx, 0
+  ;;   idiv rcx
+
+  ;; Triggers breakpoint exception
+  ;;  int3
   
   .exit:
   ret
@@ -94,7 +103,7 @@ main:
   mov r8, 0                     ; position
   call vga_print
   jmp .exit
-  
+
   
   section .data
   
