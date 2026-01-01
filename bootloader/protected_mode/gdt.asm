@@ -1,11 +1,14 @@
   ;; -----------------------------------------------------------------
   ;;
-  ;; Global Descriptor Table
-  ;; =======================
+  ;; Global Descriptor Table (protected mode)
+  ;; ========================================
   ;; 
   ;; Define the Flat Mode Configuration Global Descriptor Table (GDT).
   ;; The flat mode table allows us to read and write code anywhere,
   ;; without restriction
+  ;;
+  ;; For more information about the GDT, read the code for the GDT for
+  ;; real mode.
   ;; 
 
   align 4

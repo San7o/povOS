@@ -10,7 +10,7 @@ real_elevate:
 
   ;; 32-bit protected mode requires the GDT, so we tell the CPU where
   ;; it is with the `lgdt` command
-  lgdt [gdt_32_descriptor]
+  lgdt [gdt_32_register]
 
   ;; Enable 32-bit mode by setting bit 0 of the original control
   ;; register. We cannot set this directly, so we need to copy the
