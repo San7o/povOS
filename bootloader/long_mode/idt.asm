@@ -291,7 +291,7 @@ idt_load:
   mov r8b, 7
   mov r9, isr7
   call idt_set_gate
-  
+
   mov r8b, 8
   mov r9, isr8
   call idt_set_gate
@@ -311,7 +311,7 @@ idt_load:
   mov r8b, 12
   mov r9, isr12
   call idt_set_gate
-  
+
   mov r8b, 13
   mov r9, isr13
   call idt_set_gate
@@ -394,7 +394,7 @@ idt_load:
   ret
 
   ;;
-  ;; Interrupt service routines
+  ;; Interrupt service routines implementation
   ;;
 
   ;; -----------------------------------------------------------------
@@ -402,13 +402,24 @@ idt_load:
   ;; Prints the interrupt service number. Used for debugging
 fault_handler:
   mov rsi, [rdi + 120]          ; ISR number
+  mov rax, [rdi + 128]          ; Error code
 
+  ;; Writes 'isr x, error x'
   mov r8w, 0x3F8
-  mov r9, fault_message
+  mov r9, idt_fault_message
   call uart_write_string
+  mov r9, rsi                   ; isr number
+  call uart_write_hex
+  mov r9, idt_error_message
+  call uart_write_string
+  mov r9, rax                   ; error
+  call uart_write_hex
+  mov r9, `\n`
+  call uart_write_char
   ret
 
-fault_message:  db `Interrupt called`, 0
+idt_fault_message:  db `isr `, 0
+idt_error_message: db `, error `, 0
   
   ;; This is a common ISR stub. It saves the processor state, sets up
   ;; for kernel mode segments, calls the C-level fault handler, and
@@ -453,8 +464,13 @@ isr_common_stub:
   pop r15
   
   add rsp, 16     ; Cleans up the pushed error code and pushed ISR number
+
+  sti
   iretq
-		
+
+  ;; Some isr push a 32 bit error code. Here we manually push a 0
+  ;; value so that the isr handler can expect to have the save number
+  ;; of elements in the stack to pop.
   
   ;;  0: Divide Error fault
 isr0:

@@ -16,7 +16,7 @@ real_elevate:
   ;; register. We cannot set this directly, so we need to copy the
   ;; contents into eax (32-bit version of ax) and back again
   mov eax, cr0
-  or eax, 0x00000001
+  or eax, 0x00000001            ; CR0.PE
   mov cr0, eax
 
   ;; Now we need to clear the pipeline of all 16-bit intructions,
@@ -30,7 +30,7 @@ real_elevate:
   ;; Initialize protected mode
 real_init_pm:
   
-  ;; You are not in 32-bit mode!
+  ;; You are now in 32-bit mode!
 
   ;; We need to tell all segment registers to point to our flat-mode
   ;; data segment.

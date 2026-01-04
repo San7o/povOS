@@ -3,6 +3,14 @@
   ;; -----------------------------------------------------------------
   ;; Elevate to 64-bit mode
 elevate_protected:
+  cli
+  
+  lgdt [gdt_64_descriptor]
+
+  mov eax, cr4
+  or eax, 1 << 5                ; CR4.PAE (Physical Address Extension)
+  mov cr4, eax
+  
   mov ecx, 0xC0000080
   rdmsr
   or eax, 1 << 8
@@ -10,10 +18,9 @@ elevate_protected:
 
   ;; Enable paging
   mov eax, cr0
-  or eax, 1 << 31
+  or eax, 1 << 31               ; CR0.PG (paging)
   mov cr0, eax
 
-  lgdt [gdt_64_descriptor]
   jmp code_seg_64:init_lm
 
   [bits 64]

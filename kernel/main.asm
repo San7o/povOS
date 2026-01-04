@@ -59,13 +59,14 @@ main:
   ;; Uart hex number
   mov r9, 0x6969
   call uart_write_hex
+  mov r9, `\n`
+  call uart_write_char
   
   ;; Vga hex number
   mov r8, 19                    ; offset
   mov r9, 0x6969
   mov r10b, vga_style_blue
   call vga_print_hex
-
   
   ;; Divide by zero exception test
   ;;   mov rax, 10
@@ -114,7 +115,6 @@ main:
   mov r8, 0                     ; position
   call vga_print
   jmp .exit
-
   
   section .data
   

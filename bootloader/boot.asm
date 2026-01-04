@@ -170,11 +170,11 @@ begin_long_mode:
 
   [bits 64]
 
-  ;;   call idt_load                 ; Load the interrupt descriptor table
-  
+  call idt_load                 ; Load the interrupt descriptor table
+
   mov r9b, vga_style_bw         ; style
   call vga_clear                ; clean the screen
-
+  
   ;; Long mode message
   mov r8, 0                     ; Offset from start
   mov r9, long_mode_message     ; String

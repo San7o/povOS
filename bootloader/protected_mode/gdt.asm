@@ -7,11 +7,13 @@
   ;; The flat mode table allows us to read and write code anywhere,
   ;; without restriction
   ;;
+  ;; Base, limit and granularity are ignored in long mode.
+  ;; 
   ;; For more information about the GDT, read the code for the GDT for
   ;; real mode.
   ;; 
 
-  align 4
+  align 8
 
 gdt_64_start:
 
@@ -23,55 +25,54 @@ gdt_64_null:
 
   ;; Define the code sector for the 64 bit gdt
 gdt_64_code:
-  ;; Base:     0x00000
-  ;; Limit:    0xFFFFF
+  ;; Base:     0x00000 (ignored)
+  ;; Limit:    0x00000 (ignored)
   ;; 1st Flags:        0b1001
   ;;   Present:        1
   ;;   Privelege:      00
   ;;   Descriptor:     1
   ;; Type Flags:       0b1010
-  ;;   Code:           1
+  ;;   Executable:     1
   ;;   Conforming:     0
   ;;   Readable:       1
   ;;   Accessed:       0
-  ;; 2nd Flags:        0b1100
-  ;;   Granularity:    1
+  ;; 2nd Flags:        0b0010
+  ;;   Granularity:    0
   ;;   32-bit Default: 0
   ;;   64-bit Segment: 1
   ;;   AVL:            0
 
-  dw 0xFFFF                     ; Limit (bits 0-15)
+  dw 0x0000                     ; Limit (bits 0-15)
   dw 0x0000                     ; Base (bits 0-15)
   db 0x00                       ; Base (bits 16-23)
   db 0b10011010                 ; 1st Flags, Type flags
-  db 0b10101111                 ; 2nd Flags, Limit (bits 16-19)
+  db 0b00100000                 ; 2nd Flags, Limit (bits 16-19)
   db 0x00                       ; Base (bits 24-31)
-
 
   ;; Define the data sector for the 64 bit gdt
 gdt_64_data:
-  ;; Base: 0x00000
-  ;; Limit: 0x00000
-  ;; 1st Flags: 0b1001
-  ;;   Present: 1
-  ;;   Privelege: 00
-  ;;   Descriptor: 1
-  ;; Type Flags: 0b0010
-  ;;   Code: 0
-  ;;   Exapnd Down: 0
-  ;;   Writeable: 1
-  ;;   Accessed: 0
-  ;; 2nd Flags: 0b1100
-  ;;   Granularity: 1
+  ;; Base:    0x00000 (ignored)
+  ;; Limit:   0x00000 (ignored)
+  ;; 1st Flags:        0b1001
+  ;;   Present:        1
+  ;;   Privelege:      00
+  ;;   Descriptor:     1
+  ;; Type Flags:       0b0010
+  ;;   Executable:     0
+  ;;   Exapnd Down:    0
+  ;;   Readable:       1
+  ;;   Accessed:       0
+  ;; 2nd Flags:        0b0000
+  ;;   Granularity:    0
   ;;   32-bit Default: 0
-  ;;   64-bit Segment: 1
-  ;;   AVL: 0
+  ;;   64-bit Segment: 0 (must be 0 for data)
+  ;;   AVL:            0
 
   dw 0x0000                     ; Limit (bits 0-15)
   dw 0x0000                     ; Base (bits 0-15)
   db 0x00                       ; Base (bits 16-23)
   db 0b10010010                 ; 1st Flags, Type flags
-  db 0b10100000                 ; 2nd Flags, Limit (bits 16-19)
+  db 0b00000000                 ; 2nd Flags, Limit (bits 16-19)
   db 0x00                       ; Base (bits 24-31)
 
 gdt_64_end:

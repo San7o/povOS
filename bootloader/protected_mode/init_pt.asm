@@ -67,6 +67,9 @@ init_pt_protected:
                                 ; cr3 is what the CPU uses to locate
                                 ; the page table entries.
 
+
+  mov ax, data_seg              ; flat data selector
+  mov es, ax
   
   xor eax, eax                  ; Set eax to 0. Note that xor is
                                 ; actually faster than "mov eax, 0"
