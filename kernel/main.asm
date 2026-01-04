@@ -56,6 +56,13 @@ main:
   mov r9, greet_string
   call uart_write_string
 
+  ;; Vga hex number
+  mov r8, 19                    ; offset
+  mov r9, 0x6969
+  mov r10b, vga_style_blue
+  call vga_print_hex
+
+  
   ;; Divide by zero exception test
   ;;   mov rax, 10
   ;;   xor rdx, rdx

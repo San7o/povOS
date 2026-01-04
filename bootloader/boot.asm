@@ -160,7 +160,6 @@ protected_message:  db `64-bit long mode supported`, 0
   ;; We can use 64 bits now.
   ;; 
 
-  %include "bootloader/long_mode/print_hex.asm"
   %include "bootloader/long_mode/idt.asm"
   %include "drivers/vga.asm"
   %include "kernel/main.asm"
