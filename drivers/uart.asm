@@ -234,5 +234,47 @@ uart_write_string:
   ;;   r8w: serial port, should be one of UART_COM*
   ;;   r9: the number to write
 uart_write_hex:
-  ;; TODO
+  push r9
+  push rax
+
+  ;; Print '0x'
+  mov rax, r9                   ; backup
+  mov r9, '0'
+  call uart_write_char
+  mov r9, 'x'
+  call uart_write_char
+  mov r9, rax                   ; restore
+
+  .loop:
+  
+  mov rax, r9                   ; backup
+  shr r9, 60                    ; keep only the high 4 bits, shifted
+                                ; to the right
+  
+  cmp rax, 0                    ; see if number is 0 (before shift)
+  je .end
+
+  cmp r9, 10
+  jge .alpha
+
+    ;; Is digit
+    add r9, '0'
+    call uart_write_char
+    jmp .next
+
+    .alpha:
+    ;; Is alpha
+    sub r9, 10
+    add r9, 'A'
+    call uart_write_char
+  
+    .next:
+    mov r9, rax                 ; restore
+    shl r9, 4                   ; set new high bytes
+    jmp .loop
+  
+  .end:
+  pop rax
+  pop r9
   ret
+  

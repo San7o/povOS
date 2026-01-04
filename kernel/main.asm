@@ -56,6 +56,10 @@ main:
   mov r9, greet_string
   call uart_write_string
 
+  ;; Uart hex number
+  mov r9, 0x6969
+  call uart_write_hex
+  
   ;; Vga hex number
   mov r8, 19                    ; offset
   mov r9, 0x6969
