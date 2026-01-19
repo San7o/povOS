@@ -170,7 +170,6 @@ protected_message:  db `64-bit long mode supported`, 0
   ;; We can use 64 bits now.
   ;; 
 
-  %include "bootloader/long_mode/idt.asm"
   %include "drivers/vga.asm"
   %include "drivers/pic.asm"
   %include "drivers/ps2.asm"
@@ -182,10 +181,6 @@ begin_long_mode:
 
   [bits 64]
 
-  call pic_remap                ; Change IRQ number for PIC
-  call idt_load                 ; Load the interrupt descriptor table
-  sti                           ; Enable interrupts
-  
   mov r9b, vga_style_bw         ; style
   call vga_clear                ; clean the screen
   

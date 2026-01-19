@@ -15,6 +15,7 @@
 
   [bits 64]
 
+  %include "kernel/idt.asm"
   %include "drivers/uart.asm"
   
   section .text
@@ -40,6 +41,11 @@ main:
   jne .uart_init_error
   
   ;; Checks succesfull
+
+  ;; Setup IDT
+  call pic_remap                ; Change IRQ number for PIC
+  call idt_load                 ; Load the interrupt descriptor table
+  sti                           ; Enable interrupts
   
   ;; Clean the screen
   mov r8b, vga_style_blue
