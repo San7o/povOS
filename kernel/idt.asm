@@ -418,6 +418,8 @@ fault_handler:
   call ps2_read_scancode
   
   ;; print the scancode in hex to verify it's working
+  mov r9, idt_keyboard_message
+  call uart_write_string
   mov r9, rax                    ; Scan code is in AL
   call uart_write_hex
   mov r9, `\n`
@@ -446,6 +448,7 @@ fault_handler:
 
 idt_fault_message:  db `isr `, 0
 idt_error_message:  db `, error `, 0
+idt_keyboard_message:  db `key `, 0
   
   ;; This is a common ISR stub. It saves the processor state, sets up
   ;; for kernel mode segments, calls the C-level fault handler, and
