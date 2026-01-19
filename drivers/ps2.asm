@@ -84,4 +84,10 @@
   
   section .text
 
-  ;; TODO
+  ;; -----------------------------------------------------------------
+  ;; Read scancode, store value in al
+ps2_read_scancode:
+  in al, PS2_DATA_REG           ; Read scancode from keyboard controller
+                                ; This "clears" the interrupt at the hardware level
+  ret
+  

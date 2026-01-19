@@ -388,6 +388,14 @@ idt_load:
   mov r9, isr31
   call idt_set_gate
 
+  mov r8b, 32
+  mov r9, isr32
+  call idt_set_gate
+  
+  mov r8b, 33
+  mov r9, isr33
+  call idt_set_gate
+
   lidt [idt_register]
 
   ret
@@ -400,9 +408,27 @@ idt_load:
   ;; This gets called by all ISR
   ;; Prints the interrupt service number. Used for debugging
 fault_handler:
-  mov rsi, [rdi + 120]          ; ISR number
-  mov rax, [rdi + 128]          ; Error code
+  mov rsi, [rdi + 120]           ; ISR number
+  mov rax, [rdi + 128]           ; Error code
+  mov r8w, 0x3F8                 ; Used for uart printing
 
+  cmp rsi, 33                   ; Keyboard Interrupt
+  jne .error
+ 
+  call ps2_read_scancode
+  
+  ;; print the scancode in hex to verify it's working
+  mov r9, rax                    ; Scan code is in AL
+  call uart_write_hex
+  mov r9, `\n`
+  call uart_write_char
+  
+  call pic_ack                  ; Send acknowledgement to PIC
+
+  jmp .end
+
+  .error:
+  
   ;; Writes 'isr x, error x'
   mov r8w, 0x3F8
   mov r9, idt_fault_message
@@ -415,10 +441,12 @@ fault_handler:
   call uart_write_hex
   mov r9, `\n`
   call uart_write_char
+  
+  .end:
   ret
 
 idt_fault_message:  db `isr `, 0
-idt_error_message: db `, error `, 0
+idt_error_message:  db `, error `, 0
   
   ;; This is a common ISR stub. It saves the processor state, sets up
   ;; for kernel mode segments, calls the C-level fault handler, and
@@ -444,17 +472,8 @@ isr_common_stub:
   push rax
   
   mov rdi, rsp   ; pass stack frame
-  ;;   call fault_handler
-
-  ;; --- STACK ALIGNMENT FIX ---
-  mov rbp, rsp        ; Save original stack pointer in rbp
-  and rsp, -16        ; Align stack to 16-byte boundary (clears lowest 4 bits)
-    
   call fault_handler
-    
-  mov rsp, rbp        ; Restore the original stack pointer
-  ;; ---------------------------
-  
+
   pop rax
   pop rcx
   pop rdx
@@ -662,5 +681,19 @@ isr30:
 isr31:
   push qword 0
   push qword 31                   ; isr number
+  jmp isr_common_stub
+  
+  ;; 32: Mouse Interrupt
+isr32:
+  push qword 0
+  push qword 32                   ; isr number
+
+  ;; Does nothing special for now
+  jmp isr_common_stub
+  
+  ;; 33: Keyboard Interrupt
+isr33:
+  push qword 0
+  push qword 33                   ; isr number
   jmp isr_common_stub
   
