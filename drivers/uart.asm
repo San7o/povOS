@@ -274,6 +274,7 @@ uart_write_hex:
     jmp .loop
   
   .end:
+
   pop rax
   pop r9
   ret

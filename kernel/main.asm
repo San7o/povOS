@@ -14,9 +14,10 @@
   ;; 
 
   [bits 64]
-
-  %include "kernel/idt.asm"
+  
   %include "drivers/uart.asm"
+  %include "kernel/idt.asm"
+  %include "kernel/debug/dump_regs.asm"
   
   section .text
   
@@ -73,6 +74,8 @@ main:
   mov r9, 0x6969
   mov r10b, vga_style_blue
   call vga_print_hex
+
+  call debug_dump_regs_uart
   
   ;; Divide by zero exception test
   ;;   mov rax, 10

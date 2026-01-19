@@ -410,9 +410,9 @@ idt_load:
 fault_handler:
   mov rsi, [rdi + 120]           ; ISR number
   mov rax, [rdi + 128]           ; Error code
-  mov r8w, 0x3F8                 ; Used for uart printing
+  mov r8w, UART_COM1             ; Used for uart printing
 
-  cmp rsi, 33                   ; Keyboard Interrupt
+  cmp rsi, 33                    ; Keyboard Interrupt
   jne .error
  
   call ps2_read_scancode
@@ -430,7 +430,6 @@ fault_handler:
   .error:
   
   ;; Writes 'isr x, error x'
-  mov r8w, 0x3F8
   mov r9, idt_fault_message
   call uart_write_string
   mov r9, rsi                   ; isr number
