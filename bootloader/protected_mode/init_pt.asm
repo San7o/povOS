@@ -8,7 +8,8 @@
   ;; PML4T -> 0x1000 (Page Map Level 4 Table)
   ;; PDPT  -> 0x2000 (Page Directory Pointer Table)
   ;; PDT   -> 0x3000 (Page Directory Table)
-  ;; PT    -> 0x4000 (Page table)
+  ;; PT    -> 0x4000 (Page table) Contains 512 entries, each mapping a
+  ;;                 4KB page
   ;;
   ;; Clear the memory in those areas and the set up the page table
   ;; structure
@@ -105,6 +106,8 @@ init_pt_protected:
 
   mov dword[edi], 0x2003        ; Set PML4T[0] to address 0x2000
                                 ; (PDPT) with flags 0x0003
+  mov dword [edi + 4], 0        ; Upper 32 bits (Must be 0 for these
+                                ; addresses)
   add edi, 0x1000               ; Go to PDPT[0]
   mov dword[edi], 0x3003        ; Set PDPT[0] to address 0x3000 (PDT)
                                 ; with flags 0x0003

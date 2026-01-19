@@ -3,7 +3,7 @@
   ;; Bootloader
   ;; ==========
   ;;
-  ;; The classic boot sequence looks like this:
+  ;; The x86_64 boot sequence looks like this:
   ;;
   ;;  - CPU starts executing in 16-bit real mode, with BIOS access
   ;;  - Use the bios to load the rest of the bootloader
@@ -17,48 +17,48 @@
   ;;
 
   ;;
-  ;; Real mode
-  ;; ---------
+  ;; Master Boot Record
+  ;; ------------------
   ;;
-  ;; Program will start executing from 0x7C00 with BIOS. Only the first
-  ;; boot sector is loaded in memory, and it must end with a magic
-  ;; number 0xAA55. The bootloader needs to load more sectors to
-  ;; continue execution.
+  ;; Program will start executing from 0x7C00 with BIOS in real mode
+  ;; (16 bits). Only the first boot sector (aka "Master Boot Record")
+  ;; is loaded in memory, and it must end with a 64 bytes partition
+  ;; table and a magic number 0xAA55. The bootloader needs to load
+  ;; more sectors in order to continue execution.
   ;; 
 
   [org 0x7C00]                    ; Set program origin
-  [bits 16]                       ; 16-bit Mode
+  [bits 16]                       ; We are now in 16-bit Mode
   
   ;; Initialize the base pointer and the stack pointer
   ;; It's better to do it explicitly
-  mov bp, 0x0500
+  mov bp, 0x7C00                ; Low memory, grows downward
   mov sp, bp
 
   ;; Before we do anything else, we want to save the ID of the boot
-  ;; drive, which the BIOS stores in register dl. We can offload this
-  ;; to a specific location in memory
-  mov byte[boot_drive], dl
+  ;; drive, which the BIOS stores in register dl. We can store this to
+  ;; a specific location in memory
+  mov byte[boot_drive_id], dl
 
-  mov bx, real_hello_str
+  mov bx, real_hello_str        ; Hello message
   call bios_print
 
   ;; Load the next sector
 
   ;; The first sector's already been loaded, so we start with the
-  ;; second sector the the drive (the numbering of sectors begins at 1).
-  ;; Note: Only bl will be used
+  ;; second sector the the drive (the numbering of sectors begins at
+  ;; 1).  Note: Only bl will be used
   mov bx, 0x0002
-
   ;; Set the number of sectors to load
   mov cx, [total_bytes]
   shr cx, 9                     ; divide by 512
-  
   ;; Finally, we want to store the new sector immediately after the
-  ;; first loaded sector, at address 0x7E00. This will help a lot with
-  ;; jumping between different sectors of the bootloader.
+  ;; first loaded sector, at address 0x7E00 (0x7C00 + 512). This will
+  ;; help a lot with jumping between different sectors of the
+  ;; bootloader.
   mov dx, 0x7E00
-
   call bios_load                ; load new sectors
+  
   call real_elevate             ; elevate CPU to 32-bit mode
   
   .hang:
@@ -76,11 +76,21 @@
 
 real_hello_str:    db `\r\nHello World, from the BIOS!\r\n`, 0
 
-total_bytes:                  ; calculate the size of the binary
-  dq (sectors_end - sectors_start + 511)
-boot_drive: db 0x00           ; boot drive storage, initialized at startup
+total_bytes:                    ; calculate the size of the binary
+                                ; WARNING: This implies that the size
+                                ; can be at most 16 bits!
+  dw (sectors_end - sectors_start + 511)
+boot_drive_id: db 0x00          ; boot drive storage, initialized at
+                                ; startup
 
-  times 510 - ($ - $$) db 0x00  ; Pad boot sector for magic number
+  times 446 - ($ - $$) db 0x00  ; Pad boot sector for magic number
+
+  ;; MBR data
+  ;; 
+  ;; Reserve 64 bytes for the Partition Table (standard MBR)
+  ;; This fills the space with zeros, effectively saying "no partitions"
+partition_table:
+  times 64 db 0x00
   dw 0xAA55                     ; Magic number
 
 
@@ -162,6 +172,7 @@ protected_message:  db `64-bit long mode supported`, 0
 
   %include "bootloader/long_mode/idt.asm"
   %include "drivers/vga.asm"
+  %include "drivers/pic.asm"
   %include "kernel/main.asm"
 
   section .text
@@ -170,8 +181,10 @@ begin_long_mode:
 
   [bits 64]
 
+  call pic_remap                ; Change port of PIC
   call idt_load                 ; Load the interrupt descriptor table
-
+  sti                           ; Enable interrupts
+  
   mov r9b, vga_style_bw         ; style
   call vga_clear                ; clean the screen
   

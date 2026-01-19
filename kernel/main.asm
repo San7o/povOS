@@ -75,7 +75,7 @@ main:
   ;;   idiv rcx
 
   ;; Triggers breakpoint exception
-  ;;  int3
+  ;;   int3
   
   .exit:
   ret

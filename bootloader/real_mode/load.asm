@@ -1,12 +1,7 @@
-  ;; -----------------------------------------------------------------
-  ;; 
-  ;; Load more code
-  ;; ==============
-  ;; 
-
   [bits 16]
 
-  ;; Define load_sectors
+  ;; -----------------------------------------------------------------
+  ;; Load more sectors
   ;;   Sector start point in bx
   ;;   Number of sectors to read in cx
   ;;   Destination address in dx
@@ -44,7 +39,7 @@ bios_load:
 
   ;; Finally, we want to load the drive to read from in dl. Remember,
   ;; we stored this in the boot_drive label
-  mov dl, byte[boot_drive]
+  mov dl, byte[boot_drive_id]
 
   ;; Perform the BIOS disk read
   ;; Use an interrupt to trigger the bios funciton

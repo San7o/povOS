@@ -390,7 +390,6 @@ idt_load:
 
   lidt [idt_register]
 
-  sti
   ret
 
   ;;
@@ -445,7 +444,16 @@ isr_common_stub:
   push rax
   
   mov rdi, rsp   ; pass stack frame
+  ;;   call fault_handler
+
+  ;; --- STACK ALIGNMENT FIX ---
+  mov rbp, rsp        ; Save original stack pointer in rbp
+  and rsp, -16        ; Align stack to 16-byte boundary (clears lowest 4 bits)
+    
   call fault_handler
+    
+  mov rsp, rbp        ; Restore the original stack pointer
+  ;; ---------------------------
   
   pop rax
   pop rcx

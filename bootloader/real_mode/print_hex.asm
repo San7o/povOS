@@ -18,7 +18,7 @@ bios_print_hex:
   int 0x10
 
   ;; Initialize cx as counter
-  ;; 4 nibbles in 16-bits
+  ;; 4 characters in 16-bits
   mov cx, 4
 
   ;; Begin loop

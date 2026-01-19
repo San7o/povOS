@@ -83,7 +83,7 @@ gdt_64_end:
   ;; protected mode GDT
 gdt_64_descriptor:
   dw gdt_64_end - gdt_64_start -1 ; Size of GDT, one byte less than true size
-  dd gdt_64_start                 ; Start of the 64 bit gdt
+  dq gdt_64_start                 ; Start of the 64 bit gdt
 
   ;; Define helpers to find pointers to Code and Data segments
 code_seg_64:  equ gdt_64_code - gdt_64_start

@@ -12,7 +12,8 @@
   ;; Table
   ;; -----
   ;;
-  ;; The entries in the GDT are 8 bytes long and for a table like this:
+  ;; The entries in the GDT are 8 bytes long and form a table like
+  ;; this:
   ;;
   ;;     + --------------------------- +
   ;;     | Address           | Content |
