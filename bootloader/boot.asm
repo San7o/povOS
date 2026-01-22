@@ -28,11 +28,21 @@
   ;; 
 
   [org 0x7C00]                    ; Set program origin
+
+  jmp begin_bootloader
+
+  ;; Store the number of sectors to load for the kernel. This value
+  ;; is set after compiling the kernel, it is up here to make it
+  ;; easy to find. DO NOT CHANGE THE ADDRESS OF THE VALUE.
+kernel_size:   db 0
+
+begin_bootloader:
+  
   [bits 16]                       ; We are now in 16-bit Mode
   
   ;; Initialize the base pointer and the stack pointer
   ;; It's better to do it explicitly
-  mov bp, 0x7C00                ; Low memory, grows downward
+  mov bp, 0x7BFF                ; Low memory, grows downward
   mov sp, bp
 
   ;; Before we do anything else, we want to save the ID of the boot
@@ -43,21 +53,25 @@
   mov bx, real_hello_str        ; Hello message
   call bios_print
 
-  ;; Load the next sector
+  ;; Load the next sectors
 
   ;; The first sector's already been loaded, so we start with the
   ;; second sector the the drive (the numbering of sectors begins at
   ;; 1).  Note: Only bl will be used
   mov bx, 0x0002
   ;; Set the number of sectors to load
-  mov cx, [total_bytes]
+  mov cx, [bootloader_bytes]    ; the rest of the bootloader
   shr cx, 9                     ; divide by 512
+  xor dx, dx
+  add dl, byte[kernel_size]     ; the kernel
+  add cx, dx
+
   ;; Finally, we want to store the new sector immediately after the
   ;; first loaded sector, at address 0x7E00 (0x7C00 + 512). This will
   ;; help a lot with jumping between different sectors of the
   ;; bootloader.
   mov dx, 0x7E00
-  call bios_load                ; load new sectors
+  call bios_load                ; load bootloader sectors
   
   call real_elevate             ; elevate CPU to 32-bit mode
   
@@ -75,14 +89,13 @@
   %include "bootloader/real_mode/elevate.asm"
 
 real_hello_str:    db `\r\nHello World, from the BIOS!\r\n`, 0
-
-total_bytes:                    ; calculate the size of the binary
+boot_drive_id: db 0x00          ; boot drive storage, initialized at
+                                ; startup
+bootloader_bytes:               ; calculate the size of the binary
                                 ; WARNING: This implies that the size
                                 ; can be at most 16 bits!
   dw (sectors_end - sectors_start + 511)
-boot_drive_id: db 0x00          ; boot drive storage, initialized at
-                                ; startup
-
+  
   times 446 - ($ - $$) db 0x00  ; Pad boot sector for magic number
 
   ;; MBR data
@@ -95,8 +108,10 @@ partition_table:
 
 
   ;;
-  ;; Begin second sector
+  ;; Begin sector 2
   ;;
+sectors_start: 
+protected_mode_sector:
 
   ;;
   ;; Protected mode
@@ -107,9 +122,7 @@ partition_table:
   ;; 
 
   [bits 32]
-  
-sectors_start:                  ; used to get the number of sectors to load
-bootsector_extended:
+
 begin_protected_mode:
 
   ;; Enable the A20 line
@@ -146,13 +159,23 @@ begin_protected_mode:
     call clear_protected
     mov esi, error_enabling_A20_string
     call print_protected
-    jmp .hang
+  jmp .hang
   
-  ;; Include
-
   %include "bootloader/protected_mode/clear.asm"
   %include "bootloader/protected_mode/print.asm"
   %include "bootloader/protected_mode/detect_lm.asm"
+  
+  
+  ;; Pad sector
+  times 512 - ($ - protected_mode_sector) db 0x00
+  
+  ;; 
+  ;; Begin sector 3
+  ;;  
+protected_mode_sector_utils:
+  
+  ;; Include
+
   %include "bootloader/protected_mode/init_pt.asm"
   %include "bootloader/protected_mode/gdt.asm"
   %include "bootloader/protected_mode/enable_A20.asm"
@@ -163,6 +186,14 @@ begin_protected_mode:
 error_enabling_A20_string:  db `Error enabling A20 line`, 0
 protected_message:  db `64-bit long mode supported`, 0
 
+  ;; Pad sector
+  times 512 - ($ - protected_mode_sector_utils) db 0x00
+  
+  ;;
+  ;; Begin sector 4
+  ;;  
+long_mode_sector: 
+
   ;; 
   ;; Long mode
   ;; ---------
@@ -170,16 +201,12 @@ protected_message:  db `64-bit long mode supported`, 0
   ;; We can use 64 bits now.
   ;; 
 
-  %include "drivers/vga.asm"
-  %include "drivers/pic.asm"
-  %include "drivers/ps2.asm"
-  %include "kernel/main.asm"
-
-  section .text
-  
-begin_long_mode:
-
   [bits 64]
+  
+  %include "drivers/vga.asm"
+  
+
+begin_long_mode:
 
   mov r9b, vga_style_bw         ; style
   call vga_clear                ; clean the screen
@@ -190,17 +217,22 @@ begin_long_mode:
   mov r10b, vga_style_bw        ; Style
   call vga_print
 
-  call main
+  ;; Jump to main
+  call kernel_main
 
   .hang:
   jmp $
 
-  section .data
-  
+kernel_main:   equ 0x8400       ; 0x7C00 + 512 * 4, where 4 is the
+                                ; size of the bootloader
 long_mode_message:  db `Now running in fully-enabled, 64-bit long mode!`, 0
-  
-sectors_end:                    ; used to get the number of sectors to load
-  
+
+sectors_end:                    ; used to calculate the amount of
+                                ; sectors used by the bootloader
+
+  ;; Pad sector
+  times 512 - ($ - long_mode_sector) db 0x00
+
   ;; 
   ;; 
   ;; -----------------------------------------------------------------

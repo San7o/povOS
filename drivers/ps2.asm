@@ -82,8 +82,6 @@
   ;; ...
   
   
-  section .text
-
   ;; -----------------------------------------------------------------
   ;; Read scancode, store value in al
 ps2_read_scancode:

@@ -6,7 +6,7 @@
   ;; You access UART registers via I/O ports in an indexed style, with
   ;; a base port + an offset that specifies the register. Each
   ;; register can allow read, write, or both.
-  ;;
+
   
   [bits 64]
   

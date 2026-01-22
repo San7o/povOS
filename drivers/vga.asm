@@ -67,8 +67,6 @@
   ;; Functions
   ;;
 
-  section .text
-
   ;; -----------------------------------------------------------------
   ;; Draw a pixel in vga graphics
   ;;
@@ -290,8 +288,6 @@ vga_print_hex:
   ;; Constants
   ;;
 
-  section .data
-  
   ;; We assume VGA memory starts at 0xB8000. This can be checked with
   ;; vga_get_memory_map
 vga_start:   equ 0x000B8000
@@ -307,5 +303,5 @@ vga_style_red:   equ 0x4F
    
   ;; Strings
   
-vga_memory_map_error_string:  db `Memory map range not supported`, 0
-vga_alphanumeric_error_string:  db `VGA alphanumeric mode is disabled`, 0
+vga_memory_map_error_str:  db `Memory map range not supported`, 0
+vga_alphanumeric_error_str:  db `VGA alphanumeric mode is disabled`, 0

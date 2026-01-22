@@ -16,13 +16,20 @@
   [bits 64]
   
   %include "drivers/uart.asm"
+  %include "drivers/ps2.asm"
+  %include "drivers/vga.asm"
+  %include "drivers/pic.asm"
   %include "kernel/idt.asm"
   %include "kernel/debug/dump_regs.asm"
   
-  section .text
+
+  global kernel_entry
+  extern kernel_main
+
+  section .startup
   
   ;; Entry point
-main:
+kernel_entry:
   
   ;; 
   ;; Sanity checks
@@ -54,13 +61,13 @@ main:
   
   ;; Success message
   mov r10b, vga_style_blue      ; style
-  mov r9, greet_string          ; string
+  mov r9, greet_str          ; string
   mov r8, 0                     ; position
   call vga_print
 
   ;; Uart message
   mov r8w, UART_COM1
-  mov r9, greet_string
+  mov r9, greet_str
   call uart_write_string
 
   ;; Uart hex number
@@ -85,9 +92,25 @@ main:
 
   ;; Triggers breakpoint exception
   ;;   int3
+
+  call kernel_main
+  cmp rax, 0
+  jne .kernel_error
   
   .exit:
   ret
+
+  .kernel_error:
+  ;; Clean the screen
+  mov r8b, vga_style_red        ; style
+  call vga_clear
+  
+  mov r10b, vga_style_bw        ; style
+  mov r9, kernel_main_error_str ; string
+  mov r8, 0                     ; position
+  call vga_print
+  
+  jmp .exit
  
   .vga_memory_map_error:
   
@@ -96,7 +119,7 @@ main:
   call vga_clear
   
   mov r10b, vga_style_bw        ; style
-  mov r9, vga_memory_map_error_string ; string
+  mov r9, vga_memory_map_error_str ; string
   mov r8, 0                     ; position
   call vga_print
   jmp .exit
@@ -108,7 +131,7 @@ main:
   call vga_clear
 
   mov r10b, vga_style_bw        ; style
-  mov r9, vga_alphanumeric_error_string ; string
+  mov r9, vga_alphanumeric_error_str ; string
   mov r8, 0                     ; position
   call vga_print
   jmp .exit
@@ -120,12 +143,11 @@ main:
   call vga_clear
 
   mov r10b, vga_style_bw        ; style
-  mov r9, vga_uart_init_error_string ; string
+  mov r9, vga_uart_init_error_str ; string
   mov r8, 0                     ; position
   call vga_print
   jmp .exit
-  
-  section .data
-  
-greet_string: db `Hello, from povOS!`, 0
-vga_uart_init_error_string:  db `Error initializing UART`, 0
+
+greet_str: db `Hello, from povOS!`, 0
+vga_uart_init_error_str:  db `Error initializing UART`, 0
+kernel_main_error_str:      db `Kernel exited with error`, 0
