@@ -1,23 +1,29 @@
 povOS
 =====
 
-The bootloader just slapped you in x86_64 long (protected) mode with a
-flat memory layout. You are ring 0, you can do anything. You don't
-have access to the fancy BIOS routines anymore, so you will have to
-get creative and implement your own drivers, but you have a full
-64-bit address space and the power of CISC to play with. Have fun.
-
-Check out drivers/uart.asm for an example driver.
+x86_64 operating system.
 
 Author:  Giovanni Santini
 Mail:    giovanni.santini@proton.me
 License: MIT
 
 
+Features
+--------
+
+- custom bootloader
+- custom standard library
+- drivers:
+  - ps2
+  - uart
+  - vga
+  - pic
+
+
 The boot sequence
 -----------------
 
-The classic boot sequence looks like this:
+The x86_64 boot sequence looks like this:
 
  - CPU starts executing in 16-bit real mode, with BIOS access
  - Use the bios to load the rest of the bootloader
