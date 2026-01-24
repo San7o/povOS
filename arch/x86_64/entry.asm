@@ -15,17 +15,28 @@
 
   [bits 64]
   
-  %include "drivers/uart.asm"
-  %include "drivers/ps2.asm"
-  %include "drivers/vga.asm"
-  %include "drivers/pic.asm"
-  %include "kernel/idt.asm"
-  %include "kernel/debug/dump_regs.asm"
-  
-
   global kernel_entry
+  
   extern kernel_main
-
+  extern vga_get_memory_map
+  extern vga_clear
+  extern vga_print
+  extern vga_print_hex
+  extern vga_style_blue
+  extern vga_style_bw
+  extern vga_style_red
+  extern vga_is_alpha_disabled
+  extern vga_memory_map_error_str
+  extern vga_alphanumeric_error_str
+  extern UART_COM1
+  extern uart_init_port
+  extern uart_write_hex
+  extern uart_write_string
+  extern uart_write_char
+  extern pic_remap
+  extern idt_load
+  extern debug_dump_regs_uart
+  
   section .startup
   
   ;; Entry point

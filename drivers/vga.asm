@@ -16,27 +16,56 @@
   ;; 
 
   [bits 64]
+
+  ;; Exported symbols
+  global VGA_GRAPHICS_ADDRESS_REGISTER
+  global VGA_GRAPHICS_DATA_REGISTER
+  global VGA_GRAPHICS_SET_RESET_REGISTER_INDEX
+  global VGA_GRAPHICS_ENABLE_SET_RESET_REGISTER_INDEX
+  global VGA_GRAPHICS_COLOR_COMPARE_REGISTER_INDEX
+  global VGA_GRAPHICS_DATA_ROTATE_REGISTER_INDEX
+  global VGA_GRAPHICS_READ_MAP_SELECT_REGISTER_INDEX
+  global VGA_GRAPHICS_MODE_REGISTER_INDEX
+  global VGA_GRAPHICS_MISC_REGISTER_INDEX
+  global VGA_GRAPHICS_COLOR_DONT_CARE_REGISTER_INDEX
+  global VGA_GRAPHICS_BIT_MASK_REGISTER_INDEX
+  global VGA_GRAPHICS_MISC_REGISTER_MEMORY_MAP_SELECT_MASK
+  global VGA_GRAPHICS_MISC_REGISTER_ALPHA_DISABLED_MASK
+  global vga_draw_pixel
+  global vga_get_memory_map
+  global vga_is_alpha_disabled
+  global vga_print_char
+  global vga_clear
+  global vga_print
+  global vga_print_hex
+  global vga_start
+  global vga_extent
+  global vga_style_blue
+  global vga_style_bw
+  global vga_style_red
+  global vga_memory_map_error_str
+  global vga_alphanumeric_error_str
   
   ;;
   ;; I/O Ports
   ;; ---------
   ;; 
-  %define VGA_GRAPHICS_ADDRESS_REGISTER     0x3CE
-  %define VGA_GRAPHICS_DATA_REGISTER        0x3CF
+VGA_GRAPHICS_ADDRESS_REGISTER:  equ 0x3CE
+VGA_GRAPHICS_DATA_REGISTER:     equ 0x3CF
   
   ;; 
   ;; Graphics controller registers
   ;; ------------------------------
   ;;
-  %define VGA_GRAPHICS_SET_RESET_REGISTER_INDEX        0x00
-  %define VGA_GRAPHICS_ENABLE_SET_RESET_REGISTER_INDEX 0x01
-  %define VGA_GRAPHICS_COLOR_COMPARE_REGISTER_INDEX    0x02
-  %define VGA_GRAPHICS_DATA_ROTATE_REGISTER_INDEX      0x03
-  %define VGA_GRAPHICS_READ_MAP_SELECT_REGISTER_INDEX  0x04
-  %define VGA_GRAPHICS_MODE_REGISTER_INDEX             0x05
-  %define VGA_GRAPHICS_MISC_REGISTER_INDEX             0x06
-  %define VGA_GRAPHICS_COLOR_DONT_CARE_REGISTER_INDEX  0x07
-  %define VGA_GRAPHICS_BIT_MASK_REGISTER_INDEX         0x08
+VGA_GRAPHICS_SET_RESET_REGISTER_INDEX:         equ 0x00
+VGA_GRAPHICS_ENABLE_SET_RESET_REGISTER_INDEX:  equ 0x01
+VGA_GRAPHICS_COLOR_COMPARE_REGISTER_INDEX:     equ 0x02
+VGA_GRAPHICS_DATA_ROTATE_REGISTER_INDEX:       equ 0x03
+VGA_GRAPHICS_READ_MAP_SELECT_REGISTER_INDEX:   equ 0x04
+VGA_GRAPHICS_MODE_REGISTER_INDEX:              equ 0x05
+VGA_GRAPHICS_MISC_REGISTER_INDEX:              equ 0x06
+VGA_GRAPHICS_COLOR_DONT_CARE_REGISTER_INDEX:   equ 0x07
+VGA_GRAPHICS_BIT_MASK_REGISTER_INDEX:          equ 0x08
   ;; 
   ;; Masks
   ;; -----
@@ -53,7 +82,7 @@
   ;;  10b -- B0000h-B7FFFh (32K region)
   ;;  11b -- B8000h-BFFFFh (32K region)
   ;; 
-  %define VGA_GRAPHICS_MISC_REGISTER_MEMORY_MAP_SELECT_MASK 0b1100
+VGA_GRAPHICS_MISC_REGISTER_MEMORY_MAP_SELECT_MASK:  equ 0b1100
   ;;
   ;; GRAPHICS_MISC_REGISTER_ALPHA_DISABLED_MASK
   ;;
@@ -61,7 +90,7 @@
   ;; this bit selects graphics modes, which also disables the
   ;; character generator latches.
   ;; 
-  %define VGA_GRAPHICS_MISC_REGISTER_ALPHA_DISABLED_MASK 0b1
+VGA_GRAPHICS_MISC_REGISTER_ALPHA_DISABLED_MASK:     equ 0b1
 
   ;; 
   ;; Functions

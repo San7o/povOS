@@ -9,47 +9,74 @@
 
   
   [bits 64]
+
+  ;; Exported symbols
+  global UART_COM1
+  global UART_COM2
+  global UART_COM3
+  global UART_COM4
+  global UART_COM5
+  global UART_COM6
+  global UART_COM7
+  global UART_COM8
+  global UART_REGISTER_RECEIVE_BUF_INDEX
+  global UART_REGISTER_TRANSMIT_BUF_INDEX
+  global UART_REGISTER_INTERRUPT_ENABLE_INDEX
+  global UART_REGISTER_DIVISOR_LOW_INDEX
+  global UART_REGISTER_DIVISOR_HIGH_INDEX
+  global UART_REGISTER_INTERRUPT_ID_INDEX
+  global UART_REGISTER_FIFO_CONTROL_INDEX
+  global UART_REGISTER_LINE_CONTROL_INDEX
+  global UART_REGISTER_MODEM_CONTROL_INDEX
+  global UART_REGISTER_LINE_STATUS_INDEX
+  global UART_REGISTER_MODEM_STATUS_INDEX
+  global UART_REGISTER_SCRATCH_INDEX   
+  global uart_init_port
+  global uart_is_transmit_readt
+  global uart_write_char
+  global uart_write_string
+  global uart_write_hex
   
   ;; 
   ;; I/O Ports
   ;; ----------
   ;; 
-  %define UART_COM1 0x3F8
-  %define UART_COM2 0x2F8
+UART_COM1:  equ 0x3F8
+UART_COM2:  equ 0x2F8
   ;; 
   ;; The following addresses are not fully reliable as they depend
   ;; on how the ports are connected to the machine and how the BIOS
   ;; is configured. COM1 and COM2 are mostly reliable.
   ;; 
-  %define UART_COM3 0x3E8
-  %define UART_COM4 0x2E8
-  %define UART_COM5 0x5F8
-  %define UART_COM6 0x4F9
-  %define UART_COM7 0x5E8
-  %define UART_COM8 0x4E8
+UART_COM3:  equ 0x3E8
+UART_COM4:  equ 0x2E8
+UART_COM5:  equ 0x5F8
+UART_COM6:  equ 0x4F9
+UART_COM7:  equ 0x5E8
+UART_COM8:  equ 0x4E8
   
   ;; 
   ;; Register index (offset from port)
   ;; ---------------------------------
   ;; 
-  %define UART_REGISTER_RECEIVE_BUF_INDEX        0x0       ; r
-  %define UART_REGISTER_TRANSMIT_BUF_INDEX       0x0       ; w
-  %define UART_REGISTER_INTERRUPT_ENABLE_INDEX   0x1       ; r/w
+UART_REGISTER_RECEIVE_BUF_INDEX:       equ 0x0       ; r
+UART_REGISTER_TRANSMIT_BUF_INDEX:      equ 0x0       ; w
+UART_REGISTER_INTERRUPT_ENABLE_INDEX:  equ 0x1       ; r/w
   ;; With DLAB set to 1, this is the least significant byte of the
   ;; divisor value for setting the baud rate.
-  %define UART_REGISTER_DIVISOR_LOW_INDEX        0x0       ; r/w, DLAB=1
+UART_REGISTER_DIVISOR_LOW_INDEX:       equ 0x0       ; r/w, DLAB=1
   ;; With DLAB set to 1, this is the most significant byte of the
   ;; divisor value.
-  %define UART_REGISTER_DIVISOR_HIGH_INDEX       0x1       ; r/w, DLAB=1
-  %define UART_REGISTER_INTERRUPT_ID_INDEX       0x2       ; r
-  %define UART_REGISTER_FIFO_CONTROL_INDEX       0x2       ; w
+UART_REGISTER_DIVISOR_HIGH_INDEX:      equ 0x1       ; r/w, DLAB=1
+UART_REGISTER_INTERRUPT_ID_INDEX:      equ 0x2       ; r
+UART_REGISTER_FIFO_CONTROL_INDEX:      equ 0x2       ; w
   ;; Line Control Register. The most significant bit of this register
   ;; is the DLAB.
-  %define UART_REGISTER_LINE_CONTROL_INDEX       0x3       ; r/w
-  %define UART_REGISTER_MODEM_CONTROL_INDEX      0x4       ; r/w
-  %define UART_REGISTER_LINE_STATUS_INDEX        0x5       ; r
-  %define UART_REGISTER_MODEM_STATUS_INDEX       0x6       ; r
-  %define UART_REGISTER_SCRATCH_INDEX            0x7       ; r/w
+UART_REGISTER_LINE_CONTROL_INDEX:      equ 0x3       ; r/w
+UART_REGISTER_MODEM_CONTROL_INDEX:     equ 0x4       ; r/w
+UART_REGISTER_LINE_STATUS_INDEX:       equ 0x5       ; r
+UART_REGISTER_MODEM_STATUS_INDEX:      equ 0x6       ; r
+UART_REGISTER_SCRATCH_INDEX:           equ 0x7       ; r/w
 
   ;;
   ;; Functions

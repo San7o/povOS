@@ -168,6 +168,17 @@ idt_register:
     dq idt_start                ; base  (64 bits)
 
   section .text
+
+  ;; Exported symbols
+  global idt_load
+
+  extern UART_COM1
+  extern uart_write_string
+  extern uart_write_hex
+  extern uart_write_char
+  extern ps2_read_scancode
+  extern pic_ack
+  
   
   ;; -----------------------------------------------------------------
   ;; Set a gate in the IDT

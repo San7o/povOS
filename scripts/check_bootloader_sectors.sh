@@ -2,8 +2,15 @@
 
 set -e
 
+if [ $# -ne 1 ]; then
+    echo Please specify the arch in the first argument
+    exit 1
+fi
+
+ARCH=$1
+
 EXPECTED_SECTORS=4
-BOOTLOADER=bootloader/boot
+BOOTLOADER=bootloader/$ARCH/boot
 BOOTLOADER_SIZE=$(wc -c < $BOOTLOADER)
 BOOTLOADER_SECTORS=$(( ($BOOTLOADER_SIZE + 511) / 512 ))
 

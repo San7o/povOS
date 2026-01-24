@@ -18,6 +18,14 @@
 
   [bits 64]
 
+  ;; Exported symbols
+  global PS2_COMMAND_REG
+  global PS2_STATUS_REG
+  global PS2_DATA_REG
+  global PS2_COMMAND_READ_BYTE_0
+  global PS2_COMMAND_READ_BYTE_N
+  global ps2_read_scancode
+  
   ;; I/O ports
   ;; ---------
   ;; 
@@ -27,7 +35,7 @@
   ;;
   ;; The command register is used to send commands to the PS/2
   ;; controller (not the PS/2 devices).
-  %define PS2_COMMAND_REG 0x64
+PS2_COMMAND_REG:  equ 0x64
   ;; The Status Register contains various flags that show the state of
   ;; the PS/2 controller. The meanings for each bit are:
   ;;
@@ -53,12 +61,12 @@
   ;;   7    Parity error
   ;;           0 = no error
   ;;           1 = parity error
-  %define PS2_STATUS_REG  0x64
+PS2_STATUS_REG:  equ 0x64
   ;; The Data Port (IO Port 0x60) is used for reading data that was
   ;; received from a PS/2 device or from the PS/2 controller itself
   ;; and writing data to a PS/2 device or to the PS/2 controller
   ;; itself.
-  %define PS2_DATA_REG    0x60
+PS2_DATA_REG:    equ 0x60
 
   ;;
   ;; Commands
@@ -75,10 +83,10 @@
   ;; 
   ;; Read "byte 0" from internal RAM. Response is a Controller
   ;; Configuration Byte.
-  %define PS2_COMMAND_READ_BYTE_0 0x20
+PS2_COMMAND_READ_BYTE_0:  equ 0x20
   ;; Read "byte N" from internal RAM (where 'N' is the command byte &
   ;; 0x1F). The response is non standard.
-  %define PS2_COMMAND_READ_BYTE_N 0x21
+PS2_COMMAND_READ_BYTE_N:  equ 0x21
   ;; ...
   
   

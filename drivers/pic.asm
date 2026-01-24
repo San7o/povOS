@@ -7,14 +7,24 @@
   ;; IRQs 0–15 to Interrupts 8–23, but these are used as x86_64 CPU
   ;; exceptions! We need to move them to Interrupts 32–47.
 
-%define PIC1_COMMAND 0x20
-%define PIC1_DATA    0x21
-%define PIC2_COMMAND 0xA0
-%define PIC2_DATA    0xA1
+  ;; Exported symbols
+  global PIC1_COMMAND
+  global PIC1_DATA
+  global PIC2_COMMAND
+  global PIC2_DATA
+  global ICW1_INIT
+  global ICW4_8086
+  global pic_remap
+  global pic_ack
+    
+PIC1_COMMAND:  equ 0x20
+PIC1_DATA:     equ 0x21
+PIC2_COMMAND:  equ 0xA0
+PIC2_DATA:     equ 0xA1
 
-%define ICW1_INIT    0x11
-%define ICW4_8086    0x01
-  
+ICW1_INIT:     equ 0x11
+ICW4_8086:     equ 0x01
+
 pic_remap:
   push rax
 

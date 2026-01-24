@@ -82,11 +82,11 @@ begin_bootloader:
   ;; Includes
   ;;
 
-  %include "bootloader/real_mode/print.asm"
-  %include "bootloader/real_mode/print_hex.asm"
-  %include "bootloader/real_mode/load.asm"
-  %include "bootloader/real_mode/gdt.asm"
-  %include "bootloader/real_mode/elevate.asm"
+  %include "bootloader/x86_64/real_mode/print.asm"
+  %include "bootloader/x86_64/real_mode/print_hex.asm"
+  %include "bootloader/x86_64/real_mode/load.asm"
+  %include "bootloader/x86_64/real_mode/gdt.asm"
+  %include "bootloader/x86_64/real_mode/elevate.asm"
 
 real_hello_str:    db `\r\nHello World, from the BIOS!\r\n`, 0
 boot_drive_id: db 0x00          ; boot drive storage, initialized at
@@ -161,9 +161,9 @@ begin_protected_mode:
     call print_protected
   jmp .hang
   
-  %include "bootloader/protected_mode/clear.asm"
-  %include "bootloader/protected_mode/print.asm"
-  %include "bootloader/protected_mode/detect_lm.asm"
+  %include "bootloader/x86_64/protected_mode/clear.asm"
+  %include "bootloader/x86_64/protected_mode/print.asm"
+  %include "bootloader/x86_64/protected_mode/detect_lm.asm"
   
   
   ;; Pad sector
@@ -176,10 +176,10 @@ protected_mode_sector_utils:
   
   ;; Include
 
-  %include "bootloader/protected_mode/init_pt.asm"
-  %include "bootloader/protected_mode/gdt.asm"
-  %include "bootloader/protected_mode/enable_A20.asm"
-  %include "bootloader/protected_mode/elevate.asm"
+  %include "bootloader/x86_64/protected_mode/init_pt.asm"
+  %include "bootloader/x86_64/protected_mode/gdt.asm"
+  %include "bootloader/x86_64/protected_mode/enable_A20.asm"
+  %include "bootloader/x86_64/protected_mode/elevate.asm"
 
   ;; Constants
 

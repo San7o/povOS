@@ -3,9 +3,10 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <libk/stdlib.h>
+#ifndef LIBK_STDLIB_H
+#define LIBK_STDLIB_H
 
-int kernel_main(void)
-{
-  return EXIT_SUCCESS;
-}
+#define EXIT_SUCCESS 0
+#define EXIT_FAILURE 1
+
+#endif // LIBK_STDLIB_H

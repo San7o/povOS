@@ -1,12 +1,27 @@
+# SPDX-License-Identifier: MIT
+# Author:  Giovanni Santini
+# Mail:    giovanni.santini@proton.me
+# Github:  @San7o
+
+ARCH ?= x86_64
+
 CC    = clang
 LD   ?= ld.lld-19
 AR    = llvm-ar
 ASM  ?= nasm
-QEMU ?= qemu-system-x86_64
+QEMU ?= qemu-system-$(ARCH)
 GDB  ?= gdb
 
-OBJ     = kernel/main.o kernel/entry.o
-CFLAGS  = --target=x86_64-elf \
+OBJ     =
+
+SUBPROJECTS_MAKE_CONF = kernel/make.conf \
+                        libk/make.conf \
+                        arch/$(ARCH)/make.conf \
+                        drivers/make.conf
+include $(SUBPROJECTS_MAKE_CONF)
+
+CFLAGS  = --target=$(ARCH)-elf \
+          -std=c99 \
           -ggdb \
           -c \
           -ffreestanding \
@@ -19,10 +34,12 @@ CFLAGS  = --target=x86_64-elf \
           -nostdlib \
           -nodefaultlibs \
           -fno-builtin \
-          -Wall -Wextra -Werror
+          -Wall -Wextra -Werror \
+          -I include
 KERNEL_LDFLAGS  = -T kernel/linker.ld
 ASFLAGS         = -f elf64
-BOOT_BIN    = bootloader/boot
+BOOT_BIN    = bootloader/$(ARCH)/boot
+BOOT_ASM    = bootloader/$(ARCH)/boot.asm
 KERNEL_BIN  = kernel/kernel
 POVOS_BIN   = povos
 
@@ -35,7 +52,7 @@ all: povos
 povos: $(KERNEL_BIN) $(BOOT_BIN)
 	cp $(BOOT_BIN) $(POVOS_BIN)
 	cat $(KERNEL_BIN) >> $(POVOS_BIN)
-	./scripts/check_bootloader_sectors.sh
+	./scripts/check_bootloader_sectors.sh $(ARCH)
 	./scripts/patch_size.sh
 	dd if=/dev/zero bs=1 count=512 >> $(POVOS_BIN)
 
@@ -43,8 +60,8 @@ $(KERNEL_BIN): $(OBJ)
 	$(LD) $(KERNEL_LDFLAGS) --oformat binary -o $@ $^
 	$(LD) $(KERNEL_LDFLAGS) -o $@.elf $^
 
-$(BOOT_BIN): bootloader/boot.asm
-	$(ASM) -f bin bootloader/boot.asm -o $@
+$(BOOT_BIN): $(BOOT_ASM)
+	$(ASM) -f bin $(BOOT_ASM) -o $@
 
 .PHONY: qemu
 qemu:
@@ -60,7 +77,7 @@ hexdump:
 
 .PHONY: debug
 debug:
-	./scripts/debug.sh
+	./scripts/debug.sh $(ARCH)
 
 .PHONY: clean
 clean:

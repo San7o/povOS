@@ -1,4 +1,11 @@
 
+  global debug_dump_regs_uart
+
+  extern UART_COM1
+  extern uart_write_string
+  extern uart_write_hex
+  extern uart_write_char
+  
   ;; -----------------------------------------------------------------
   ;; Dump all register values over UART
 debug_dump_regs_uart:
