@@ -176,7 +176,7 @@ idt_register:
   extern uart_write_string
   extern uart_write_hex
   extern uart_write_char
-  extern ps2_read_scancode
+  extern ps2_read_data
   extern pic_ack
   
   
@@ -426,7 +426,7 @@ fault_handler:
   cmp rsi, 33                    ; Keyboard Interrupt
   jne .error
  
-  call ps2_read_scancode
+  call ps2_read_data
   
   ;; print the scancode in hex to verify it's working
   mov r9, idt_keyboard_message

@@ -10,6 +10,7 @@
 void port_outb(const unsigned char port,
                const unsigned char value);
 
-// TODO: port_inb
+// Return a byte read from [port]
+unsigned char port_inb(const unsigned char port);
 
 #endif // POVOS_KERNEL_PORT_H

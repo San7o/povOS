@@ -1,0 +1,23 @@
+General Purpose Registers
+=========================
+
+  / ============================================================== \
+  | 64b  | 32b | 16b  | hi8  | 8b   | Description                  |
+  | -------------------------------------------------------------- |
+  | RAX  | EAX | AX   | AH   | AL   | Accumulator                  |
+  | RBX  | EBX | BX   | BH   | BL   | Base                         |
+  | RCX  | ECX | CX   | CH   | CL   | Counter                      |
+  | RDX  | EDX | DX   | DH   | DL   | Data                         |
+  | RSI  | ESI | SI   |  -   | SIL  | Src index (strings)          |
+  | RDI  | EDI | DI   |  -   | DIL  | Dst index (strings)          |
+  | RSP  | ESP | SP   |  -   | SPL  | Stack pointer                |
+  | RBP  | EBP | BP   |  -   | BPL  | Base pointer                 |
+  | R8   | R8D | R8W  |  -   | R8B  | General purpose              |
+  | R9   | R9D | R9W  |  -   | R9B  | General purpose              |
+  | R10  | R10D| R10W |  -   | R10B | General purpose              |
+  | R11  | R11D| R11W |  -   | R11B | General purpose              |
+  | R12  | R12D| R12W |  -   | R12B | General purpose              |
+  | R13  | R13D| R13W |  -   | R13B | General purpose              |
+  | R14  | R14D| R14W |  -   | R14B | General purpose              |
+  | R15  | R15D| R15W |  -   | R15B | General purpose              |
+  \ ============================================================== /
