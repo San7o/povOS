@@ -1,0 +1,12 @@
+// SPDX-License-Identifier: MIT
+// Author:  Giovanni Santini
+// Mail:    giovanni.santini@proton.me
+// Github:  @San7o
+
+#ifndef POVOS_KERNEL_UTILS_H
+#define POVOS_KERNEL_UTILS_H
+
+// Wait a very small amount of time (1 to 4 microseconds, generally)
+void io_wait(void);
+
+#endif // POVOS_KERNEL_UTILS_H

@@ -1,0 +1,113 @@
+===================
+calling conventions
+===================
+
+To allow separate programmers to share code and develop libraries for
+use by many programs, and to simplify the use of subroutines in
+general, programmers typically adopt a common calling convention. The
+calling convention is a protocol stating how to call and return from
+routines.
+
+> Source: https://www.cs.virginia.edu/~evans/cs216/guides/x86.html
+
+This document will cover calling conventions for i386 (x86) and i686
+(x86_64).
+
+
+System V ABI
+------------
+
+The System V Application Binary Interface is a set of specifications
+that detail calling conventions, object file formats, executable file
+formats, dynamic linking semantics, and much more [...]. It is today
+the standard ABI used by the major Unix operating systems such as
+Linux, the BSD systems, and many others. The Executable and Linkable
+Format (ELF) is part of the System V ABI.
+
+> Source: https://wiki.osdev.org/System_V_ABI
+
+System V i386
+-------------
+
+/ =================================================================== \
+| Stack growth        | downwards                                     |
+| ------------------- | --------------------------------------------- |
+| Arguments location  | stack                                         |
+| ------------------- | --------------------------------------------- |
+| Arguments order     | in C, arguments are pushed right-to-left      |
+| ------------------- | --------------------------------------------- |
+| Stack alignment     | 4-byte, or usually 16-byte if supporting SSE  |
+| ------------------- | --------------------------------------------- |
+| Preserved registers | ebx, esi, edi, ebp, esp                       |
+| ------------------- | --------------------------------------------- |
+| Scratch registers   | eax, ecx, edx                                 |
+| ------------------- | --------------------------------------------- |
+| Return value        | eax (32 bit value), or eax and edx (64 bit    |
+|                     | value, high 32 in edx)                        |
+| ------------------- | --------------------------------------------- |
+| Call a function     | use the "call" instruction, which pushes the  |
+|                     | address of the next instruction to the stack  |
+|                     | and jumps to the operand                      |
+| ------------------- | --------------------------------------------- |
+| Exit a function     | use the "ret" instruction, which pops a value |
+|                     | from the stack and jumps to it                |
+\ =================================================================== /
+
+System V i686
+-------------
+
+/ =================================================================== \
+| Stack growth        | downwards                                     |
+| ------------------- | --------------------------------------------- |
+| Arguments location  | registers and stack                           |
+| ------------------- | --------------------------------------------- |
+| Arguments order     | rdi, rsi, rdx, rcx, r8, r9, the rest is       |
+|                     | pushed on the stack in reverse order          |
+|                     | xmm0 to xmm7 for floating-point arguments     |
+| ------------------- | --------------------------------------------- |
+| Stack alignment     | 16-byte                                       |
+| ------------------- | --------------------------------------------- |
+| Preserved registers | rbx, rsp, r12, r13, r14, r15                  |
+|                     | floating-point registers are not preserved    |
+| ------------------- | --------------------------------------------- |
+| Scratch registers   | rax, rdi, rsi, rdx, rcx, r8, r9, r10, r11     |
+| --------------------|---------------------------------------------- |
+| Return value        | rax (64 bit value), or rax and rdx (128 bit   |
+|                     | value, high 64 in edx)                        |
+| ------------------- | --------------------------------------------- |
+| Call a function     | use the "call" instruction, which pushes the  |
+|                     | address of the next instruction to the stack  |
+|                     | and jumps to the operand                      |
+| ------------------- | --------------------------------------------- |
+| Exit a function     | use the "ret" instruction, which pops a value |
+|                     | from the stack and jumps to it                |
+| ------------------- | --------------------------------------------- |
+| Other info          | Optionally, functions push rbp such that the  |
+|                     | caller-return-rip is 8 bytes above it, and    |
+|                     | set rbp to the address of the saved rbp. This |
+|                     | allows iterating through the existing stack   |
+|                     | frames. This can be eliminated by specifying  |
+|                     | the -fomit-frame-pointer GCC option.          |
+|                     | --------------------------------------------- |
+|                     | For leaf-node functions (functions which do   |
+|                     | not call any other function(s)), a 128-byte   |
+|                     | space is stored just beneath the stack        |
+|                     | pointer of the function. The space is called  |
+|                     | the red zone. This zone will not be           |
+|                     | overwritten by any signal or interrupt        |
+|                     | handlers. Compilers can thus use this zone to |
+|                     | save local variables. Compilers may omit some |
+|                     | instructions at the starting of the function  |
+|                     | (adjustment of RSP, RBP) by using this zone.  |
+|                     | However, other functions may overwrite this   |
+|                     | zone. Therefore, this zone should only be     |
+|                     | used for leaf-node functions. gcc and clang   |
+|                     | offer the -mno-red-zone flag to disable       |
+|                     | red-zone optimizations.                       |
+|                     | --------------------------------------------- |
+|                     | If the callee is a variadic function, then    |
+|                     | the number of floating point arguments passed |
+|                     | to the function in vector registers must be   |
+|                     | provided by the caller in the AL register.    |
+\ =================================================================== /
+

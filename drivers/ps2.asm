@@ -93,6 +93,7 @@ PS2_COMMAND_READ_BYTE_N:  equ 0x21
   ;; -----------------------------------------------------------------
   ;; Read scancode, store value in al
 ps2_read_scancode:
+  xor rax, rax
   in al, PS2_DATA_REG           ; Read scancode from keyboard controller
                                 ; This "clears" the interrupt at the hardware level
   ret
