@@ -172,10 +172,9 @@ idt_register:
   ;; Exported symbols
   global idt_load
 
-  extern UART_COM1
-  extern uart_write_string
+  extern uart_write_str
   extern uart_write_hex
-  extern uart_write_char
+  extern uart_putc
   extern ps2_read_data
   extern pic_ack
   
@@ -419,22 +418,25 @@ idt_load:
   ;; This gets called by all ISR
   ;; Prints the interrupt service number. Used for debugging
 fault_handler:
-  mov rsi, [rdi + 120]           ; ISR number
-  mov rax, [rdi + 128]           ; Error code
-  mov r8w, UART_COM1             ; Used for uart printing
+  mov r8, [rdi + 120]           ; ISR number
+  mov r9, [rdi + 128]           ; Error code
 
-  cmp rsi, 33                    ; Keyboard Interrupt
+  cmp r8, 33                    ; Keyboard Interrupt
   jne .error
- 
-  call ps2_read_data
-  
+
   ;; print the scancode in hex to verify it's working
-  mov r9, idt_keyboard_message
-  call uart_write_string
-  mov r9, rax                    ; Scan code is in AL
+  mov rdi, 0x3F8
+  mov rsi, idt_keyboard_message
+  call uart_write_str
+
+  call ps2_read_data            ; return scancode in AL
+
+  mov rdi, 0x3F8
+  mov rsi, rax
   call uart_write_hex
-  mov r9, `\n`
-  call uart_write_char
+  
+  mov rsi, `\n`
+  call uart_putc
   
   call pic_ack                  ; Send acknowledgement to PIC
 
@@ -443,16 +445,16 @@ fault_handler:
   .error:
   
   ;; Writes 'isr x, error x'
-  mov r9, idt_fault_message
-  call uart_write_string
-  mov r9, rsi                   ; isr number
+  mov rsi, idt_fault_message
+  call uart_write_str
+  mov rsi, r8                   ; isr number
   call uart_write_hex
-  mov r9, idt_error_message
-  call uart_write_string
-  mov r9, rax                   ; error
+  mov rsi, idt_error_message
+  call uart_write_str
+  mov rsi, r9                   ; error
   call uart_write_hex
-  mov r9, `\n`
-  call uart_write_char
+  mov rsi, `\n`
+  call uart_putc
   
   .end:
   ret

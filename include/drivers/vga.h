@@ -61,6 +61,10 @@
 #define VGA_EXTENT        (80*25*2)
 #define VGA_BUFFER_SIZE   (VGA_EXTENT / 2)
 
+//
+// Types
+//
+
 #include <libk/stddef.h>
 #include <libk/stdbool.h>
 
@@ -77,6 +81,10 @@ typedef enum vga_style {
   VGA_STYLE_BW     = 0xF,
   VGA_STYLE_REF    = 0x4F
 } vga_style_t;
+
+//
+// Functions
+//
 
 // Returns the range of host memory addresses decoded by the VGA,
 // which can be one of the following values:

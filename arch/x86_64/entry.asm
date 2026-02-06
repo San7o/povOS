@@ -25,11 +25,10 @@
   extern vga_is_alpha_disabled
   extern vga_memory_map_error_str
   extern vga_alphanumeric_error_str
-  extern UART_COM1
   extern uart_init_port
   extern uart_write_hex
-  extern uart_write_string
-  extern uart_write_char
+  extern uart_write_str
+  extern uart_putc
   extern pic_remap
   extern idt_load
   extern debug_dump_regs_uart
@@ -51,9 +50,10 @@ kernel_entry:
   cmp rax, 0
   jne .vga_alphanumeric_error
 
-  mov r8w, UART_COM1            ; Initialize UART port COM1
+  mov rdi, 0x3F8            ; Initialize UART port COM1
   call uart_init_port
-  cmp rax, 0
+  and rax, 0x1
+  cmp rax, 1
   jne .uart_init_error
 
   ;; Checks succesfull
@@ -74,15 +74,15 @@ kernel_entry:
   call vga_print
 
   ;; Uart message
-  mov r8w, UART_COM1
-  mov r9, greet_str
-  call uart_write_string
+  mov rdi, 0x3F8
+  mov rsi, greet_str
+  call uart_write_str
 
   ;; Uart hex number
-  mov r9, 0x6969
+  mov rsi, 0x6969
   call uart_write_hex
-  mov r9, `\n`
-  call uart_write_char
+  mov rsi, `\n`
+  call uart_putc
   
   ;; Vga hex number
   mov rdi, 19                    ; offset
