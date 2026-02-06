@@ -1,0 +1,98 @@
+// SPDX-License-Identifier: MIT
+// Author:  Giovanni Santini
+// Mail:    giovanni.santini@proton.me
+// Github:  @San7o
+
+//
+// VGA Driver
+// ==========
+//
+
+#ifndef POVOS_DRIVERS_VGA_H
+#define POVOS_DRIVERS_VGA_H
+
+//
+// I/O Ports
+// ---------
+// 
+#define VGA_ADDRESS_REGISTER   0x3CE
+#define VGA_DATA_REGISTER      0x3CF
+  
+// 
+// Graphics controller registers
+// ------------------------------
+//
+#define VGA_SET_RESET_REGISTER_INDEX          0x00
+#define VGA_ENABLE_SET_RESET_REGISTER_INDEX   0x01
+#define VGA_COLOR_COMPARE_REGISTER_INDEX      0x02
+#define VGA_DATA_ROTATE_REGISTER_INDEX        0x03
+#define VGA_READ_MAP_SELECT_REGISTER_INDEX    0x04
+#define VGA_MODE_REGISTER_INDEX               0x05
+#define VGA_MISC_REGISTER_INDEX               0x06
+#define VGA_COLOR_DONT_CARE_REGISTER_INDEX    0x07
+#define VGA_BIT_MASK_REGISTER_INDEX           0x08
+// 
+// Masks
+// -----
+// 
+// VGA_GRAPHICS_MISC_REGISTER_MEMORY_MAP_SELECT_MASK
+// 
+// This field specifies the range of host memory addresses that is
+// decoded by the VGA hardware and mapped into display memory
+// accesses.  The values of this field and their corresponding host
+// memory ranges are:
+// 
+//  00b -- A0000h-BFFFFh (128K region)
+//  01b -- A0000h-AFFFFh (64K region)
+//  10b -- B0000h-B7FFFh (32K region)
+//  11b -- B8000h-BFFFFh (32K region)
+// 
+#define VGA_MISC_REGISTER_MEMORY_MAP_SELECT_MASK   0b1100
+//
+// GRAPHICS_MISC_REGISTER_ALPHA_DISABLED_MASK
+//
+// This bit controls alphanumeric mode addressing. When set to 1,
+// this bit selects graphics modes, which also disables the
+// character generator latches.
+// 
+#define VGA_MISC_REGISTER_ALPHA_DISABLED_MASK   0b1
+
+#define VGA_START         0x000B8000
+#define VGA_EXTENT        (80*25*2)
+#define VGA_BUFFER_SIZE   (VGA_EXTENT / 2)
+
+#include <libk/stddef.h>
+#include <libk/stdbool.h>
+
+typedef struct  __attribute__((packed)) vga_entry {
+  unsigned char value;
+  unsigned char style;
+} vga_entry_t;
+
+// Global VGA buffer
+extern vga_entry_t *vga_buffer;
+
+typedef enum vga_style {
+  VGA_STYLE_BLUE   = 0x1F,
+  VGA_STYLE_BW     = 0xF,
+  VGA_STYLE_REF    = 0x4F
+} vga_style_t;
+
+// Returns the range of host memory addresses decoded by the VGA,
+// which can be one of the following values:
+//
+//  0b00 -- A0000h-BFFFFh (128K region)
+//  0b01 -- A0000h-AFFFFh (64K region)
+//  0b10 -- B0000h-B7FFFh (32K region)
+//  0b11 -- B8000h-BFFFFh (32K region)
+// 
+int vga_get_memory_map(void);
+// Returns true if alphanumeric is disabled
+bool vga_is_alpha_disabled(void);
+// TODO: usage fg_color and bf_color instead of style
+void vga_putc(int offset, unsigned char c, vga_style_t style);
+size_t vga_print(int offset, const char* str, vga_style_t style);
+size_t vga_print_hex(int offset, unsigned long num, vga_style_t style);
+void vga_clear(vga_style_t style);
+
+#endif // POVOS_DRIVERS_VGA_H

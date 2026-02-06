@@ -6,8 +6,6 @@
 #ifndef POVOS_DRIVERS_KEYBOARD_H
 #define POVOS_DRIVERS_KEYBOARD_H
 
-#include <stdbool.h>
-
 //
 // Keyboard driver
 // ===============
@@ -18,6 +16,8 @@
 // send different codes depending on the keyboard layout, and we
 // want to abstract this behaviour.
 //
+
+#include <libk/stdbool.h>
 
 typedef enum keycode {
   // Reserved
@@ -146,16 +146,26 @@ typedef enum keycode {
 
 typedef unsigned char keycode_raw_t;
 
-struct keyboard {
-  keycode_t state[__KEY_MAX];
-};
-typedef struct keyboard keyboard_t;
+typedef enum keyboard_type {
+  KEYBOARD_NONE = 0,
+  KEYBOARD_TYPE_PS2_1, // Scancode set 1
+  KEYBOARD_TYPE_PS2_2, // Scancode set 2
+  KEYBOARD_TYPE_PS2_3, // Scancode set 3
+  __KEYBOARD_TYPE,
+} keyboard_type_t;
 
-extern bool keyboard_active[__KEY_MAX];
+typedef struct keyboard_event {
+  unsigned char scancode;
+} keyboard_event_t;
+
+typedef struct keyboard_dev {
+  keycode_t        state[__KEY_MAX];
+  keyboard_type_t  type;
+} keyboard_dev_t;
 
 // This should be called to update the global keyboard_active state
 // when a PS/2 scancode is received.
-void keyboard_register_ps2_scancode(keyboard_t *keyboard,
-                                    unsigned int ps2_scancode);
+void keyboard_register_event(keyboard_dev_t *keyboard,
+                             keyboard_event_t event);
 
 #endif // POVOS_DRIVERS_KEYBOARD_H

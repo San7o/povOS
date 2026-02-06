@@ -1,5 +1,7 @@
   global port_outb
+  global port_outw
   global port_inb
+  global port_inw
 
   ;; 
   ;; out - x86_64
@@ -22,6 +24,9 @@ port_outb:
   push rax
   push rdx
 
+  xor rax, rax
+  xor rdx, rdx
+  
   mov al, sil
   mov dx, di
   out dx, al
@@ -30,6 +35,24 @@ port_outb:
   pop rax
   ret
   
+  ;; -----------------------------------------------------------------
+  ;; Writes `si` value into port `dx`
+port_outw:
+  
+  push rax
+  push rdx
+
+  xor rax, rax
+  xor rdx, rdx
+  
+  mov ax, si
+  mov dx, di
+  out dx, ax
+
+  pop rdx
+  pop rax
+  ret
+    
   ;; 
   ;; in - x86_64
   ;; -----------
@@ -45,15 +68,31 @@ port_outb:
   ;; accessed.
 
   ;; -----------------------------------------------------------------
-  ;; Returns in `ax` the value from port `di`
+  ;; Returns in `al` the value from port `di`
 port_inb:
 
   push rdx
 
   xor rax, rax
-
+  xor rdx, rdx
+  
   mov dx, di
   in al, dx
+  
+  pop rdx
+  ret
+  
+  ;; -----------------------------------------------------------------
+  ;; Returns in `ax` the value from port `di`
+port_inw:
+
+  push rdx
+
+  xor rax, rax
+  xor rdx, rdx
+
+  mov dx, di
+  in ax, dx
   
   pop rdx
   ret

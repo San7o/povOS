@@ -17,35 +17,6 @@
 
   [bits 64]
 
-  ;; Exported symbols
-  global VGA_GRAPHICS_ADDRESS_REGISTER
-  global VGA_GRAPHICS_DATA_REGISTER
-  global VGA_GRAPHICS_SET_RESET_REGISTER_INDEX
-  global VGA_GRAPHICS_ENABLE_SET_RESET_REGISTER_INDEX
-  global VGA_GRAPHICS_COLOR_COMPARE_REGISTER_INDEX
-  global VGA_GRAPHICS_DATA_ROTATE_REGISTER_INDEX
-  global VGA_GRAPHICS_READ_MAP_SELECT_REGISTER_INDEX
-  global VGA_GRAPHICS_MODE_REGISTER_INDEX
-  global VGA_GRAPHICS_MISC_REGISTER_INDEX
-  global VGA_GRAPHICS_COLOR_DONT_CARE_REGISTER_INDEX
-  global VGA_GRAPHICS_BIT_MASK_REGISTER_INDEX
-  global VGA_GRAPHICS_MISC_REGISTER_MEMORY_MAP_SELECT_MASK
-  global VGA_GRAPHICS_MISC_REGISTER_ALPHA_DISABLED_MASK
-  global vga_draw_pixel
-  global vga_get_memory_map
-  global vga_is_alpha_disabled
-  global vga_print_char
-  global vga_clear
-  global vga_print
-  global vga_print_hex
-  global vga_start
-  global vga_extent
-  global vga_style_blue
-  global vga_style_bw
-  global vga_style_red
-  global vga_memory_map_error_str
-  global vga_alphanumeric_error_str
-  
   ;;
   ;; I/O Ports
   ;; ---------
@@ -329,8 +300,3 @@ vga_extent: equ 80 * 25 * 2
 vga_style_blue:  equ 0x1F
 vga_style_bw:    equ 0xF
 vga_style_red:   equ 0x4F
-   
-  ;; Strings
-  
-vga_memory_map_error_str:  db `Memory map range not supported`, 0
-vga_alphanumeric_error_str:  db `VGA alphanumeric mode is disabled`, 0

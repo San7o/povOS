@@ -203,7 +203,7 @@ long_mode_sector:
 
   [bits 64]
   
-  %include "drivers/vga.asm"
+  %include "bootloader/x86_64/long_mode/vga.asm"
   
 
 begin_long_mode:

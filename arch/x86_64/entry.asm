@@ -22,9 +22,6 @@
   extern vga_clear
   extern vga_print
   extern vga_print_hex
-  extern vga_style_blue
-  extern vga_style_bw
-  extern vga_style_red
   extern vga_is_alpha_disabled
   extern vga_memory_map_error_str
   extern vga_alphanumeric_error_str
@@ -45,11 +42,11 @@ kernel_entry:
   ;; 
   ;; Sanity checks
   ;;
-  
+
   call vga_get_memory_map       ; Check VGA memory map value is 11
   cmp rax, 0b11
   jne .vga_memory_map_error
-  
+
   call vga_is_alpha_disabled    ; Check VGA mode is alphanumeric
   cmp rax, 0
   jne .vga_alphanumeric_error
@@ -58,22 +55,22 @@ kernel_entry:
   call uart_init_port
   cmp rax, 0
   jne .uart_init_error
-  
-  ;; Checks succesfull
 
+  ;; Checks succesfull
+  
   ;; Setup IDT
   call pic_remap                ; Change IRQ number for PIC
   call idt_load                 ; Load the interrupt descriptor table
   sti                           ; Enable interrupts
   
   ;; Clean the screen
-  mov r8b, vga_style_blue
+  mov rdi, 0x1F
   call vga_clear
   
   ;; Success message
-  mov r10b, vga_style_blue      ; style
-  mov r9, greet_str          ; string
-  mov r8, 0                     ; position
+  mov rdx, 0x1F                  ; style
+  mov rsi, greet_str             ; string
+  mov rdi, 0                     ; position
   call vga_print
 
   ;; Uart message
@@ -88,10 +85,12 @@ kernel_entry:
   call uart_write_char
   
   ;; Vga hex number
-  mov r8, 19                    ; offset
-  mov r9, 0x6969
-  mov r10b, vga_style_blue
+  mov rdi, 19                    ; offset
+  mov rsi, 0x6969
+  mov rdx, 0x1F
   call vga_print_hex
+
+  xor rax, rax
 
   call debug_dump_regs_uart
   
@@ -113,12 +112,12 @@ kernel_entry:
 
   .kernel_error:
   ;; Clean the screen
-  mov r8b, vga_style_red        ; style
+  mov rdi, 0x4F                 ; style
   call vga_clear
   
-  mov r10b, vga_style_bw        ; style
-  mov r9, kernel_main_error_str ; string
-  mov r8, 0                     ; position
+  mov rdx, 0xF                 ; style
+  mov rsi, kernel_main_error_str ; string
+  mov rdi, 0                     ; position
   call vga_print
   
   jmp .exit
@@ -126,39 +125,43 @@ kernel_entry:
   .vga_memory_map_error:
   
   ;; Clean the screen
-  mov r8b, vga_style_red        ; style
+  mov rdi, 0x4F                 ; style
   call vga_clear
   
-  mov r10b, vga_style_bw        ; style
-  mov r9, vga_memory_map_error_str ; string
-  mov r8, 0                     ; position
+  mov rdx, 0xF                 ; style
+  mov rsi, vga_memory_map_error_str ; string
+  mov rdi, 0                     ; position
   call vga_print
   jmp .exit
   
   .vga_alphanumeric_error:
   
   ;; Clean the screen
-  mov r8b, vga_style_red
+  mov rdi, 0x4F
   call vga_clear
 
-  mov r10b, vga_style_bw        ; style
-  mov r9, vga_alphanumeric_error_str ; string
-  mov r8, 0                     ; position
+  mov rdx, 0xF                 ; style
+  mov rsi, vga_alphanumeric_error_str ; string
+  mov rdi, 0                     ; position
   call vga_print
   jmp .exit
 
   .uart_init_error:
 
   ;; Clean the screen
-  mov r8b, vga_style_red
+  mov rdi, 0x4F
   call vga_clear
 
-  mov r10b, vga_style_bw        ; style
-  mov r9, vga_uart_init_error_str ; string
-  mov r8, 0                     ; position
+  mov rdx, 0xF                 ; style
+  mov rsi, vga_uart_init_error_str ; string
+  mov rdi, 0                     ; position
   call vga_print
   jmp .exit
-
-greet_str: db `Hello, from povOS!`, 0
-vga_uart_init_error_str:  db `Error initializing UART`, 0
-kernel_main_error_str:      db `Kernel exited with error`, 0
+   
+  ;; Strings
+  
+greet_str:                   db `Hello, from povOS!`, 0
+vga_uart_init_error_str:     db `Error initializing UART`, 0
+kernel_main_error_str:       db `Kernel exited with error`, 0
+vga_memory_map_error_str:    db `Memory map range not supported`, 0
+vga_alphanumeric_error_str:  db `VGA alphanumeric mode is disabled`, 0

@@ -6,11 +6,15 @@
 #ifndef POVOS_KERNEL_PORT_H
 #define POVOS_KERNEL_PORT_H
 
-// Write byte [value] to [port]
-void port_outb(const unsigned char port,
-               const unsigned char value);
+// Write [value] to [port]
+void port_outb(const unsigned short  port,
+               const unsigned char  value);
+void port_outw(const unsigned short port,
+               const unsigned short value);
 
-// Return a byte read from [port]
-unsigned char port_inb(const unsigned char port);
+// Return content read from [port]
+unsigned char  port_inb(const unsigned short port);
+unsigned short port_inw(const unsigned short port);
+
 
 #endif // POVOS_KERNEL_PORT_H
