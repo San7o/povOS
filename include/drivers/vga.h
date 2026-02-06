@@ -94,7 +94,7 @@ extern vga_entry_t *vga_buffer;
 typedef enum vga_style {
   VGA_STYLE_BLUE   = 0x1F,
   VGA_STYLE_BW     = 0xF,
-  VGA_STYLE_REF    = 0x4F
+  VGA_STYLE_RED    = 0x4F
 } vga_style_t;
 
 //
@@ -113,9 +113,9 @@ int vga_get_memory_map(void);
 // Returns true if alphanumeric is disabled
 bool vga_is_alpha_disabled(void);
 // TODO: usage fg_color and bf_color instead of style
-void vga_putc(int offset, u8_t c, vga_style_t style);
+void   vga_putc(int offset, u8_t c, vga_style_t style);
 size_t vga_print(int offset, const char* str, vga_style_t style);
 size_t vga_print_hex(int offset, u64_t num, vga_style_t style);
-void vga_clear(vga_style_t style);
+void   vga_clear(vga_style_t style);
 
 #endif // POVOS_DRIVERS_VGA_H

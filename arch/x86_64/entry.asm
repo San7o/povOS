@@ -38,67 +38,6 @@
   ;; Entry point
 kernel_entry:
   
-  ;; 
-  ;; Sanity checks
-  ;;
-
-  call vga_get_memory_map       ; Check VGA memory map value is 11
-  cmp rax, 0b11
-  jne .vga_memory_map_error
-
-  call vga_is_alpha_disabled    ; Check VGA mode is alphanumeric
-  cmp rax, 0
-  jne .vga_alphanumeric_error
-
-  mov rdi, 0x3F8            ; Initialize UART port COM1
-  call uart_init_port
-  and rax, 0x1
-  cmp rax, 1
-  jne .uart_init_error
-
-  ;; Checks succesfull
-  
-  ;; Setup IDT
-  call pic_remap                ; Change IRQ number for PIC
-  call idt_set                  ; Load the interrupt descriptor table
-  
-  ;; Clean the screen
-  mov rdi, 0x1F
-  call vga_clear
-  
-  ;; Success message
-  mov rdx, 0x1F                  ; style
-  mov rsi, greet_str             ; string
-  mov rdi, 0                     ; position
-  call vga_print
-
-  ;; Uart message
-  mov rdi, 0x3F8
-  mov rsi, greet_str
-  call uart_write_str
-
-  ;; Uart hex number
-  mov rsi, 0x6969
-  call uart_write_hex
-  mov rsi, `\n`
-  call uart_putc
-  
-  ;; Vga hex number
-  mov rdi, 19                    ; offset
-  mov rsi, 0x6969
-  mov rdx, 0x1F
-  call vga_print_hex
-
-  xor rax, rax
-
-  call debug_dump_regs_uart
-  
-  ;; Divide by zero exception test
-  ;;   mov rax, 10
-  ;;   xor rdx, rdx
-  ;;   mov rcx, 0
-  ;;   idiv rcx
-
   ;; Triggers breakpoint exception
   ;;   int3
 
