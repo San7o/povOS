@@ -6,7 +6,11 @@
 #ifndef POVOS_LIBK_STDDEF_H
 #define POVOS_LIBK_STDDEF_H
 
-typedef long unsigned int size_t;
+typedef long unsigned int  size_t;
+typedef unsigned char      u8_t;
+typedef unsigned short     u16_t;
+typedef unsigned int       u32_t;
+typedef unsigned long int  u64_t;
 
 #define NULL ((void*) 0)
 

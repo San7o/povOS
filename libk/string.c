@@ -3,7 +3,7 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <libk/string.h>
+#include <libk/string.h>   // implements
 
 int strcmp(const unsigned char *s1, const unsigned char *s2)
 {

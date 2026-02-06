@@ -11,13 +11,16 @@
 // ===============
 //
 // The driver updates a bit array of active presses, which are read
-// through serial communication and converted to keycodes through
-// a lookup. The conversion is needed because each keyboard will
-// send different codes depending on the keyboard layout, and we
-// want to abstract this behaviour.
+// through serial communication and converted to keycodes through a
+// lookup. The conversion is needed because each keyboard will send
+// different codes depending on the keyboard layout, and we want to
+// abstract this behaviour.
+//
+// TODO: update description
 //
 
 #include <libk/stdbool.h>
+#include <libk/stddef.h>
 
 typedef enum keycode {
   // Reserved
@@ -155,7 +158,7 @@ typedef enum keyboard_type {
 } keyboard_type_t;
 
 typedef struct keyboard_event {
-  unsigned char scancode;
+  u8_t scancode;
 } keyboard_event_t;
 
 typedef struct keyboard_dev {

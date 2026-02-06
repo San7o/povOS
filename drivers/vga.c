@@ -3,26 +3,26 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <drivers/vga.h>
+#include <drivers/vga.h>   // implements
 #include <bits/port.h>
 
 vga_entry_t *vga_buffer = (vga_entry_t*) VGA_START;
 
 int vga_get_memory_map(void)
 {
-  port_outb(VGA_ADDRESS_REGISTER, VGA_MISC_REGISTER_INDEX);
+  port_outb(VGA_ADDRESS_REGISTER, VGA_GRAPHICS_MISC_REGISTER_INDEX);
   unsigned int misc_register = port_inb(VGA_DATA_REGISTER);
-  return (misc_register & VGA_MISC_REGISTER_MEMORY_MAP_SELECT_MASK) >> 2;
+  return (misc_register & VGA_GRAPHICS_MISC_REGISTER_MEMORY_MAP_SELECT_MASK) >> 2;
 }
 
 bool vga_is_alpha_disabled(void)
 {
-  port_outb(VGA_ADDRESS_REGISTER, VGA_MISC_REGISTER_INDEX);
+  port_outb(VGA_ADDRESS_REGISTER, VGA_GRAPHICS_MISC_REGISTER_INDEX);
   unsigned int misc_register = port_inb(VGA_DATA_REGISTER);
-  return misc_register & VGA_MISC_REGISTER_ALPHA_DISABLED_MASK;
+  return misc_register & VGA_GRAPHICS_MISC_REGISTER_ALPHA_DISABLED_MASK;
 }
 
-void vga_putc(int offset, unsigned char c, vga_style_t style)
+void vga_putc(int offset, u8_t c, vga_style_t style)
 {
   if (offset >= VGA_BUFFER_SIZE) return;
   
@@ -45,7 +45,7 @@ size_t vga_print(int offset, const char* str, vga_style_t style)
   return i;
 }
 
-size_t vga_print_hex(int offset, unsigned long num, vga_style_t style)
+size_t vga_print_hex(int offset, u64_t num, vga_style_t style)
 {
   vga_putc(offset, '0', style);
   vga_putc(offset + 1, 'x', style);

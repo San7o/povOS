@@ -3,7 +3,7 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <kernel/utils.h>
+#include <kernel/utils.h>   // implements
 #include <bits/port.h>
 
 // Do an IO operation in an unused port

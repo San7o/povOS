@@ -6,7 +6,17 @@
 #ifndef POVOS_KERNEL_UTILS_H
 #define POVOS_KERNEL_UTILS_H
 
+//
+// Utils
+// =====
+//
+// General utility functions that can be useful in several occasions.
+//
+
 // Wait a very small amount of time (1 to 4 microseconds, generally)
 void io_wait(void);
+
+void disable_interrupts(void);
+void enable_interrupts(void);
 
 #endif // POVOS_KERNEL_UTILS_H

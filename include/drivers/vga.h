@@ -3,18 +3,26 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-//
-// VGA Driver
-// ==========
-//
 
 #ifndef POVOS_DRIVERS_VGA_H
 #define POVOS_DRIVERS_VGA_H
 
 //
+// VGA Driver
+// ==========
+//
+//
+// The best resource to learn VGA is the following:
+//    http://www.osdever.net/FreeVGA/vga/vga.htm
+//
 // I/O Ports
 // ---------
-// 
+//
+// VGA has pleny of registers. To work with them (reading and writing)
+// you use two ports which access two specific registers: an address
+// register and a data register. In order to access the other
+// registers, you usually write an identifier (INDEX) of that register
+// and the address register, then read / write the data register.
 #define VGA_ADDRESS_REGISTER   0x3CE
 #define VGA_DATA_REGISTER      0x3CF
   
@@ -22,15 +30,15 @@
 // Graphics controller registers
 // ------------------------------
 //
-#define VGA_SET_RESET_REGISTER_INDEX          0x00
-#define VGA_ENABLE_SET_RESET_REGISTER_INDEX   0x01
-#define VGA_COLOR_COMPARE_REGISTER_INDEX      0x02
-#define VGA_DATA_ROTATE_REGISTER_INDEX        0x03
-#define VGA_READ_MAP_SELECT_REGISTER_INDEX    0x04
-#define VGA_MODE_REGISTER_INDEX               0x05
-#define VGA_MISC_REGISTER_INDEX               0x06
-#define VGA_COLOR_DONT_CARE_REGISTER_INDEX    0x07
-#define VGA_BIT_MASK_REGISTER_INDEX           0x08
+#define VGA_GRAPHICS_SET_RESET_REGISTER_INDEX          0x00
+#define VGA_GRAPHICS_ENABLE_SET_RESET_REGISTER_INDEX   0x01
+#define VGA_GRAPHICS_COLOR_COMPARE_REGISTER_INDEX      0x02
+#define VGA_GRAPHICS_DATA_ROTATE_REGISTER_INDEX        0x03
+#define VGA_GRAPHICS_READ_MAP_SELECT_REGISTER_INDEX    0x04
+#define VGA_GRAPHICS_MODE_REGISTER_INDEX               0x05
+#define VGA_GRAPHICS_MISC_REGISTER_INDEX               0x06
+#define VGA_GRAPHICS_COLOR_DONT_CARE_REGISTER_INDEX    0x07
+#define VGA_GRAPHICS_BIT_MASK_REGISTER_INDEX           0x08
 // 
 // Masks
 // -----
@@ -47,7 +55,7 @@
 //  10b -- B0000h-B7FFFh (32K region)
 //  11b -- B8000h-BFFFFh (32K region)
 // 
-#define VGA_MISC_REGISTER_MEMORY_MAP_SELECT_MASK   0b1100
+#define VGA_GRAPHICS_MISC_REGISTER_MEMORY_MAP_SELECT_MASK   0b1100
 //
 // GRAPHICS_MISC_REGISTER_ALPHA_DISABLED_MASK
 //
@@ -55,7 +63,7 @@
 // this bit selects graphics modes, which also disables the
 // character generator latches.
 // 
-#define VGA_MISC_REGISTER_ALPHA_DISABLED_MASK   0b1
+#define VGA_GRAPHICS_MISC_REGISTER_ALPHA_DISABLED_MASK   0b1
 
 #define VGA_START         0x000B8000
 #define VGA_EXTENT        (80*25*2)
@@ -69,11 +77,18 @@
 #include <libk/stdbool.h>
 
 typedef struct  __attribute__((packed)) vga_entry {
-  unsigned char value;
-  unsigned char style;
+  u8_t value;
+  u8_t style;
 } vga_entry_t;
 
 // Global VGA buffer
+// -----------------
+//
+// VGA uses an in-memory buffer where each entry is two bytes
+// representing a character and its color style. You can write to the
+// buffer directly, its address can be queried (use the
+// vga_get_memory_map function) and the number of entries is
+// VGA_BUFFER_SIZE.
 extern vga_entry_t *vga_buffer;
 
 typedef enum vga_style {
@@ -98,9 +113,9 @@ int vga_get_memory_map(void);
 // Returns true if alphanumeric is disabled
 bool vga_is_alpha_disabled(void);
 // TODO: usage fg_color and bf_color instead of style
-void vga_putc(int offset, unsigned char c, vga_style_t style);
+void vga_putc(int offset, u8_t c, vga_style_t style);
 size_t vga_print(int offset, const char* str, vga_style_t style);
-size_t vga_print_hex(int offset, unsigned long num, vga_style_t style);
+size_t vga_print_hex(int offset, u64_t num, vga_style_t style);
 void vga_clear(vga_style_t style);
 
 #endif // POVOS_DRIVERS_VGA_H

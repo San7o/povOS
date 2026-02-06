@@ -3,30 +3,31 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
+#ifndef POVOS_DRIVERS_UART_H
+#define POVOS_DRIVERS_UART_H
+
 //
 // UART driver
 // ===========
 //
+// A universal asynchronous receiver-transmitter (UART) is a hardware
+// device for asynchronous *serial* communication which is very
+// popular in personal computers and embedded systems. It is usually
+// the simplest way to communicate with a device.
 //
-// You access UART registers via I/O ports in an indexed style, with
-// a base port + an offset that specifies the register. Each
-// register can allow read, write, or both.
-//
-
-#ifndef POVOS_DRIVERS_UART_H
-#define POVOS_DRIVERS_UART_H
-
-
 // 
 // I/O Ports
 // ----------
-// 
+//
+// You access UART registers via I/O ports in an indexed style, with a
+// base port + an offset that specifies the register. Each register
+// may allow read, write, or both.
 #define UART_COM1   0x3F8
 #define UART_COM2   0x2F8
 // 
-// The following addresses are not fully reliable as they depend
-// on how the ports are connected to the machine and how the BIOS
-// is configured. COM1 and COM2 are mostly reliable.
+// The following addresses are not fully reliable as they depend on
+// how the ports are connected to the machine and how the BIOS is
+// configured. COM1 and COM2 are mostly reliable.
 // 
 #define UART_COM3   0x3E8
 #define UART_COM4   0x2E8
@@ -63,15 +64,16 @@
 //
 
 #include <libk/stdbool.h>
+#include <bits/port.h>
 
 //
 // Functions
 //
 
-bool uart_init_port(unsigned short port);
-bool uart_is_transmit_ready(unsigned short port);
-void uart_putc(unsigned short port, unsigned char c);
-void uart_write_str(unsigned short port, const char *str);
-void uart_write_hex(unsigned short port, unsigned long int num);
+bool uart_init_port(port_t port);
+bool uart_is_transmit_ready(port_t port);
+void uart_putc(port_t port, u8_t c);
+void uart_write_str(port_t port, const char *str);
+void uart_write_hex(port_t port, u64_t num);
 
 #endif // POVOS_DRIVERS_UART_H

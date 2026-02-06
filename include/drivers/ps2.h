@@ -15,8 +15,8 @@
 // controller is also known as Intel 8042 or I8042 for short.
 //
 //
-// I/O ports
-// ---------
+// I/O ports and registers
+// -----------------------
 // 
 // The PS/2 Controller itself uses 2 IO ports, 0x60 and 0x64. Like
 // many IO ports, reads and writes may access different internal

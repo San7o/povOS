@@ -3,7 +3,7 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <drivers/input/keyboard.h>
+#include <drivers/input/keyboard.h>   // implements
 
 // TODO: reference minix codes
 typedef enum ps2_keycode_1 {

@@ -30,7 +30,7 @@
   extern uart_write_str
   extern uart_putc
   extern pic_remap
-  extern idt_load
+  extern idt_set
   extern debug_dump_regs_uart
   
   section .startup
@@ -60,8 +60,7 @@ kernel_entry:
   
   ;; Setup IDT
   call pic_remap                ; Change IRQ number for PIC
-  call idt_load                 ; Load the interrupt descriptor table
-  sti                           ; Enable interrupts
+  call idt_set                  ; Load the interrupt descriptor table
   
   ;; Clean the screen
   mov rdi, 0x1F
