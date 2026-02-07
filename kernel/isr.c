@@ -36,6 +36,11 @@ void isr_keyboard_handler(u8_t  isr_number,
   keyboard_event_t event =
     keyboard_event_from_scancode(keyboard, scancode);
   if (event.key == KEY_NONE) goto exit;
+
+  // Update the keyboard
+  keyboard_update(keyboard, event);
+  
+  // Debug print via UART
   
   const char* key_str = keyboard_string_from_keycode(event.key);
 

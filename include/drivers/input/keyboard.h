@@ -10,18 +10,25 @@
 // Keyboard driver
 // ===============
 //
-// The driver updates a bit array of active presses, which are read
-// through serial communication and converted to keycodes through a
-// lookup. The conversion is needed because each keyboard will send
-// different codes depending on the keyboard layout, and we want to
-// abstract this behaviour.
+// The driver exposes three important types: the `keycode`, the
+// `keyboard` and the `keyboard_event`. When a scancode is received,
+// the scancode is converted a keycode, and generates an event which
+// is used to update the keyboard. While scancodes depend on the type
+// of keyboard, the keycodes are a general abstraction for all
+// keyboards.
 //
-// TODO: update description
+// The keyboard keeps an array of active presses.
 //
 
 #include <libk/stdbool.h>
 #include <libk/stddef.h>
 
+//
+// Keycode
+// -------
+//
+// The keycode type is a general abstraction over the scancodes.
+//
 typedef enum keycode {
     // Reserved
     KEY_NONE            = 0x00,
@@ -192,24 +199,34 @@ typedef unsigned char keycode_raw_t;
 extern const char* keycode_str[_KEY_MAX];
 
 typedef enum keyboard_type {
-  KEYBOARD_NONE = 0,
+  KEYBOARD_NONE      = 0,
   KEYBOARD_TYPE_PS2_SET1,
   KEYBOARD_TYPE_PS2_SET2,
   KEYBOARD_TYPE_PS2_SET3,
   __KEYBOARD_TYPE,
 } keyboard_type_t;
 
+//
+// The event
+// ---------
+//
 typedef struct keyboard_event {
-  bool      pressed;   // false = released
-  keycode_t key;
+  bool        pressed;   // false = released
+  keycode_t   key;
 } keyboard_event_t;
 
+//
+// The keyboard
+// ------------
+//
 typedef struct keyboard {
-  keycode_t        state[_KEY_MAX];   // TODO: implement
-  // TODO: event rig buffer
-  keyboard_type_t  type;
-  bool             escaped;   // True if the last keycode was an
-                              // escape character
+  // Public
+  keyboard_type_t    type;
+  bool               state[_KEY_MAX];
+  keyboard_event_t   events_rb[256];   // ring buffer
+
+  // Private
+  unsigned int _internal;   // For internal use, do not modify
 } keyboard_t;
 
 //
@@ -217,9 +234,7 @@ typedef struct keyboard {
 //
 
 void keyboard_init(keyboard_t *keyboard, keyboard_type_t type);
-keyboard_event_t keyboard_event_from_scancode(keyboard_t *keyboard,
-                                              u8_t        scancode);
-const char* keyboard_string_from_keycode(keycode_t key);
+void keyboard_update(keyboard_t *keyboard, keyboard_event_t event);
 
 //
 // Active keyboard
@@ -234,5 +249,13 @@ const char* keyboard_string_from_keycode(keycode_t key);
 void keyboard_set_active(keyboard_t *keyboard);
 // Set the currently active keyboard (may be NULL if none was set)
 keyboard_t *keyboard_get_active(void);
+
+//
+// Conversion functions
+// --------------------
+//
+keyboard_event_t keyboard_event_from_scancode(keyboard_t *keyboard,
+                                              u8_t        scancode);
+const char* keyboard_string_from_keycode(keycode_t key);
 
 #endif // POVOS_DRIVERS_KEYBOARD_H

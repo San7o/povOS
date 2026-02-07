@@ -55,6 +55,7 @@ int kernel_main(void)
   
   uart_write_str(UART_COM1, "Hello, from povOS!");
   uart_write_hex(UART_COM1, 0x6969);
+  uart_putc(UART_COM1, '\n');
 
   debug_dump_regs_uart();
 

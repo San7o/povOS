@@ -431,9 +431,19 @@ void keyboard_init(keyboard_t *keyboard, keyboard_type_t type)
 {
   if (!keyboard) return;
 
-  keyboard->type    = type;
-  keyboard->escaped = false;
+  keyboard->type      = type;
+  keyboard->_internal = 0;
   memset(keyboard->state, 0, _KEY_MAX * sizeof(keycode_t));
+  
+  return;
+}
+
+void keyboard_update(keyboard_t *keyboard, keyboard_event_t event)
+{
+  if (!keyboard || event.key == KEY_NONE
+      || event.key < 0 || event.key >= _KEY_MAX) return;
+
+  keyboard->state[event.key] = event.pressed;
   
   return;
 }
@@ -447,16 +457,16 @@ keyboard_event_from_scancode_ps2_set1(keyboard_t *keyboard,
   if (!keyboard)
     goto exit;
   
-  if (keyboard->escaped)
+  if (keyboard->_internal == 1)
   {
-    keyboard->escaped = false;
+    keyboard->_internal = 0;
     return keyboard_scanmap_ps2_set1_escaped[scancode];
   }
   else
   {
     if (scancode == 0xE0)
     {
-      keyboard->escaped = true;
+      keyboard->_internal = 1;
       goto exit;
     }
     
