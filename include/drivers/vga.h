@@ -11,9 +11,15 @@
 // VGA Driver
 // ==========
 //
+// VGA, or Video Graphics Array, is a video display standard
+// introduced by IBM in 1987 that defines how video signals are
+// transmitted from a computer to a display. It uses a 15-pin
+// connector and supports a maximum resolution of 640x480 pixels with
+// 256 colors.
 //
 // The best resource to learn VGA is the following:
 //    http://www.osdever.net/FreeVGA/vga/vga.htm
+//
 //
 // I/O Ports
 // ---------

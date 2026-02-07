@@ -17,7 +17,8 @@
 // of keyboard, the keycodes are a general abstraction for all
 // keyboards.
 //
-// The keyboard keeps an array of active presses.
+// The keyboard keeps an array of active presses and a ring buffer
+// of the latest events.
 //
 
 #include <libk/stdbool.h>
@@ -215,15 +216,24 @@ typedef struct keyboard_event {
   keycode_t   key;
 } keyboard_event_t;
 
+#define KEYBOARD_EVENTS_RB_SIZE   256
+
+// A ring buffer
+typedef struct keyboard_events_rb {
+  keyboard_event_t events[KEYBOARD_EVENTS_RB_SIZE];
+  unsigned int     writer_index;
+  unsigned int     reader_index;
+} keyboard_events_rb_t;
+
 //
 // The keyboard
 // ------------
 //
 typedef struct keyboard {
   // Public
-  keyboard_type_t    type;
-  bool               state[_KEY_MAX];
-  keyboard_event_t   events_rb[256];   // ring buffer
+  keyboard_type_t         type;
+  bool                    state[_KEY_MAX];
+  keyboard_events_rb_t    events_rb;   // ring buffer
 
   // Private
   unsigned int _internal;   // For internal use, do not modify
@@ -233,7 +243,9 @@ typedef struct keyboard {
 // Functions
 //
 
+// Use this function when creating a new keyboard
 void keyboard_init(keyboard_t *keyboard, keyboard_type_t type);
+// Register a new event
 void keyboard_update(keyboard_t *keyboard, keyboard_event_t event);
 
 //
@@ -249,6 +261,18 @@ void keyboard_update(keyboard_t *keyboard, keyboard_event_t event);
 void keyboard_set_active(keyboard_t *keyboard);
 // Set the currently active keyboard (may be NULL if none was set)
 keyboard_t *keyboard_get_active(void);
+
+//
+// Keyboard state query
+// --------------------
+//
+// Register a new event to the ring buffer
+// This is called in `keyboard_update`
+void keyboard_events_rb_write(keyboard_t *keyboard,
+                              keyboard_event_t event);
+// Returns event.key = KEY_NONE when no events are found
+keyboard_event_t keyboard_events_rb_read(keyboard_t *keyboard);
+bool keyboard_is_key_pressed(keyboard_t *keyboard, keycode_t key);
 
 //
 // Conversion functions

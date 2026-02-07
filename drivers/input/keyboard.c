@@ -434,6 +434,10 @@ void keyboard_init(keyboard_t *keyboard, keyboard_type_t type)
   keyboard->type      = type;
   keyboard->_internal = 0;
   memset(keyboard->state, 0, _KEY_MAX * sizeof(keycode_t));
+  keyboard->events_rb.writer_index = 0;
+  keyboard->events_rb.reader_index = 0;
+  memset(&keyboard->events_rb.events, 0,
+         KEYBOARD_EVENTS_RB_SIZE * sizeof(keyboard_event_t));
   
   return;
 }
@@ -444,6 +448,9 @@ void keyboard_update(keyboard_t *keyboard, keyboard_event_t event)
       || event.key < 0 || event.key >= _KEY_MAX) return;
 
   keyboard->state[event.key] = event.pressed;
+
+  // For future me: careful with future deadlock here
+  keyboard_events_rb_write(keyboard, event);
   
   return;
 }
@@ -524,4 +531,43 @@ void keyboard_set_active(keyboard_t *keyboard)
 keyboard_t *keyboard_get_active(void)
 {
   return keyboard_active;
+}
+
+void keyboard_events_rb_write(keyboard_t *keyboard,
+                              keyboard_event_t event)
+{
+  if (!keyboard) return;
+
+  keyboard->events_rb.events[keyboard->events_rb.writer_index] = event;
+  keyboard->events_rb.writer_index =
+    (keyboard->events_rb.writer_index + 1) % KEYBOARD_EVENTS_RB_SIZE;
+  
+  return;
+}
+
+keyboard_event_t keyboard_events_rb_read(keyboard_t *keyboard)
+{
+  if (!keyboard) goto exit;
+
+  if (keyboard->events_rb.reader_index ==
+      keyboard->events_rb.writer_index) goto exit;
+
+  keyboard_event_t event =
+    keyboard->events_rb.events[keyboard->events_rb.reader_index];
+  keyboard->events_rb.reader_index =
+    (keyboard->events_rb.reader_index + 1) % KEYBOARD_EVENTS_RB_SIZE;
+
+  return event;
+  
+ exit:
+  return (keyboard_event_t) {
+    .pressed = false,
+    .key     = KEY_NONE,
+  };
+} 
+
+bool keyboard_is_key_pressed(keyboard_t *keyboard, keycode_t key)
+{
+  if (!keyboard) return false;
+  return keyboard->state[key];
 }

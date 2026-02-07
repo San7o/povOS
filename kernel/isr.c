@@ -4,6 +4,7 @@
 // Github:  @San7o
 
 #include <kernel/isr.h>   // implements
+#include <kernel/debug.h>
 #include <drivers/uart.h>
 #include <drivers/ps2.h>
 #include <drivers/pic.h>
@@ -41,13 +42,7 @@ void isr_keyboard_handler(u8_t  isr_number,
   keyboard_update(keyboard, event);
   
   // Debug print via UART
-  
-  const char* key_str = keyboard_string_from_keycode(event.key);
-
-  uart_write_str(UART_COM1, "keyboard: ");
-  uart_write_str(UART_COM1, (event.pressed) ? "pressed " : "released ");
-  uart_write_str(UART_COM1, key_str);
-  uart_putc(UART_COM1, '\n');
+  // debug_dump_keyboard_event_uart(event);
 
  exit:
   pic_ack();

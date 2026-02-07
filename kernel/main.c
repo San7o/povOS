@@ -64,7 +64,13 @@ int kernel_main(void)
   keyboard_init(&keyboard, KEYBOARD_TYPE_PS2_SET1);
   keyboard_set_active(&keyboard);
 
-  while(1) {}
+  // Read keyboard input
+  while(1) {
+    keyboard_event_t event = keyboard_events_rb_read(&keyboard);
+    if (event.key == KEY_NONE) continue;
+
+    debug_dump_keyboard_event_uart(event);
+  }
   
   return EXIT_SUCCESS;
 }

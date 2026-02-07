@@ -153,8 +153,8 @@ debug_dump_regs_uart:
   pop rdi
   ret
 
-debug_dump_regs_uart_intro_str: db `-------------- debug -------------\n`, 0
-debug_dump_regs_uart_outro_str: db `------------ end debug -----------\n`, 0
+debug_dump_regs_uart_intro_str: db `[debug] -------------\n`, 0
+debug_dump_regs_uart_outro_str: db `[end debug] -----------\n`, 0
 debug_dump_regs_uart_rax_str:   db `rax `, 0
 debug_dump_regs_uart_rbx_str:   db `rbx `, 0
 debug_dump_regs_uart_rcx_str:   db `rcx `, 0
