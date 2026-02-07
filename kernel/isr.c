@@ -7,6 +7,7 @@
 #include <drivers/uart.h>
 #include <drivers/ps2.h>
 #include <drivers/pic.h>
+#include <drivers/input/keyboard.h>
 
 void isr_common_handler(u8_t  isr_number,
                         u64_t error_code)
@@ -21,18 +22,29 @@ void isr_common_handler(u8_t  isr_number,
   return;
 }
 
-void isr33_handler(u8_t  isr_number,
-                   u64_t error_code)
+// Keyboard interrupt
+void isr_keyboard_handler(u8_t  isr_number,
+                          u64_t error_code)
 {
   (void) isr_number;
   (void) error_code;
+
+  keyboard_t *keyboard = keyboard_get_active();
+  if (!keyboard) goto exit;
   
-  unsigned char scancode = ps2_read_data();
+  u8_t scancode = ps2_read_data();
+  keyboard_event_t event =
+    keyboard_event_from_scancode(keyboard, scancode);
+  if (event.key == KEY_NONE) goto exit;
   
-  uart_write_str(UART_COM1, "key: ");
-  uart_write_hex(UART_COM1, scancode);
+  const char* key_str = keyboard_string_from_keycode(event.key);
+
+  uart_write_str(UART_COM1, "keyboard: ");
+  uart_write_str(UART_COM1, (event.pressed) ? "pressed " : "released ");
+  uart_write_str(UART_COM1, key_str);
   uart_putc(UART_COM1, '\n');
-  
+
+ exit:
   pic_ack();
   return;
 }

@@ -41,7 +41,7 @@
 
   ;; Imported symbols
   extern isr_common_handler
-  extern isr33_handler
+  extern isr_keyboard_handler
   extern idt_descriptor
   extern idt
 
@@ -304,5 +304,5 @@ isr32:
 isr33:
   push qword 0
   push qword 33                   ; isr number
-  ISR_HANDLER isr33_handler
+  ISR_HANDLER isr_keyboard_handler
   

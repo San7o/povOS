@@ -10,6 +10,7 @@
 #include <drivers/pic.h>
 #include <drivers/vga.h>
 #include <drivers/uart.h>
+#include <drivers/input/keyboard.h>
 
 // C entrypoint
 int kernel_main(void)
@@ -56,6 +57,13 @@ int kernel_main(void)
   uart_write_hex(UART_COM1, 0x6969);
 
   debug_dump_regs_uart();
+
+  // Create a keyboard
+  keyboard_t keyboard;
+  keyboard_init(&keyboard, KEYBOARD_TYPE_PS2_SET1);
+  keyboard_set_active(&keyboard);
+
+  while(1) {}
   
   return EXIT_SUCCESS;
 }

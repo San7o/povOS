@@ -29,8 +29,7 @@
 // implemented
 void isr_common_handler(u8_t  isr_number,
                         u64_t error_code);
-// Keyboard interrupt
-void isr33_handler(u8_t  isr_number,
-                   u64_t error_code);
+void isr_keyboard_handler(u8_t  isr_number,
+                          u64_t error_code);
 
 #endif // POVOS_KERNEL_IDT_H

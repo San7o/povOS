@@ -24,3 +24,11 @@ int strncmp(const unsigned char *s1, const unsigned char *s2, size_t n)
   if (*s2 == '\0') return 1;
   return ((*s1 > *s2) ? 1 : -1);
 }
+
+void *memset(void *buf, u8_t c, size_t n)
+{
+  u8_t *_buf = buf;
+  for (size_t i = 0; i < n; ++i)
+    _buf[i] = c;
+  return buf;
+}
