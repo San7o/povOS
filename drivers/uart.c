@@ -88,4 +88,6 @@ void uart_write_hex(port_t port, u64_t num)
       uart_putc(port, '0' + hex);
     }
   }
+
+  return;
 }

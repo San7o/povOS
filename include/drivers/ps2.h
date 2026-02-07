@@ -82,6 +82,10 @@
 //    https://wiki.osdev.org/I8042_PS/2_Controller
 //
 
+//
+// Functions
+//
+
 unsigned char ps2_read_data(void);
                                 
 #endif // POVOS_DRIVERS_PS2_H

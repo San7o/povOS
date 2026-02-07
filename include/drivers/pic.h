@@ -171,6 +171,10 @@
 #define PIC_ICW4_SFNM       0x10    // Special fully nested (not)
 #define PIC_OCW3_EOI        0x20
 
+//
+// Functions
+//
+
 // In protected mode, IRQs 0–15 map to intel's interrupts 8–23, but
 // these are reserved as x86_64 CPU exceptions! We need to move them
 // to Interrupts 32–47 instead.

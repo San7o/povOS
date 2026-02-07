@@ -40,16 +40,16 @@ void idt_set(void)
 {
   disable_interrupts();
 
-  idt_set_gate(0, (u64_t) isr0, true);
-  idt_set_gate(1, (u64_t) isr1, true);
-  idt_set_gate(2, (u64_t) isr2, false);
-  idt_set_gate(3, (u64_t) isr3, true);
-  idt_set_gate(4, (u64_t) isr4, true);
-  idt_set_gate(5, (u64_t) isr5, true);
-  idt_set_gate(6, (u64_t) isr6, true);
-  idt_set_gate(7, (u64_t) isr7, true);
-  idt_set_gate(8, (u64_t) isr8, true);
-  idt_set_gate(9, (u64_t) isr9, true);
+  idt_set_gate(0,  (u64_t) isr0, true);
+  idt_set_gate(1,  (u64_t) isr1, true);
+  idt_set_gate(2,  (u64_t) isr2, false);
+  idt_set_gate(3,  (u64_t) isr3, true);
+  idt_set_gate(4,  (u64_t) isr4, true);
+  idt_set_gate(5,  (u64_t) isr5, true);
+  idt_set_gate(6,  (u64_t) isr6, true);
+  idt_set_gate(7,  (u64_t) isr7, true);
+  idt_set_gate(8,  (u64_t) isr8, true);
+  idt_set_gate(9,  (u64_t) isr9, true);
   idt_set_gate(10, (u64_t) isr10, true);
   idt_set_gate(11, (u64_t) isr11, true);
   idt_set_gate(12, (u64_t) isr12, true);
