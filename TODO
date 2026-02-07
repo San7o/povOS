@@ -1,5 +1,20 @@
 TODO
 ====
 
-- keyboard driver
-- tty
+TTY
+---
+
+- input -> textbuffer -> tty
+
+
+Better Video
+------------
+
+- rework VGA colors
+- VGA pixel mode -> framebuffers
+
+
+Other
+-----
+
+- timers

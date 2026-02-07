@@ -18,6 +18,9 @@ Features
   - uart
   - vga
   - pic
+  - keyboard
+
+The implementation is clean and readable, headers = documentation.
 
 
 The boot sequence

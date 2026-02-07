@@ -23,7 +23,9 @@ void idt_set_gate(u8_t  gate_number,
 {
   u8_t attributes = 0b10001110;
   if (is_trap) attributes |= 0x01;
-  
+
+  // Refer to the documentation in the header to understand these
+  // values
   idt[gate_number] = (idt_gate_t) {
     .base_low      = (u16_t) (isr_address & 0xFFFF),
     .cs_selector   = 0x08,
@@ -40,6 +42,7 @@ void idt_set(void)
 {
   disable_interrupts();
 
+  // The various isr are implemented in assembly
   idt_set_gate(0,  (u64_t) isr0, true);
   idt_set_gate(1,  (u64_t) isr1, true);
   idt_set_gate(2,  (u64_t) isr2, false);

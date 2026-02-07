@@ -23,7 +23,6 @@ void isr_common_handler(u8_t  isr_number,
   return;
 }
 
-// Keyboard interrupt
 void isr_keyboard_handler(u8_t  isr_number,
                           u64_t error_code)
 {
