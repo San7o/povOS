@@ -82,10 +82,35 @@
 #include <libk/stddef.h>
 #include <libk/stdbool.h>
 
-typedef struct  __attribute__((packed)) vga_entry {
-  u8_t value;
-  u8_t style;
-} vga_entry_t;
+#define VGA_COLOR_BLACK        0
+#define VGA_COLOR_BLUE         1
+#define VGA_COLOR_GREEN        2
+#define VGA_COLOR_CYAN         3
+#define VGA_COLOR_RED          4
+#define VGA_COLOR_PURPLE       5
+#define VGA_COLOR_BROWN        6
+#define VGA_COLOR_GRAY         7
+#define VGA_COLOR_DARK_GRAY    8
+#define VGA_COLOR_LIGHT_BLUE   9
+#define VGA_COLOR_LIGHT_GREEN  10
+#define VGA_COLOR_LIGHT_CYAN   11
+#define VGA_COLOR_LIGHT_RED    12
+#define VGA_COLOR_LIGHT_PURPLE 13
+#define VGA_COLOR_YELLOW       14
+#define VGA_COLOR_WHITE        15
+
+typedef struct __attribute__((packed)) vga_style {
+  u8_t foreground;
+  u8_t background;
+} vga_style_t;
+
+// Convert a vga_style_t into bytes for the VGA text buffer
+#define VGA_STYLE_BYTES(style) (style.foreground | (style.background << 4))
+
+// Some default colors
+#define VGA_STYLE_BLUE ((vga_style_t) { .foreground = VGA_COLOR_WHITE, .background = VGA_COLOR_BLUE })
+#define VGA_STYLE_BW   ((vga_style_t) { .foreground = VGA_COLOR_WHITE, .background = VGA_COLOR_BLACK })
+#define VGA_STYLE_RED  ((vga_style_t) { .foreground = VGA_COLOR_WHITE, .background = VGA_COLOR_BLACK })
 
 //
 // Global VGA buffer
@@ -96,13 +121,14 @@ typedef struct  __attribute__((packed)) vga_entry {
 // buffer directly, its address can be queried (use the
 // vga_get_memory_map function) and the number of entries is
 // VGA_BUFFER_SIZE.
-extern vga_entry_t *vga_buffer;
 
-typedef enum vga_style {
-  VGA_STYLE_BLUE   = 0x1F,
-  VGA_STYLE_BW     = 0xF,
-  VGA_STYLE_RED    = 0x4F
-} vga_style_t;
+// An entry in the vga text buffer
+typedef struct  __attribute__((packed)) vga_entry {
+  u8_t value;
+  u8_t style;   // use VGA_STYLE_BYTES(style)
+} vga_entry_t;
+
+extern vga_entry_t *vga_buffer;
 
 //
 // Functions

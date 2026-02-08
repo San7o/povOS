@@ -28,7 +28,7 @@ void vga_putc(int offset, u8_t c, vga_style_t style)
   
   vga_buffer[offset] = (vga_entry_t) {
     .value = c,
-    .style = style,
+    .style = VGA_STYLE_BYTES(style),
   };
   return;
 }

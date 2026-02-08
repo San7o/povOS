@@ -10,7 +10,6 @@ TTY
 Better Video
 ------------
 
-- rework VGA colors
 - VGA pixel mode -> framebuffers
 
 
