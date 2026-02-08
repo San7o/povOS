@@ -10,15 +10,15 @@ vga_entry_t *vga_buffer = (vga_entry_t*) VGA_START;
 
 int vga_get_memory_map(void)
 {
-  port_outb(VGA_ADDRESS_REGISTER, VGA_GRAPHICS_MISC_REGISTER_INDEX);
-  unsigned int misc_register = port_inb(VGA_DATA_REGISTER);
+  port_outb(VGA_GRAPHICS_ADDRESS_REGISTER, VGA_GRAPHICS_MISC_REGISTER_INDEX);
+  unsigned int misc_register = port_inb(VGA_GRAPHICS_DATA_REGISTER);
   return (misc_register & VGA_GRAPHICS_MISC_REGISTER_MEMORY_MAP_SELECT_MASK) >> 2;
 }
 
 bool vga_is_alpha_disabled(void)
 {
-  port_outb(VGA_ADDRESS_REGISTER, VGA_GRAPHICS_MISC_REGISTER_INDEX);
-  unsigned int misc_register = port_inb(VGA_DATA_REGISTER);
+  port_outb(VGA_GRAPHICS_ADDRESS_REGISTER, VGA_GRAPHICS_MISC_REGISTER_INDEX);
+  unsigned int misc_register = port_inb(VGA_GRAPHICS_DATA_REGISTER);
   return misc_register & VGA_GRAPHICS_MISC_REGISTER_ALPHA_DISABLED_MASK;
 }
 
@@ -70,5 +70,19 @@ void vga_clear(vga_style_t style)
 {
   for (int i = 0; i < VGA_BUFFER_SIZE; ++i)
     vga_putc(i, ' ', style);
+  return;
+}
+
+void vga_set_cursor(unsigned int x, unsigned int y)
+{
+  if (x >= VGA_WIDTH || y >= VGA_HEIGHT || x < 0 || y < 0) return;
+
+  u16_t pos = y * VGA_WIDTH + x;
+  
+	port_outb(VGA_CRTC_ADDRESS_REGISTER, VGA_CRTC_CURSOR_LOCATION_LOW_INDEX);
+	port_outb(VGA_CRTC_DATA_REGISTER, (u8_t) (pos & 0xFF));
+	port_outb(VGA_CRTC_ADDRESS_REGISTER, VGA_CRTC_CURSOR_LOCATION_HIGH_INDEX);
+  port_outb(VGA_CRTC_DATA_REGISTER, (u8_t) ((pos >> 8) & 0xFF));
+  
   return;
 }

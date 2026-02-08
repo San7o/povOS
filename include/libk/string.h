@@ -8,6 +8,7 @@
 
 #include <libk/stddef.h>
 
+size_t strlen(const char *s);
 int strcmp(const unsigned char *s1, const unsigned char *s2);
 int strncmp(const unsigned char *s1, const unsigned char *s2, size_t n);
 

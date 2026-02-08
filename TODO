@@ -1,10 +1,10 @@
 TODO
 ====
 
-TTY
----
+Memory management
+-----------------
 
-- console -> tty
+Setup proper memory management.
 
 
 Better Video

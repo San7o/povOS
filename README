@@ -13,6 +13,7 @@ Features
 
 - custom bootloader
 - custom standard library
+- GDT and paging
 - drivers:
   - ps2
   - uart

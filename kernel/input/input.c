@@ -23,7 +23,10 @@ void input_events_add(input_t *input, input_event_t event)
   input->events_rb.events[input->events_rb.writer_index] = event;
   input->events_rb.writer_index =
     (input->events_rb.writer_index + 1) % INPUT_EVENTS_RB_SIZE;
-  
+
+  tty_write_input((tty_t*) input->tty, event);
+  tty_flush((tty_t*) input->tty);
+    
   return;
 }
 
@@ -39,8 +42,6 @@ input_event_t input_events_get(input_t *input)
   input->events_rb.reader_index =
     (input->events_rb.reader_index + 1) % INPUT_EVENTS_RB_SIZE;
 
-  tty_write_input((tty_t*)input->tty, event);
-  
   return event;
   
  exit:

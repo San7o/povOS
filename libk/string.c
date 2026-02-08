@@ -5,6 +5,15 @@
 
 #include <libk/string.h>   // implements
 
+size_t strlen(const char *s)
+{
+  if (!s) return 0;
+  
+  size_t len = 0;
+  while(*s++ != '\0') { len++; };
+  return len;
+}
+
 int strcmp(const unsigned char *s1, const unsigned char *s2)
 {
   while (*s1 == *s2 && (*s1 != '\0' && *s2 != '\0')) { s1++; s2++; }

@@ -4,6 +4,7 @@
 // Github:  @San7o
 
 #include <kernel/textbuffer.h>   // implements
+#include <drivers/video/vga.h>
 
 void textbuffer_init(textbuffer_t *textbuffer,
                      textbuffer_entry_t *buff,
@@ -20,40 +21,93 @@ void textbuffer_init(textbuffer_t *textbuffer,
   textbuffer->cursor_x = cursor_x;
   textbuffer->cursor_y = cursor_y;
 
+  for (unsigned int i = 0; i < width * height; ++i)
+  {
+    textbuffer->buff[i] = (textbuffer_entry_t) {
+      .c = ' ',
+      .style = (textbuffer_style_t) {
+        .foreground = VGA_COLOR_WHITE,
+        .background = VGA_COLOR_BLACK,
+      },
+    };
+  }
+  
   return;
 }
 
 void textbuffer_write(textbuffer_t *textbuffer,
                       char c,
                       unsigned char foreground_color,
-                      unsigned char background_color,
-                      unsigned int x,
-                      unsigned int y)
+                      unsigned char background_color)
 {
-  textbuffer_write_style(textbuffer, c,
-                         (textbuffer_style_t) {
-                           .foreground_color = foreground_color,
-                           .background_color = background_color },
-                         x, y);
+  if (!textbuffer) return;
+  
+  textbuffer_write_pos(textbuffer, c,
+                       foreground_color,
+                       background_color,
+                       textbuffer->cursor_x,
+                       textbuffer->cursor_y);
+  textbuffer_cursor_advance(textbuffer);
   return;
 }
 
 void textbuffer_write_style(textbuffer_t *textbuffer,
                             char c,
-                            textbuffer_style_t style,
-                            unsigned int x,
-                            unsigned int y)
+                            textbuffer_style_t style)
 {
-  textbuffer_write_entry(textbuffer,
-                         (textbuffer_entry_t) { .c = c, .style = style },
-                         x, y);
+  if (!textbuffer) return;
+
+  textbuffer_write_pos_style(textbuffer, c, style,
+                             textbuffer->cursor_x,
+                             textbuffer->cursor_y);
+  textbuffer_cursor_advance(textbuffer);
   return;
 }
 
 void textbuffer_write_entry(textbuffer_t *textbuffer,
-                            textbuffer_entry_t entry,
-                            unsigned int x,
-                            unsigned int y)
+                            textbuffer_entry_t entry)
+{
+  if (!textbuffer) return;
+
+  textbuffer_write_pos_entry(textbuffer, entry,
+                             textbuffer->cursor_x,
+                             textbuffer->cursor_y);
+  textbuffer_cursor_advance(textbuffer);
+  return;
+}
+
+
+void textbuffer_write_pos(textbuffer_t *textbuffer,
+                          char c,
+                          textbuffer_color_t foreground,
+                          textbuffer_color_t background,
+                          unsigned int x,
+                          unsigned int y)
+{
+  textbuffer_write_pos_style(textbuffer, c,
+                             (textbuffer_style_t) {
+                               .foreground = foreground,
+                               .background = background },
+                             x, y);
+  return;
+}
+
+void textbuffer_write_pos_style(textbuffer_t *textbuffer,
+                                char c,
+                                textbuffer_style_t style,
+                                unsigned int x,
+                                unsigned int y)
+{
+  textbuffer_write_pos_entry(textbuffer,
+                             (textbuffer_entry_t) { .c = c, .style = style },
+                             x, y);
+  return;
+}
+
+void textbuffer_write_pos_entry(textbuffer_t *textbuffer,
+                                textbuffer_entry_t entry,
+                                unsigned int x,
+                                unsigned int y)
 {
   if (!textbuffer || x >= textbuffer->width || y >= textbuffer->height
       || x < 0 || y < 0)
@@ -76,19 +130,19 @@ textbuffer_entry_t textbuffer_read(textbuffer_t *textbuffer,
   return (textbuffer_entry_t) {0};
 }
 
-unsigned int textuffer_get_cursor_x(textbuffer_t *textbuffer)
+unsigned int textuffer_cursor_get_x(textbuffer_t *textbuffer)
 {
   if (!textbuffer) return 0;
   return textbuffer->cursor_x;
 }
 
-unsigned int textuffer_get_cursor_y(textbuffer_t *textbuffer)
+unsigned int textuffer_cursor_get_y(textbuffer_t *textbuffer)
 {
   if (!textbuffer) return 0;
   return textbuffer->cursor_y;
 }
 
-void textbuffer_move_cursor(textbuffer_t *textbuffer,
+void textbuffer_cursor_move(textbuffer_t *textbuffer,
                             unsigned int x, unsigned int y)
 {
   if (!textbuffer || x >= textbuffer->width || y >= textbuffer->height
@@ -100,19 +154,43 @@ void textbuffer_move_cursor(textbuffer_t *textbuffer,
   
   return;
 }
-void textbuffer_advance_cursor(textbuffer_t *textbuffer)
+void textbuffer_cursor_advance(textbuffer_t *textbuffer)
 {
-  if (!textbuffer || textbuffer->cursor_x+1 >= textbuffer->width ||
-      textbuffer->cursor_y+1 >= textbuffer->height)
+  if (!textbuffer)
     return;
 
-  textbuffer->cursor_x++;
-  textbuffer->cursor_y++;
-  
+  if (textbuffer->cursor_x == textbuffer->width)
+  {
+    textbuffer->cursor_x = 0;
+    textbuffer->cursor_y =
+      (textbuffer->cursor_y + 1) % textbuffer->height;
+  }
+  else
+  {
+    textbuffer->cursor_x++;
+  }
   return;
 }
 
-textbuffer_entry_t textbuffer_read_cursor(textbuffer_t *textbuffer)
+void textbuffer_cursor_regress(textbuffer_t *textbuffer)
+{
+  if (!textbuffer)
+    return;
+
+  if (textbuffer->cursor_x == 0)
+  {
+    if (textbuffer->cursor_y == 0) return;
+    textbuffer->cursor_y--;
+    textbuffer->cursor_x = textbuffer->width - 1;
+  }
+  else
+  {
+    textbuffer->cursor_x--;
+  }
+  return;
+}
+
+textbuffer_entry_t textbuffer_cursor_read(textbuffer_t *textbuffer)
 {
   if (!textbuffer || textbuffer->cursor_x >= textbuffer->width
       || textbuffer->cursor_y >= textbuffer->height)
@@ -123,4 +201,14 @@ textbuffer_entry_t textbuffer_read_cursor(textbuffer_t *textbuffer)
   
  exit:
   return (textbuffer_entry_t) {0};  
+}
+
+void textbuffer_cursor_newline(textbuffer_t *textbuffer)
+{
+  if (!textbuffer) return;
+
+  textbuffer->cursor_x = 0;
+  textbuffer->cursor_y = (textbuffer->cursor_y + 1) % textbuffer->height;
+  
+  return;
 }

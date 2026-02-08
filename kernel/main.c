@@ -5,6 +5,7 @@
 
 #include <libk/stdlib.h>
 #include <libk/stdbool.h>
+#include <libk/string.h>
 #include <kernel/idt.h>
 #include <kernel/debug.h>
 #include <kernel/utils.h>
@@ -16,6 +17,8 @@
 #include <drivers/uart.h>
 #include <drivers/video/vga.h>
 #include <drivers/input/keyboard.h>
+
+#include "banner.h"
 
 // C entrypoint
 int kernel_main(void)
@@ -52,19 +55,10 @@ int kernel_main(void)
   pic_remap();  // Chage overlapping IRQ numbers
   idt_set();    // Setup the IDT
 
-  // Print tests
-  
-  vga_clear(VGA_STYLE_BLUE);
-  vga_print(0, "Hello, from povOS!", VGA_STYLE_BLUE);
-  vga_print_hex(18, 0x6969, VGA_STYLE_BW);
-  
-  uart_write_str(UART_COM1, "Hello, from povOS!");
-  uart_write_hex(UART_COM1, 0x6969);
-  uart_putc(UART_COM1, '\n');
-
+  // Tests
+  debug_print_vga();
+  debug_write_uart();
   debug_dump_regs_uart();
-
-  // Test breakpoint
   breakpoint();
 
   //
@@ -76,7 +70,7 @@ int kernel_main(void)
   textbuffer_init(&textbuffer, buff, VGA_WIDTH, VGA_HEIGHT, 0, 0);
 
   tty_t tty;
-  tty_init(&tty, &textbuffer, &vga_console);
+  tty_init(&tty, &textbuffer, TEXTBUFFER_STYLE_BW, &vga_console);
   
   input_t input;
   input_init(&input, &input_keymap_us, &tty);
@@ -85,13 +79,12 @@ int kernel_main(void)
   keyboard_init(&keyboard, KEYBOARD_TYPE_PS2_SET1, &input);
   keyboard_set_active(&keyboard);
 
-  // Read keyboard input
-  while(1) {
-    input_event_t event = input_events_get(&input);
-    if (event.type == INPUT_EVENT_TYPE_NONE) continue;
-    
-    debug_dump_input_event_uart(event);
-  }
+  tty_write(&tty, povos_banner, strlen(povos_banner));
+  tty_flush(&tty);
+
+  // Read and print keyboard input
+  // debug_dump_input_loop(&input);
+  while(1) {}
   
   return EXIT_SUCCESS;
 }

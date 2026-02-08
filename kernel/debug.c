@@ -5,6 +5,7 @@
 
 #include <kernel/debug.h>   // implements
 #include <drivers/uart.h>
+#include <drivers/video/vga.h>
 
 void debug_dump_keyboard_event_uart(keyboard_event_t event)
 {
@@ -39,4 +40,30 @@ void debug_dump_input_event_uart(input_event_t event)
   
   uart_putc(UART_COM1, '\n');
   return;
+}
+
+void debug_print_vga(void)
+{
+  vga_clear(VGA_STYLE_BLUE);
+  vga_print(0, "Hello, from povOS!", VGA_STYLE_BLUE);
+  vga_print_hex(18, 0x6969, VGA_STYLE_BW);
+  return;
+}
+
+void debug_write_uart(void)
+{
+  uart_write_str(UART_COM1, "Hello, from povOS!");
+  uart_write_hex(UART_COM1, 0x6969);
+  uart_putc(UART_COM1, '\n');
+  return;
+}
+
+void debug_dump_input_loop(input_t *input)
+{
+  while(1) {
+    input_event_t event = input_events_get(input);
+    if (event.type == INPUT_EVENT_TYPE_NONE) continue;
+    
+    debug_dump_input_event_uart(event);
+  }
 }

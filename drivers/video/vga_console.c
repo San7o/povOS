@@ -4,23 +4,26 @@ void vga_console_draw(const textbuffer_t *textbuffer)
 {
   if (!textbuffer) return;
 
-  // TODO
+  for (unsigned int i = 0; i < textbuffer->width * textbuffer->height; ++i)
+  {
+    vga_putc(i, textbuffer->buff[i].c, (vga_style_t) {
+        .foreground = textbuffer->buff[i].style.foreground,
+        .background = textbuffer->buff[i].style.background,
+      });
+  }
   
   return;
 }
 
 void vga_console_set_cursor(unsigned int x, unsigned int y)
 {
-  (void) x;
-  (void) y;
-  
-  // TODO
+  vga_set_cursor(x, y);
   return;
 }
 
 void vga_console_clear(void)
 {
-  // TODO
+  vga_clear(VGA_STYLE_BW);
   return;
 }
 

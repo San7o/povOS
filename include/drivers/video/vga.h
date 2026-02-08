@@ -29,13 +29,14 @@
 // register and a data register. In order to access the other
 // registers, you usually write an identifier (INDEX) of that register
 // and the address register, then read / write the data register.
-#define VGA_ADDRESS_REGISTER   0x3CE
-#define VGA_DATA_REGISTER      0x3CF
-  
+
 // 
 // Graphics controller registers
 // ------------------------------
 //
+#define VGA_GRAPHICS_ADDRESS_REGISTER   0x3CE
+#define VGA_GRAPHICS_DATA_REGISTER      0x3CF
+
 #define VGA_GRAPHICS_SET_RESET_REGISTER_INDEX          0x00
 #define VGA_GRAPHICS_ENABLE_SET_RESET_REGISTER_INDEX   0x01
 #define VGA_GRAPHICS_COLOR_COMPARE_REGISTER_INDEX      0x02
@@ -71,6 +72,44 @@
 // 
 #define VGA_GRAPHICS_MISC_REGISTER_ALPHA_DISABLED_MASK   0b1
 
+//
+// CRTC Registers
+// --------------
+//
+#define VGA_CRTC_ADDRESS_REGISTER       0x3D4
+#define VGA_CRTC_DATA_REGISTER          0x3D5
+
+#define VGA_CRTC_HORIZONTAL_TOTAL_INDEX          0x00
+#define VGA_CRTC_END_HORIZONTAL_DISPLAY_INDEX    0x01
+#define VGA_CRTC_START_HORIZONTAL_BLANKING_INDEX 0x02
+#define VGA_CRTC_END_HORIZONTAL_BLANKING_INDEX   0x03
+#define VGA_CRTC_START_HORIZONTAL_RETRACE_INDEX  0x04
+#define VGA_CRTC_END_HORIZONTAL_RETRACE_INDEX    0x05
+#define VGA_CRTC_VERTICAL_TOTAL_INDEX            0x06
+#define VGA_CRTC_OVERFLOW_INDEX                  0x07
+#define VGA_CRTC_PRESET_ROW_SCAN_INDEX           0x08
+#define VGA_CRTC_MAXIMUM_SCAN_LINE_INDEX         0x09
+#define VGA_CRTC_CURSOR_START_INDEX              0x0A
+#define VGA_CRTC_CURSOR_END_INDEX                0x0B
+#define VGA_CRTC_START_ADDRESS_HIGH_INDEX        0x0C
+#define VGA_CRTC_START_ADDRESS_LOW_INDEX         0x0D
+#define VGA_CRTC_CURSOR_LOCATION_HIGH_INDEX      0x0E
+#define VGA_CRTC_CURSOR_LOCATION_LOW_INDEX       0x0F
+#define VGA_CRTC_VERTICAL_RETRACE_START_INDEX    0x10
+#define VGA_CRTC_VERTICAL_RETRACE_END_INDEX      0x11
+#define VGA_CRTC_VERTICAL_DISPLAY_END_INDEX      0x12
+#define VGA_CRTC_OFFSET_INDEX                    0x13
+#define VGA_CRTC_UNDERLINE_LOCATION_INDEX        0x14
+#define VGA_CRTC_START_VERTICAL_BLANKING_INDEX   0x15
+#define VGA_CRTC_END_VERTICAL_BLANKING           0x16
+#define VGA_CRTC_CRTC_MODE_CONTROL_INDEX         0x17
+#define VGA_CRTC_LINE_COMPARE_INDEX              0x18
+
+
+//
+// VGA Text mode
+// -------------
+//
 #define VGA_START         0x000B8000
 #define VGA_WIDTH         80
 #define VGA_HEIGHT        25
@@ -102,18 +141,22 @@
 #define VGA_COLOR_YELLOW       14
 #define VGA_COLOR_WHITE        15
 
-typedef struct __attribute__((packed)) vga_style {
-  u8_t foreground;
-  u8_t background;
+typedef u8_t vga_color_t;
+
+typedef struct vga_style {
+  vga_color_t foreground;
+  vga_color_t background;
 } vga_style_t;
 
 // Convert a vga_style_t into bytes for the VGA text buffer
 #define VGA_STYLE_BYTES(style) (style.foreground | (style.background << 4))
+#define VGA_STYLE_MAKE(fg, bg) \
+  (vga_style_t) { .foreground = fg, .background = bg }
 
 // Some default colors
-#define VGA_STYLE_BLUE ((vga_style_t) { .foreground = VGA_COLOR_WHITE, .background = VGA_COLOR_BLUE })
-#define VGA_STYLE_BW   ((vga_style_t) { .foreground = VGA_COLOR_WHITE, .background = VGA_COLOR_BLACK })
-#define VGA_STYLE_RED  ((vga_style_t) { .foreground = VGA_COLOR_WHITE, .background = VGA_COLOR_BLACK })
+#define VGA_STYLE_BLUE  VGA_STYLE_MAKE(VGA_COLOR_WHITE, VGA_COLOR_BLUE)
+#define VGA_STYLE_BW    VGA_STYLE_MAKE(VGA_COLOR_WHITE, VGA_COLOR_BLACK)
+#define VGA_STYLE_RED   VGA_STYLE_MAKE(VGA_COLOR_RED, VGA_COLOR_BLACK)
 
 //
 // Global VGA buffer
@@ -153,6 +196,7 @@ void   vga_putc(int offset, u8_t c, vga_style_t style);
 size_t vga_print(int offset, const char* str, vga_style_t style);
 size_t vga_print_hex(int offset, u64_t num, vga_style_t style);
 void   vga_clear(vga_style_t style);
+void   vga_set_cursor(unsigned int x, unsigned int y);
 
 // VGA console
 extern console_t vga_console;
