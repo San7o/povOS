@@ -35,10 +35,10 @@
   
   section .startup
   
-  ;; Entry point
+  ;; Entry point, the bootloader will jump here
 kernel_entry:
   
-  ;; Triggers breakpoint exception
+  ;; Triggers breakpoint exception (for debugging)
   ;;   int3
 
   call kernel_main

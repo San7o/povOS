@@ -7,10 +7,12 @@
 #include <libk/stdbool.h>
 #include <kernel/idt.h>
 #include <kernel/debug.h>
+#include <kernel/utils.h>
 #include <drivers/pic.h>
 #include <drivers/vga.h>
 #include <drivers/uart.h>
 #include <drivers/input/keyboard.h>
+#include <drivers/input/input.h>
 
 // C entrypoint
 int kernel_main(void)
@@ -59,17 +61,23 @@ int kernel_main(void)
 
   debug_dump_regs_uart();
 
-  // Create a keyboard
+  // Test breakpoint
+  breakpoint();
+  
+  // Create an input device and a keyboard
+  input_t input;
+  input_init(&input, &input_keymap_us);
+  
   keyboard_t keyboard;
-  keyboard_init(&keyboard, KEYBOARD_TYPE_PS2_SET1);
+  keyboard_init(&keyboard, KEYBOARD_TYPE_PS2_SET1, &input);
   keyboard_set_active(&keyboard);
 
   // Read keyboard input
   while(1) {
-    keyboard_event_t event = keyboard_events_rb_read(&keyboard);
-    if (event.key == KEY_NONE) continue;
-
-    debug_dump_keyboard_event_uart(event);
+    input_event_t event = input_events_get(&input);
+    if (event.type == INPUT_EVENT_TYPE_NONE) continue;
+    
+    debug_dump_input_event_uart(event);
   }
   
   return EXIT_SUCCESS;

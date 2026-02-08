@@ -2,6 +2,7 @@
 
   global enable_interrupts
   global disable_interrupts
+  global breakpoint
 
 enable_interrupts:
   sti
@@ -9,4 +10,8 @@ enable_interrupts:
 
 disable_interrupts:
   cli
+  ret
+
+breakpoint:
+  int3
   ret

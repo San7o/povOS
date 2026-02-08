@@ -19,6 +19,7 @@ Features
   - vga
   - pic
   - keyboard
+  - input (+ multiple keyboard layouts)
 
 The implementation is clean and readable, headers = documentation.
 

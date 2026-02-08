@@ -10,12 +10,14 @@
 #include <drivers/pic.h>
 #include <drivers/input/keyboard.h>
 
+#include "isr_string.h"
+
 void isr_common_handler(u8_t  isr_number,
                         u64_t error_code)
 {
-  uart_write_str(UART_COM1, "isr ");
-  uart_write_hex(UART_COM1, isr_number);
-  uart_write_str(UART_COM1, " , error code: ");
+  uart_write_str(UART_COM1, "isr: ");
+  uart_write_str(UART_COM1, isr_exception_string[isr_number]);
+  uart_write_str(UART_COM1, ", error code: ");
   uart_write_hex(UART_COM1, error_code);
   uart_putc(UART_COM1, '\n');
 

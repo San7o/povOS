@@ -87,6 +87,7 @@ typedef struct  __attribute__((packed)) vga_entry {
   u8_t style;
 } vga_entry_t;
 
+//
 // Global VGA buffer
 // -----------------
 //

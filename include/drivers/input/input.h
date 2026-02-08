@@ -29,6 +29,11 @@
 //
 
 #include <drivers/input/keyboard.h>
+#include <drivers/input/keymap.h>
+
+//
+// Types
+//
 
 typedef enum input_type {
   INPUT_EVENT_TYPE_NONE = 0,
@@ -41,6 +46,7 @@ typedef struct input_modifiers {
   bool shift;
   bool ctrl;
   bool alt;
+  bool meta;
 } input_modifiers_t;
 
 typedef struct input_event {
@@ -51,23 +57,28 @@ typedef struct input_event {
   } e;
 } input_event_t;
 
-#define INPUT_EVENTS_FB_SIZE   256
+#define INPUT_EVENTS_RB_SIZE   256
 
-typedef struct input_event_fb {
-  input_event_t   events[INPUT_EVENTS_FB_SIZE];
+typedef struct input_event_rb {
+  input_event_t   events[INPUT_EVENTS_RB_SIZE];
   unsigned int    writer_index;
   unsigned int    reader_index;
-} input_event_fb_t;
+} input_event_rb_t;
 
 typedef struct input {
-  input_event_fb_t    events_fb;
+  input_event_rb_t    events_rb;
   input_modifiers_t   modifiers;
+  input_keymap_t      *keymap;
 } input_t;
 
 //
 // Functions
 //
 
-// TODO
+void input_init(input_t *input, input_keymap_t *keymap);
+void input_update(input_t *input, keyboard_event_t event);
+
+void          input_events_add(input_t *input, input_event_t event);
+input_event_t input_events_get(input_t *input);
 
 #endif // POVOS_DRIVERS_INPUT_H

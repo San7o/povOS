@@ -15,6 +15,8 @@
 
 // Wait a very small amount of time (1 to 4 microseconds, generally)
 void io_wait(void);
+// Set a breakpoint
+void breakpoint(void);
 
 void disable_interrupts(void);
 void enable_interrupts(void);

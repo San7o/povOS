@@ -15,7 +15,6 @@ GDB  ?= gdb
 OBJ     =
 
 SUBPROJECTS_MAKE_CONF = kernel/make.conf \
-                        kernel/debug/make.conf \
                         libk/make.conf \
                         arch/$(ARCH)/make.conf \
                         drivers/make.conf \
