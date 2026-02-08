@@ -19,6 +19,7 @@ SUBPROJECTS_MAKE_CONF = kernel/make.conf \
                         libk/make.conf \
                         arch/$(ARCH)/make.conf \
                         drivers/make.conf \
+                        drivers/video/make.conf \
                         drivers/input/make.conf
 
 include $(SUBPROJECTS_MAKE_CONF)

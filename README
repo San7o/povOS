@@ -19,7 +19,12 @@ Features
   - vga
   - pic
   - keyboard
-  - input (+ multiple keyboard layouts)
+- kernel:
+  - IDT and ISR
+  - input (supports multiple keyboard layouts)
+  - textbuffer
+  - console
+  - tty
 
 The implementation is clean and readable, headers = documentation.
 

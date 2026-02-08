@@ -9,9 +9,12 @@
 #include <kernel/debug.h>
 #include <kernel/utils.h>
 #include <kernel/input/input.h>
+#include <kernel/textbuffer.h>
+#include <kernel/console.h>
+#include <kernel/tty.h>
 #include <drivers/pic.h>
-#include <drivers/vga.h>
 #include <drivers/uart.h>
+#include <drivers/video/vga.h>
 #include <drivers/input/keyboard.h>
 
 // C entrypoint
@@ -63,10 +66,20 @@ int kernel_main(void)
 
   // Test breakpoint
   breakpoint();
+
+  //
+  // Setup tty
+  //
   
-  // Create an input device and a keyboard
+  textbuffer_entry_t buff[VGA_BUFFER_SIZE] = {0};
+  textbuffer_t textbuffer;
+  textbuffer_init(&textbuffer, buff, VGA_WIDTH, VGA_HEIGHT, 0, 0);
+
+  tty_t tty;
+  tty_init(&tty, &textbuffer, &vga_console);
+  
   input_t input;
-  input_init(&input, &input_keymap_us);
+  input_init(&input, &input_keymap_us, &tty);
   
   keyboard_t keyboard;
   keyboard_init(&keyboard, KEYBOARD_TYPE_PS2_SET1, &input);

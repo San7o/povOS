@@ -4,13 +4,15 @@
 // Github:  @San7o
 
 #include <kernel/input/input.h>   // implements
+#include <kernel/tty.h>
 #include <libk/string.h>
 
-void input_init(input_t *input, input_keymap_t *keymap)
+void input_init(input_t *input, input_keymap_t *keymap, void *tty)
 {
   if (!input) return;
   memset((void*)input, 0, sizeof(input_t));
   input->keymap = keymap;
+  input->tty = tty;
   return;
 }
 
@@ -37,6 +39,8 @@ input_event_t input_events_get(input_t *input)
   input->events_rb.reader_index =
     (input->events_rb.reader_index + 1) % INPUT_EVENTS_RB_SIZE;
 
+  tty_write_input((tty_t*)input->tty, event);
+  
   return event;
   
  exit:

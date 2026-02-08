@@ -66,16 +66,17 @@ typedef struct input_event_rb {
 } input_event_rb_t;
 
 typedef struct input {
+  void*               tty;   // pointer to a tty
   input_event_rb_t    events_rb;
   input_modifiers_t   modifiers;
-  input_keymap_t      *keymap;
+  input_keymap_t*     keymap;
 } input_t;
 
 //
 // Functions
 //
 
-void input_init(input_t *input, input_keymap_t *keymap);
+void input_init(input_t *input, input_keymap_t *keymap, void *tty);
 void input_update(input_t *input, keyboard_event_t event);
 
 void          input_events_add(input_t *input, input_event_t event);

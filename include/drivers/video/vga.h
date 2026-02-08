@@ -72,13 +72,16 @@
 #define VGA_GRAPHICS_MISC_REGISTER_ALPHA_DISABLED_MASK   0b1
 
 #define VGA_START         0x000B8000
-#define VGA_EXTENT        (80*25*2)
-#define VGA_BUFFER_SIZE   (VGA_EXTENT / 2)
+#define VGA_WIDTH         80
+#define VGA_HEIGHT        25
+#define VGA_BUFFER_SIZE   (VGA_WIDTH * VGA_HEIGHT)
+#define VGA_EXTENT        (80*25*2)   // bytes
 
 //
 // Types
 //
 
+#include <kernel/console.h>
 #include <libk/stddef.h>
 #include <libk/stdbool.h>
 
@@ -145,10 +148,13 @@ extern vga_entry_t *vga_buffer;
 int vga_get_memory_map(void);
 // Returns true if alphanumeric is disabled
 bool vga_is_alpha_disabled(void);
-// TODO: usage fg_color and bf_color instead of style
+
 void   vga_putc(int offset, u8_t c, vga_style_t style);
 size_t vga_print(int offset, const char* str, vga_style_t style);
 size_t vga_print_hex(int offset, u64_t num, vga_style_t style);
 void   vga_clear(vga_style_t style);
+
+// VGA console
+extern console_t vga_console;
 
 #endif // POVOS_DRIVERS_VGA_H

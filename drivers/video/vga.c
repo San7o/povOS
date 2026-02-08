@@ -3,7 +3,7 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <drivers/vga.h>   // implements
+#include <drivers/video/vga.h>   // implements
 #include <bits/port.h>
 
 vga_entry_t *vga_buffer = (vga_entry_t*) VGA_START;
