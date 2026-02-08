@@ -3,7 +3,7 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <drivers/input/keymap.h>   // implements
+#include <kernel/input/keymap.h>   // implements
 
 input_keymap_t input_keymap_us = {
   // Letters

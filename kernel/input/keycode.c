@@ -3,7 +3,7 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <drivers/input/keycodes.h>   // implements
+#include <kernel/input/keycodes.h>   // implements
 #include <libk/stddef.h>
 
 static const char* keycode_str[_KEY_MAX] = {

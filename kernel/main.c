@@ -8,11 +8,11 @@
 #include <kernel/idt.h>
 #include <kernel/debug.h>
 #include <kernel/utils.h>
+#include <kernel/input/input.h>
 #include <drivers/pic.h>
 #include <drivers/vga.h>
 #include <drivers/uart.h>
 #include <drivers/input/keyboard.h>
-#include <drivers/input/input.h>
 
 // C entrypoint
 int kernel_main(void)

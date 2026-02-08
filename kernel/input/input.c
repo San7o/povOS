@@ -3,7 +3,7 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <drivers/input/input.h>   // implements
+#include <kernel/input/input.h>   // implements
 #include <libk/string.h>
 
 void input_init(input_t *input, input_keymap_t *keymap)

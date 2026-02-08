@@ -3,8 +3,8 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#ifndef POVOS_DRIVERS_INPUT_KEYCODES_H
-#define POVOS_DRIVERS_INPUT_KEYCODES_H
+#ifndef POVOS_KERNEL_INPUT_KEYCODES_H
+#define POVOS_KERNEL_INPUT_KEYCODES_H
 
 //
 // Keycode
@@ -179,4 +179,4 @@ typedef enum keycode {
 // Convert keycode to string
 const char* keycode_from_string(keycode_t key);
 
-#endif // POVOS_DRIVERS_INPUT_KEYCODES_H
+#endif // POVOS_KERNEL_INPUT_KEYCODES_H

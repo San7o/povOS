@@ -24,7 +24,7 @@
 #include <libk/stdbool.h>
 #include <libk/stddef.h>
 
-#include <drivers/input/keycodes.h>
+#include <kernel/input/keycodes.h>
 
 typedef unsigned char keycode_raw_t;
 

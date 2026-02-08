@@ -4,7 +4,7 @@
 // Github:  @San7o
 
 #include <drivers/input/keyboard.h>   // implements
-#include <drivers/input/input.h>
+#include <kernel/input/input.h>
 #include <libk/string.h>
 
 #include "keyboard_scanmap.h"

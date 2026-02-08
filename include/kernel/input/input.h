@@ -3,8 +3,8 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#ifndef POVOS_DRIVERS_INPUT_H
-#define POVOS_DRIVERS_INPUT_H
+#ifndef POVOS_KERNEL_INPUT_H
+#define POVOS_KERNEL_INPUT_H
 
 //
 // Input driver
@@ -29,7 +29,7 @@
 //
 
 #include <drivers/input/keyboard.h>
-#include <drivers/input/keymap.h>
+#include <kernel/input/keymap.h>
 
 //
 // Types
@@ -81,4 +81,4 @@ void input_update(input_t *input, keyboard_event_t event);
 void          input_events_add(input_t *input, input_event_t event);
 input_event_t input_events_get(input_t *input);
 
-#endif // POVOS_DRIVERS_INPUT_H
+#endif // POVOS_KERNEL_INPUT_H

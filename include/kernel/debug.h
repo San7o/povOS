@@ -14,7 +14,7 @@
 //
 
 #include <drivers/input/keyboard.h>
-#include <drivers/input/input.h>
+#include <kernel/input/input.h>
 
 // Implemented in assembly
 void debug_dump_regs_uart(void);
