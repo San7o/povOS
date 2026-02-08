@@ -28,28 +28,69 @@
   ;; 
 
   [org 0x7C00]                    ; Set program origin
+  [bits 16]
 
-  jmp begin_bootloader
-
+start:
+  jmp short begin_bootloader ; Workaround for some BIOSes that require this stub
+  
+  
   ;; Store the number of sectors to load for the kernel. This value
   ;; is set after compiling the kernel, it is up here to make it
   ;; easy to find. DO NOT CHANGE THE ADDRESS OF THE VALUE.
 kernel_size:   db 0
-
-begin_bootloader:
   
-  [bits 16]                       ; We are now in 16-bit Mode
+  ;; Some BIOSes will do a funny and decide to overwrite bytes of code in
+  ;; the section where a FAT BPB would be, potentially overwriting
+  ;; bootsector code.
+  ;; Avoid that by filling the BPB area with dummy values.
+  ;; Some of the values have to be set to certain values in order
+  ;; to boot on even quirkier machines.
+  .bpb:
+    times 3-($-$$) db 0
+    .bpb_oem_id:            db "POVOS   "
+    .bpb_sector_size:       dw 512
+    .bpb_sects_per_cluster: db 0
+    .bpb_reserved_sects:    dw 0
+    .bpb_fat_count:         db 0
+    .bpb_root_dir_entries:  dw 0
+    .bpb_sector_count:      dw 0
+    .bpb_media_type:        db 0
+    .bpb_sects_per_fat:     dw 0
+    .bpb_sects_per_track:   dw 18
+    .bpb_heads_count:       dw 2
+    .bpb_hidden_sects:      dd 0
+    .bpb_sector_count_big:  dd 0
+    .bpb_drive_num:         db 0
+    .bpb_reserved:          db 0
+    .bpb_signature:         db 0
+    .bpb_volume_id:         dd 0
+    .bpb_volume_label:      db "POVOS      "
+    .bpb_filesystem_type:   times 8 db 0
+
+begin_bootloader:               ; Stage 1
   
   ;; Initialize the base pointer and the stack pointer
   ;; It's better to do it explicitly
-  mov bp, 0x7BFF                ; Low memory, grows downward
-  mov sp, bp
+
+  cli                      ; Disable interrupts during setup
+  cld
+  jmp 0x0000:.initialize_cs
+  .initialize_cs:
+  xor ax, ax
+  mov ds, ax               ; 2. Fixes DS: Ensure it matches ORG 0x7C00
+  mov es, ax
+  mov ss, ax
+  mov sp, 0x7BFF           ; 3. Setup Stack just below bootloader
+  sti                      ; Re-enable interrupts
 
   ;; Before we do anything else, we want to save the ID of the boot
   ;; drive, which the BIOS stores in register dl. We can store this to
   ;; a specific location in memory
   mov byte[boot_drive_id], dl
 
+  mov ax, 0x0003                ; Make sure we are in text mode
+  int 0x10
+  
   mov bx, real_hello_str        ; Hello message
   call bios_print
 

@@ -46,18 +46,11 @@ kernel_entry:
   jne .kernel_error
   
   .exit:
-  ret
+  hlt
+  jmp .exit
 
   .kernel_error:
-  ;; Clean the screen
-  mov rdi, 0x4F                 ; style
-  call vga_clear
-  
-  mov rdx, 0xF                 ; style
-  mov rsi, kernel_main_error_str ; string
-  mov rdi, 0                     ; position
-  call vga_print
-  
+  ;; The kernel already prints an error message, so do nothing
   jmp .exit
  
   .vga_memory_map_error:
