@@ -6,8 +6,6 @@
 #ifndef POVOS_KERNEL_ISR_H
 #define POVOS_KERNEL_ISR_H
 
-#include <libk/stddef.h>
-
 //
 // Interrupt service routines handlers
 // -----------------------------------
@@ -24,6 +22,8 @@
 //
 // Error code 0 means no error.
 //
+
+#include <libk/stddef.h>
 
 // Default interrupt handler, when a more specific one is not
 // implemented

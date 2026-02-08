@@ -3,7 +3,7 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include "keyboard_scanmap.h"
+#include "keyboard_scanmap.h"   // implements
 
 const keyboard_event_t keyboard_scanmap_ps2_set1[] = {
     // Pressed keys

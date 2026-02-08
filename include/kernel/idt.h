@@ -6,9 +6,6 @@
 #ifndef POVOS_KERNEL_IDT_H
 #define POVOS_KERNEL_IDT_H
 
-#include <libk/stddef.h>
-#include <libk/stdbool.h>
-
 //
 // Interrupt Descriptor Table
 // ==========================
@@ -48,6 +45,9 @@
 // 
 //  - task: used for hardware taks switching (removed in x86_64)
 //
+
+#include <libk/stddef.h>
+#include <libk/stdbool.h>
 
 // Gates
 // -----
