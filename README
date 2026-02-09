@@ -33,7 +33,7 @@ The implementation is clean and readable, headers = documentation.
 The boot sequence
 -----------------
 
-The x86_64 boot sequence looks like this:
+The BIOS boot sequence x86_64 looks like this:
 
  - CPU starts executing in 16-bit real mode, with BIOS access
  - Use the bios to load the rest of the bootloader

@@ -3,7 +3,7 @@
   ;; Bootloader
   ;; ==========
   ;;
-  ;; The x86_64 boot sequence looks like this:
+  ;; The BIOS boot sequence x86_64 looks like this:
   ;;
   ;;  - CPU starts executing in 16-bit real mode, with BIOS access
   ;;  - Use the bios to load the rest of the bootloader
@@ -15,28 +15,59 @@
   ;;  - Enable long mode
   ;;  - Call the main routine
   ;;
-
+  ;; To keep it seimple, all these steps are called from this file,
+  ;; starting with the Master Boot Record.
   ;;
-  ;; Master Boot Record
-  ;; ------------------
   ;;
-  ;; The bootloader will start executing at address 0x7C00 in real
-  ;; mode (16 bits) and we can access BIOS interrupts. Only the first
-  ;; boot sector (aka "Master Boot Record") is loaded in memory, and
-  ;; it must end with a 64 bytes partition table and a magic number
-  ;; 0xAA55. The bootloader needs to load more sectors in order to
-  ;; continue execution.
+  ;; Memory Layout
+  ;; -------------
+  ;;
+  ;; Before going further, you should have a picture in mind of how
+  ;; the memory is layed out in most BIOSes:
+  ;;
+  ;; / ==================================================================== \
+  ;; | Address Range (Hex)     | Size    | Description                      |
+  ;; | ----------------------- | ------- | -------------------------------- |
+  ;; | 0x000F0000 - 0x000FFFFF | 64 KiB  | Motherboard BIOS                 |
+  ;; | 0x000C8000 - 0x000EFFFF | 160 KiB | BIOS Expansions (Typically)      |
+  ;; | 0x000C0000 - 0x000C7FFF | 32 KiB  | Video BIOS                       |
+  ;; | 0x000A0000 - 0x000BFFFF | 128 KiB | Video Display Memory (Hardware)  |
+  ;; | ----------------------- | ------- | -------------------------------- |
+  ;; | 0x00080000 - 0x0009FFFF | 128 KiB | EBDA (Extended BIOS Data Area)   |
+  ;; | 0x00007E00 - 0x0007FFFF | 480.5 K | Conventional Memory              |
+  ;; | 0x00007C00 - 0x00007DFF | 512 B   | Your OS BootSector               |
+  ;; | 0x00000500 - 0x00007BFF | 29.75 K | Conventional Memory              |
+  ;; | 0x00000400 - 0x000004FF | 256 B   | BDA (BIOS Data Area)             |
+  ;; | 0x00000000 - 0x000003FF | 1 KiB   | Real Mode IVT (Interrupt Vector) |
+  ;; \ ==================================================================== /
+  ;; 
+  ;; 
+  ;; Master Boot Record (Stage 1)
+  ;; ----------------------------
+  ;;
+  ;; To start the bootloader, the first sector of the disk / floppy is
+  ;; loaded into memory and executed. This first special sector is
+  ;; called the "Master Boot Record" aka MBR aka "Stage 1" and is
+  ;; identified by a magic number 0xAA55 in the last two bytes of the
+  ;; sector (this is required or the BIOS will not boot us!). The
+  ;; instructions have to expect to be loaded at address 0x7C00.
+  ;;
+  ;; The MBR needs to load the rest of the bootloader into memory in
+  ;; order to continue execution. This is his main responsibility.
   ;; 
 
   [org 0x7C00]                    ; Set program origin
-  [bits 16]
+  [bits 16]                       ; We are in 16-bit real mode
 
 start:
+  ;; You have been deceived! The start is a bit further down
   jmp short begin_bootloader ; Workaround for some BIOSes that require this stub
   
-  ;; Store the number of sectors to load for the kernel. This value
-  ;; is set after compiling the kernel, it is up here to make it
-  ;; easy to find. DO NOT CHANGE THE ADDRESS OF THE VALUE.
+  ;; Store the number of sectors that needs to be loaded to load the
+  ;; entire kernel. This value is patched in the bootloader after
+  ;; compiling the kernel, it is positioned up here to make it easy to
+  ;; find. DO NOT CHANGE THE ADDRESS OF THE VALUE OR BAD THINGS WILL
+  ;; HAPPEN.
 kernel_size:   db 0
   
   ;; Some BIOSes will do a funny and decide to overwrite bytes of code in
@@ -67,20 +98,21 @@ kernel_size:   db 0
     .bpb_volume_label:      db "POVOS      "
     .bpb_filesystem_type:   times 8 db 0
 
-begin_bootloader:               ; Stage 1
+begin_bootloader:
   
   ;; Initialize the base pointer and the stack pointer
-  ;; It's better to do it explicitly
+  ;; It's better to do it explicitly because you never know what the
+  ;; BIOS state is at this point
 
-  cli                      ; 1. Disable interrupts during setup
+  cli                      ; Disable interrupts during setup
   cld
   jmp 0x0000:.initialize_cs
   .initialize_cs:
   xor ax, ax
-  mov ds, ax               ; 2. Fixes DS: Ensure it matches ORG 0x7C00
+  mov ds, ax
   mov es, ax
   mov ss, ax
-  mov sp, 0x7BFF           ; 3. Setup Stack. The memory from 0x7BFF to
+  mov sp, 0x7BFF           ; Setup Stack. The memory from 0x7BFF to
                            ; 0x500 is not used by the bios so we can
                            ; use it for the stack
   sti                      ; Re-enable interrupts
@@ -90,7 +122,9 @@ begin_bootloader:               ; Stage 1
   ;; a specific location in memory
   mov byte[boot_drive_id], dl
 
-  ;; Hello message
+  ;; Print an Hello message
+  ;; We usually print something at each major step so that it is
+  ;; easier to understant at wich step something broke
   mov ax, 0x0003                ; Make sure we are in text mode
   int 0x10
   mov bx, real_hello_str
@@ -118,7 +152,7 @@ begin_bootloader:               ; Stage 1
   mov dx, 0x7E00
   call bios_load                ; load bootloader sectors
 
-  call bios_sector_2             ; go to next sector
+  call bios_sector_2            ; go to next sector
   
   ;; Includes
   %include "bootloader/x86_64/real_mode/print.asm"
@@ -146,10 +180,12 @@ partition_table:
   dw 0xAA55                     ; Magic number
 
 
-  ;;
+  ;; -----------------------------------------------------------------
   ;; Begin sector 2
   ;;
-  ;; Here we can still access the BIOS for additional setting up
+  
+  ;; 
+  ;; Here we can still access the BIOS for additional setup
   ;;
   
   [bits 16]
@@ -172,8 +208,9 @@ bios_sector_2:
 
   ;; Pad sector
   times 512 - ($ - bios_sector_2) db 0x00
+
   
-  ;;
+  ;; -----------------------------------------------------------------
   ;; Begin sector 3
   ;; 
 
@@ -181,8 +218,8 @@ bios_sector_2:
   ;; Protected mode
   ;; --------------
   ;;
-  ;; We can use 32 bits, but we don't have access to the BIOS routines
-  ;; anymore. We use VGA for printing.
+  ;; Welcome to protected mode! We can use 32 bits, but we don't have
+  ;; access to the BIOS routines anymore. We use VGA for printing.
   ;; 
 
 protected_mode_sector:
@@ -233,8 +270,9 @@ begin_protected_mode:
   
   ;; Pad sector
   times 512 - ($ - protected_mode_sector) db 0x00
+
   
-  ;; 
+  ;; -----------------------------------------------------------------
   ;; Begin sector 4
   ;;  
 protected_mode_sector_utils:
@@ -251,8 +289,9 @@ protected_message:  db `64-bit long mode supported`, 0
 
   ;; Pad sector
   times 512 - ($ - protected_mode_sector_utils) db 0x00
+
   
-  ;;
+  ;; -----------------------------------------------------------------
   ;; Begin sector 5
   ;;  
 long_mode_sector: 
@@ -287,6 +326,9 @@ begin_long_mode:
   .hang:
   jmp $
 
+  ;; This is literally hardcoded, there is a script that checks that
+  ;; we didn't increase the number of sectors in the bootloader
+  ;; to make sure we have the right offset
 kernel_main:   equ 0x8600       ; 0x7C00 + 512 * 5, where 5 is the
                                 ; number of sectors of the bootloader
 long_mode_message:  db `Now running in fully-enabled, 64-bit long mode!`, 0
@@ -297,6 +339,5 @@ sectors_end:                    ; used to calculate the amount of
   ;; Pad sector
   times 512 - ($ - long_mode_sector) db 0x00
 
-  ;; 
   ;; 
   ;; -----------------------------------------------------------------
