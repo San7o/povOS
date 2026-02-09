@@ -3,7 +3,7 @@
   ;; Bootloader
   ;; ==========
   ;;
-  ;; The BIOS boot sequence x86_64 looks like this:
+  ;; The BIOS boot sequence for x86_64 looks like this:
   ;;
   ;;  - CPU starts executing in 16-bit real mode, with BIOS access
   ;;  - Use the bios to load the rest of the bootloader
@@ -13,17 +13,17 @@
   ;;  - Setup GDT again
   ;;  - Setup the page table
   ;;  - Enable long mode
-  ;;  - Call the main routine
+  ;;  - Call the kernel main function
   ;;
-  ;; To keep it seimple, all these steps are called from this file,
+  ;; To keep it simple, all these steps are called from this file,
   ;; starting with the Master Boot Record.
   ;;
   ;;
   ;; Memory Layout
   ;; -------------
   ;;
-  ;; Before going further, you should have a picture in mind of how
-  ;; the memory is layed out in most BIOSes:
+  ;; Before going any further, you should have a picture in mind of
+  ;; how the memory is layed out in most BIOSes:
   ;;
   ;; / ==================================================================== \
   ;; | Address Range (Hex)     | Size    | Description                      |
