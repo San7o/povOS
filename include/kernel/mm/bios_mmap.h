@@ -15,6 +15,14 @@
 // address map returned by int 0x15, ax=0xE820
 //
 
+#include <libk/stddef.h>
+
+#define BIOS_MMAP_TYPE_AVAILABLE          1
+#define BIOS_MMAP_TYPE_RESERVED           2
+#define BIOS_MMAP_TYPE_ACPI_RECLAIMABLE   3
+#define BIOS_MMAP_TYPE_MEMORY_NVS         4
+#define BIOS_MMAP_TYPE_MEMORY_BADRAM      5
+
 typedef struct __attribute__((packed)) bios_mmap_entry {
   u32_t base_low;
   u32_t base_high;

@@ -25,7 +25,7 @@ void debug_dump_input_event_uart(input_event_t event);
 void debug_print_vga(void);
 void debug_write_uart(void);
 void debug_dump_input_loop(input_t *input);
-void debug_print_memory_map_uart(u32_t *num_entries,
-                                 bios_mmap_entry_t *memory_map);
+void debug_print_memory_map_uart(bios_mmap_entry_t *mmap,
+                                 u32_t num_entries);
 
 #endif // POVOS_KERNEL_DEBUG_H

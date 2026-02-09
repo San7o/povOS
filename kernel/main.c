@@ -6,6 +6,7 @@
 #include <libk/stdlib.h>
 #include <libk/stdbool.h>
 #include <libk/string.h>
+#include <kernel/mm/pmmgr.h>
 #include <kernel/mm/vmmgr.h>
 #include <kernel/mm/bios_mmap.h>
 #include <kernel/idt.h>
@@ -56,10 +57,12 @@ int kernel_main(void)
   // Setup memory management
   //
 
-  u32_t *memory_map_num_entries = (void*) 0x5000;
-  bios_mmap_entry_t *memory_map = (void*) 0x5004;
+  u32_t *mmap_num_entries = (void*) 0x5000;
+  bios_mmap_entry_t *mmap = (void*) 0x5004;
+  debug_print_memory_map_uart(mmap, *mmap_num_entries);
 
-  debug_print_memory_map_uart(memory_map_num_entries, memory_map);
+  pmmgr_t pmmgr;
+  pmmgr_init(&pmmgr, mmap, *mmap_num_entries);
   
   vmmgr_t vmmgr;
   vmmgr_setup(&vmmgr);

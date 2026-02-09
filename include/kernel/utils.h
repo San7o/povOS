@@ -13,6 +13,9 @@
 // General utility functions that can be useful in several occasions.
 //
 
+#define MAX(x, y) ((x > y) ? (x) : (y))
+#define MIN(x, y) ((x < y) ? (x) : (y))
+
 // Wait a very small amount of time (1 to 4 microseconds, generally)
 void io_wait(void);
 // Set a breakpoint

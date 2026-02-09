@@ -68,30 +68,30 @@ void debug_dump_input_loop(input_t *input)
   }
 }
 
-void debug_print_memory_map_uart(u32_t *num_entries,
-                                 bios_mmap_entry_t *memory_map)
+void debug_print_memory_map_uart(bios_mmap_entry_t *mmap,
+                                 u32_t num_entries)
 {
-  if (!num_entries || !memory_map) return;
+  if (!mmap) return;
   
   uart_write_str(UART_COM1, "[debug] [memory map] Memory map entries: ");
-  uart_write_hex(UART_COM1, (u64_t)*num_entries);
+  uart_write_hex(UART_COM1, (u64_t) num_entries);
   uart_putc(UART_COM1, '\n');
 
-  for (u32_t i = 0; i < *num_entries && i < 50; ++i)
+  for (u32_t i = 0; i < num_entries && i < 50; ++i)
   {
-    u64_t base = (u64_t)memory_map[i].base_low | ((u64_t) memory_map[i].base_high << 32);
-    uart_write_str(UART_COM1, "[debug] [memory_map] base: ");
+    u64_t base = (u64_t)mmap[i].base_low | ((u64_t) mmap[i].base_high << 32);
+    uart_write_str(UART_COM1, "[debug] [mmap] base: ");
     uart_write_hex(UART_COM1, base);
 
-    u64_t length = (u64_t)memory_map[i].length_low | ((u64_t) memory_map[i].base_high << 32);
+    u64_t length = (u64_t)mmap[i].length_low | ((u64_t) mmap[i].base_high << 32);
     uart_write_str(UART_COM1, ", length: ");
     uart_write_hex(UART_COM1, length);
 
     uart_write_str(UART_COM1, ", type: ");
-    uart_write_hex(UART_COM1, (u64_t) memory_map[i].type);
+    uart_write_hex(UART_COM1, (u64_t) mmap[i].type);
     
     uart_write_str(UART_COM1, ", acpi: ");
-    uart_write_hex(UART_COM1, (u64_t) memory_map[i].acpi);
+    uart_write_hex(UART_COM1, (u64_t) mmap[i].acpi);
 
     uart_putc(UART_COM1, '\n');
   }
