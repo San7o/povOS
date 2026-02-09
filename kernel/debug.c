@@ -11,7 +11,7 @@ void debug_dump_keyboard_event_uart(keyboard_event_t event)
 {
   const char* key_str = keycode_to_string(event.key);
 
-  uart_write_str(UART_COM1, "[debug] [keyboard event] ");
+  uart_write_str(UART_COM1, "[debug] [keyboard_event] ");
   uart_write_str(UART_COM1, (event.pressed) ? "pressed  " : "released ");
   uart_write_str(UART_COM1, key_str);
   uart_putc(UART_COM1, '\n');
@@ -21,7 +21,7 @@ void debug_dump_keyboard_event_uart(keyboard_event_t event)
 
 void debug_dump_input_event_uart(input_event_t event)
 {
-  uart_write_str(UART_COM1, "[debug] [input event] ");
+  uart_write_str(UART_COM1, "[debug] [input_event] ");
 
   switch (event.type)
   {
@@ -45,14 +45,14 @@ void debug_dump_input_event_uart(input_event_t event)
 void debug_print_vga(void)
 {
   vga_clear(VGA_STYLE_BLUE);
-  vga_print(0, "Hello, from povOS!", VGA_STYLE_BLUE);
+  vga_print(0, "[debug] Hello, from povOS!", VGA_STYLE_BLUE);
   vga_print_hex(18, 0x6969, VGA_STYLE_BW);
   return;
 }
 
 void debug_write_uart(void)
 {
-  uart_write_str(UART_COM1, "Hello, from povOS!");
+  uart_write_str(UART_COM1, "[debug] Hello, from povOS! ");
   uart_write_hex(UART_COM1, 0x6969);
   uart_putc(UART_COM1, '\n');
   return;
@@ -66,4 +66,35 @@ void debug_dump_input_loop(input_t *input)
     
     debug_dump_input_event_uart(event);
   }
+}
+
+void debug_print_memory_map_uart(u32_t *num_entries,
+                                 bios_mmap_entry_t *memory_map)
+{
+  if (!num_entries || !memory_map) return;
+  
+  uart_write_str(UART_COM1, "[debug] [memory map] Memory map entries: ");
+  uart_write_hex(UART_COM1, (u64_t)*num_entries);
+  uart_putc(UART_COM1, '\n');
+
+  for (u32_t i = 0; i < *num_entries && i < 50; ++i)
+  {
+    u64_t base = (u64_t)memory_map[i].base_low | ((u64_t) memory_map[i].base_high << 32);
+    uart_write_str(UART_COM1, "[debug] [memory_map] base: ");
+    uart_write_hex(UART_COM1, base);
+
+    u64_t length = (u64_t)memory_map[i].length_low | ((u64_t) memory_map[i].base_high << 32);
+    uart_write_str(UART_COM1, ", length: ");
+    uart_write_hex(UART_COM1, length);
+
+    uart_write_str(UART_COM1, ", type: ");
+    uart_write_hex(UART_COM1, (u64_t) memory_map[i].type);
+    
+    uart_write_str(UART_COM1, ", acpi: ");
+    uart_write_hex(UART_COM1, (u64_t) memory_map[i].acpi);
+
+    uart_putc(UART_COM1, '\n');
+  }
+  
+  return;
 }

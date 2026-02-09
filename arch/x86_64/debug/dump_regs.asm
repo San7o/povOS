@@ -15,9 +15,7 @@ debug_dump_regs_uart:
   push rsi
   
   mov rdi, UART_COM1
-  mov rsi, debug_dump_regs_uart_intro_str
-  call uart_write_str
-
+  
   ;; rax
   mov rsi, debug_dump_regs_uart_rax_str
   call uart_write_str
@@ -146,28 +144,23 @@ debug_dump_regs_uart:
   mov rsi, `\n`
   call uart_putc
 
-  mov rsi, debug_dump_regs_uart_outro_str
-  call uart_write_str
-
   pop rsi
   pop rdi
   ret
 
-debug_dump_regs_uart_intro_str: db `[debug] [registers] --------------\n`, 0
-debug_dump_regs_uart_outro_str: db `[end debug] [registers] ----------\n`, 0
-debug_dump_regs_uart_rax_str:   db `rax `, 0
-debug_dump_regs_uart_rbx_str:   db `rbx `, 0
-debug_dump_regs_uart_rcx_str:   db `rcx `, 0
-debug_dump_regs_uart_rdx_str:   db `rdx `, 0
-debug_dump_regs_uart_rsi_str:   db `rsi `, 0
-debug_dump_regs_uart_rdi_str:   db `rdi `, 0  
-debug_dump_regs_uart_rsp_str:   db `rsp `, 0
-debug_dump_regs_uart_rbp_str:   db `rbp `, 0
-debug_dump_regs_uart_r8_str:    db `r8  `, 0  
-debug_dump_regs_uart_r9_str:    db `r9  `, 0
-debug_dump_regs_uart_r10_str:   db `r10 `, 0
-debug_dump_regs_uart_r11_str:   db `r11 `, 0
-debug_dump_regs_uart_r12_str:   db `r12 `, 0
-debug_dump_regs_uart_r13_str:   db `r13 `, 0
-debug_dump_regs_uart_r14_str:   db `r14 `, 0
-debug_dump_regs_uart_r15_str:   db `r15 `, 0
+debug_dump_regs_uart_rax_str:   db `[debug] [registers] rax `, 0
+debug_dump_regs_uart_rbx_str:   db `[debug] [registers] rbx `, 0
+debug_dump_regs_uart_rcx_str:   db `[debug] [registers] rcx `, 0
+debug_dump_regs_uart_rdx_str:   db `[debug] [registers] rdx `, 0
+debug_dump_regs_uart_rsi_str:   db `[debug] [registers] rsi `, 0
+debug_dump_regs_uart_rdi_str:   db `[debug] [registers] rdi `, 0  
+debug_dump_regs_uart_rsp_str:   db `[debug] [registers] rsp `, 0
+debug_dump_regs_uart_rbp_str:   db `[debug] [registers] rbp `, 0
+debug_dump_regs_uart_r8_str:    db `[debug] [registers] r8  `, 0  
+debug_dump_regs_uart_r9_str:    db `[debug] [registers] r9  `, 0
+debug_dump_regs_uart_r10_str:   db `[debug] [registers] r10 `, 0
+debug_dump_regs_uart_r11_str:   db `[debug] [registers] r11 `, 0
+debug_dump_regs_uart_r12_str:   db `[debug] [registers] r12 `, 0
+debug_dump_regs_uart_r13_str:   db `[debug] [registers] r13 `, 0
+debug_dump_regs_uart_r14_str:   db `[debug] [registers] r14 `, 0
+debug_dump_regs_uart_r15_str:   db `[debug] [registers] r15 `, 0

@@ -7,6 +7,7 @@
 #include <libk/stdbool.h>
 #include <libk/string.h>
 #include <kernel/mm/vmmgr.h>
+#include <kernel/mm/bios_mmap.h>
 #include <kernel/idt.h>
 #include <kernel/debug.h>
 #include <kernel/utils.h>
@@ -55,6 +56,11 @@ int kernel_main(void)
   // Setup memory management
   //
 
+  u32_t *memory_map_num_entries = (void*) 0x5000;
+  bios_mmap_entry_t *memory_map = (void*) 0x5004;
+
+  debug_print_memory_map_uart(memory_map_num_entries, memory_map);
+  
   vmmgr_t vmmgr;
   vmmgr_setup(&vmmgr);
   vmmgr_activate(&vmmgr);
@@ -94,7 +100,8 @@ int kernel_main(void)
   tty_flush(&tty);
 
   // Read and print keyboard input
-  // debug_dump_input_loop(&input);
+  debug_dump_input_loop(&input);
+  
   while(1) {}
   
   return EXIT_SUCCESS;

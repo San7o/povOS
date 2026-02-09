@@ -17,6 +17,6 @@
 // TODO: use a O(1) stack allocator
 //
 
-// TODO: we need to get the memory map first form the bios.
+// TODO
 
 #endif // POVOS_KERNEL_MM_PMMGR_H
