@@ -20,11 +20,12 @@
   ;; Master Boot Record
   ;; ------------------
   ;;
-  ;; Program will start executing from 0x7C00 with BIOS in real mode
-  ;; (16 bits). Only the first boot sector (aka "Master Boot Record")
-  ;; is loaded in memory, and it must end with a 64 bytes partition
-  ;; table and a magic number 0xAA55. The bootloader needs to load
-  ;; more sectors in order to continue execution.
+  ;; The bootloader will start executing at address 0x7C00 in real
+  ;; mode (16 bits) and we can access BIOS interrupts. Only the first
+  ;; boot sector (aka "Master Boot Record") is loaded in memory, and
+  ;; it must end with a 64 bytes partition table and a magic number
+  ;; 0xAA55. The bootloader needs to load more sectors in order to
+  ;; continue execution.
   ;; 
 
   [org 0x7C00]                    ; Set program origin
@@ -32,7 +33,6 @@
 
 start:
   jmp short begin_bootloader ; Workaround for some BIOSes that require this stub
-  
   
   ;; Store the number of sectors to load for the kernel. This value
   ;; is set after compiling the kernel, it is up here to make it
@@ -72,7 +72,7 @@ begin_bootloader:               ; Stage 1
   ;; Initialize the base pointer and the stack pointer
   ;; It's better to do it explicitly
 
-  cli                      ; Disable interrupts during setup
+  cli                      ; 1. Disable interrupts during setup
   cld
   jmp 0x0000:.initialize_cs
   .initialize_cs:
@@ -80,7 +80,9 @@ begin_bootloader:               ; Stage 1
   mov ds, ax               ; 2. Fixes DS: Ensure it matches ORG 0x7C00
   mov es, ax
   mov ss, ax
-  mov sp, 0x7BFF           ; 3. Setup Stack just below bootloader
+  mov sp, 0x7BFF           ; 3. Setup Stack. The memory from 0x7BFF to
+                           ; 0x500 is not used by the bios so we can
+                           ; use it for the stack
   sti                      ; Re-enable interrupts
 
   ;; Before we do anything else, we want to save the ID of the boot
@@ -88,48 +90,44 @@ begin_bootloader:               ; Stage 1
   ;; a specific location in memory
   mov byte[boot_drive_id], dl
 
+  ;; Hello message
   mov ax, 0x0003                ; Make sure we are in text mode
   int 0x10
-  
-  mov bx, real_hello_str        ; Hello message
+  mov bx, real_hello_str
   call bios_print
-
+  
   ;; Load the next sectors
 
-  ;; The first sector's already been loaded, so we start with the
+  ;; The first sector has already been loaded, so we start with the
   ;; second sector the the drive (the numbering of sectors begins at
-  ;; 1).  Note: Only bl will be used
-  mov bx, 0x0002
+  ;; 1).
+  mov bx, 0x0002                ; note: only bl will be used
   ;; Set the number of sectors to load
-  mov cx, [bootloader_bytes]    ; the rest of the bootloader
-  shr cx, 9                     ; divide by 512
+  mov cx, [bootloader_bytes]    ; the size of the rest of the
+                                ; bootloader
+  shr cx, 9                     ; divide by 512 to get the number of
+                                ; sectors
   xor dx, dx
-  add dl, byte[kernel_size]     ; the kernel
+  add dl, byte[kernel_size]     ; the size of the kernel
   add cx, dx
-
-  ;; Finally, we want to store the new sector immediately after the
-  ;; first loaded sector, at address 0x7E00 (0x7C00 + 512). This will
-  ;; help a lot with jumping between different sectors of the
-  ;; bootloader.
+  ;; Finally, we want to store the new sector somewhere. We have space
+  ;; from 0x7E00 up to 0x7FFFF to do whatever we want (so 480.5 KiB in
+  ;; total), so that is where we want to load the rest of the
+  ;; bootloader. Note that 0x7E00 is right after this sector, which
+  ;; makes it easy to jump to.
   mov dx, 0x7E00
   call bios_load                ; load bootloader sectors
-  
-  call real_elevate             ; elevate CPU to 32-bit mode
-  
-  .hang:
-  jmp $                         ; infinite loop
-  
-  ;; 
-  ;; Includes
-  ;;
 
+  call bios_sector_2             ; go to next sector
+  
+  ;; Includes
   %include "bootloader/x86_64/real_mode/print.asm"
   %include "bootloader/x86_64/real_mode/print_hex.asm"
   %include "bootloader/x86_64/real_mode/load.asm"
   %include "bootloader/x86_64/real_mode/gdt.asm"
   %include "bootloader/x86_64/real_mode/elevate.asm"
 
-real_hello_str:    db `\r\nHello World, from the BIOS!\r\n`, 0
+real_hello_str:    db `\r\nHello, from BIOS!\r\n`, 0
 boot_drive_id: db 0x00          ; boot drive storage, initialized at
                                 ; startup
 bootloader_bytes:               ; calculate the size of the binary
@@ -151,8 +149,33 @@ partition_table:
   ;;
   ;; Begin sector 2
   ;;
-sectors_start: 
-protected_mode_sector:
+  ;; Here we can still access the BIOS for additional setting up
+  ;;
+  
+  [bits 16]
+  
+sectors_start:
+bios_sector_2:
+
+  ;; Get the memory map
+  ;; It is very important for the kernel to know what the memory map
+  ;; looks like, and this can be done only through the BIOS.
+  call save_memory_map
+  
+  call real_elevate             ; elevate CPU to 32-bit mode
+  
+  .hang:
+  jmp $                         ; infinite loop
+  
+  ;; Includes
+  %include "bootloader/x86_64/real_mode/memory_map.asm"
+
+  ;; Pad sector
+  times 512 - ($ - bios_sector_2) db 0x00
+  
+  ;;
+  ;; Begin sector 3
+  ;; 
 
   ;;
   ;; Protected mode
@@ -162,9 +185,10 @@ protected_mode_sector:
   ;; anymore. We use VGA for printing.
   ;; 
 
-  [bits 32]
-
+protected_mode_sector:
 begin_protected_mode:
+
+  [bits 32]
 
   ;; Enable the A20 line
   ;; The A20 line should be automatically enabled in modern BIOS
@@ -201,29 +225,27 @@ begin_protected_mode:
     mov esi, error_enabling_A20_string
     call print_protected
   jmp .hang
-  
+
+  ;; Includes
   %include "bootloader/x86_64/protected_mode/clear.asm"
   %include "bootloader/x86_64/protected_mode/print.asm"
   %include "bootloader/x86_64/protected_mode/detect_lm.asm"
-  
   
   ;; Pad sector
   times 512 - ($ - protected_mode_sector) db 0x00
   
   ;; 
-  ;; Begin sector 3
+  ;; Begin sector 4
   ;;  
 protected_mode_sector_utils:
   
-  ;; Include
-
+  ;; Includes
   %include "bootloader/x86_64/protected_mode/init_pt.asm"
   %include "bootloader/x86_64/protected_mode/gdt.asm"
   %include "bootloader/x86_64/protected_mode/enable_A20.asm"
   %include "bootloader/x86_64/protected_mode/elevate.asm"
 
   ;; Constants
-
 error_enabling_A20_string:  db `Error enabling A20 line`, 0
 protected_message:  db `64-bit long mode supported`, 0
 
@@ -231,7 +253,7 @@ protected_message:  db `64-bit long mode supported`, 0
   times 512 - ($ - protected_mode_sector_utils) db 0x00
   
   ;;
-  ;; Begin sector 4
+  ;; Begin sector 5
   ;;  
 long_mode_sector: 
 
@@ -243,7 +265,8 @@ long_mode_sector:
   ;; 
 
   [bits 64]
-  
+
+  ;; Includes
   %include "bootloader/x86_64/long_mode/vga.asm"
   
 
@@ -264,8 +287,8 @@ begin_long_mode:
   .hang:
   jmp $
 
-kernel_main:   equ 0x8400       ; 0x7C00 + 512 * 4, where 4 is the
-                                ; size of the bootloader
+kernel_main:   equ 0x8600       ; 0x7C00 + 512 * 5, where 5 is the
+                                ; number of sectors of the bootloader
 long_mode_message:  db `Now running in fully-enabled, 64-bit long mode!`, 0
 
 sectors_end:                    ; used to calculate the amount of

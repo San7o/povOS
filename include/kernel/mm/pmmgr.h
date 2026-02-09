@@ -3,8 +3,8 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#ifndef POVOS_KERNEL_MM_PMM_H
-#define POVOS_KERNEL_MM_PMM_H
+#ifndef POVOS_KERNEL_MM_PMMGR_H
+#define POVOS_KERNEL_MM_PMMGR_H
 
 //
 // Physical Memory Manager
@@ -14,7 +14,9 @@
 // hardware memory (usually ram) are free/in-use. It usually allocates
 // in fixed size blocks, the native page size (4096 bytes).
 //
+// TODO: use a O(1) stack allocator
+//
 
-// TODO
+// TODO: we need to get the memory map first form the bios.
 
-#endif // POVOS_KERNEL_MM_PMM_H
+#endif // POVOS_KERNEL_MM_PMMGR_H

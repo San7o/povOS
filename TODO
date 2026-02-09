@@ -4,7 +4,7 @@ TODO
 Memory management
 -----------------
 
-Setup proper memory management.
+- BIOS mmap -> physical memory manager -> virtual memory manager
 
 
 Boot

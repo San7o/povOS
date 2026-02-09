@@ -6,6 +6,7 @@
 #include <libk/stdlib.h>
 #include <libk/stdbool.h>
 #include <libk/string.h>
+#include <kernel/mm/vmmgr.h>
 #include <kernel/idt.h>
 #include <kernel/debug.h>
 #include <kernel/utils.h>
@@ -48,10 +49,20 @@ int kernel_main(void)
     return EXIT_FAILURE;
   }
 
-  //
   // Checks successfull
+
+  //
+  // Setup memory management
   //
 
+  vmmgr_t vmmgr;
+  vmmgr_setup(&vmmgr);
+  vmmgr_activate(&vmmgr);
+
+  //
+  // Setup interrupts
+  //
+  
   pic_remap();  // Chage overlapping IRQ numbers
   idt_set();    // Setup the IDT
 

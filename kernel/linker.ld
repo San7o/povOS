@@ -1,7 +1,7 @@
 ENTRY(kernel_entry)
 
 SECTIONS {
-         . = 0x8400;
+         . = 0x8600;
 
         .startup : {
                _start = .;

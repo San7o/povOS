@@ -77,7 +77,7 @@ qemu:
 
 .PHONY: bochs
 bochs:
-	$(BOCHS) -f $(BOCHSRC)
+	$(BOCHS) -f $(BOCHSRC) -q
 
 .PHONY: disas
 disas:

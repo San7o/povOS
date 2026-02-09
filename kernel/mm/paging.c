@@ -5,7 +5,7 @@
 
 #include <kernel/mm/paging.h>   // implements
 
-void paging_tables_init(paging_tables_t *tables)
+void paging_setup(paging_tables_t *tables)
 {
   if (!tables) return;
   
@@ -34,14 +34,31 @@ void paging_tables_init(paging_tables_t *tables)
   return;
 }
 
-void paging_tables_load(paging_tables_t *tables)
+void paging_load(paging_tables_t *tables)
 {
   if (!tables) return;
 
   (void) tables;
 
   // TODO: figure out how to always get the physical address of
-  //       the pointer to tables
+  //       the pointer to tables. Probably will have to walk the
+  //       table manually.
+  
+  return;
+}
+
+
+void paging_add_entry(paging_tables_t      *tables,
+                      void                 *phys_addr,
+                      void                 *virt_addr,
+                      paging_entry_flags_t  flags)
+{
+  (void) tables;
+  (void) phys_addr;
+  (void) virt_addr;
+  (void) flags;
+  
+  // TODO
   
   return;
 }

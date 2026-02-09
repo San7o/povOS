@@ -11,26 +11,27 @@
   ;; PT    -> 0x4000 (Page table) Contains 512 entries, each mapping a
   ;;                 4KB page
   ;;
-  ;; Clear the memory in those areas and the set up the page table
-  ;; structure
-
+  ;; We want to clear the memory in those areas and the set up the
+  ;; page table structure
+  ;; 
   ;; Each table in the page table has 512 entries, all of which are 8
   ;; bytes (one quadword or 64 bits) long. In this step, we'll be
   ;; identity mapping ONLY the lowest 2 MB of memory, since this is
   ;; all we need for now. Note that this only requires one page table,
   ;; so the upper 511 entries in the PML4T, PDPT and PDT will all be
   ;; NULL.
-
+  ;; 
   ;; Once we have the zeroth address in all pointing to our page
   ;; table, we will need to create a identity map, which will point
   ;; each virtual page to the physical page accessed with that
   ;; address. Note that in the x86_64 architecture, a page is
   ;; addressed using 12 bits, which corresponds to 4096 addressible
   ;; bytes (4KB). Remember this, it'll be important later.
-
+  ;; 
   ;; Another thing to note is that we're in protected mode now, which
   ;; grants us access to fancy CISC instructions like rep, stosd, and
   ;; loop.
+  ;; 
 
   [bits 32]
 
@@ -60,8 +61,7 @@ init_pt_protected:
   
   mov edi, 0x1000               ; Set the base address for rep stosd.
                                 ; Our page table goes from 0x1000 to
-                                ; 0x4FFF, so we want to start at
-                                ; 0x1000
+                                ; 0x4FFF
 
   mov cr3, edi                  ; Save the PML4T start address in cr3.
                                 ; This will save us time later because
