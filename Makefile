@@ -5,12 +5,14 @@
 
 ARCH ?= x86_64
 
-CC    = clang
-LD   ?= ld.lld-19
-AR    = llvm-ar
-ASM  ?= nasm
-QEMU ?= qemu-system-$(ARCH)
-GDB  ?= gdb
+CC       = clang
+LD      ?= ld.lld-19
+AR       = llvm-ar
+ASM     ?= nasm
+QEMU    ?= qemu-system-$(ARCH)
+BOCHS   ?= bochs
+BOCHSRC ?= scripts/bochsrc.txt
+GDB     ?= gdb
 
 OBJ     =
 
@@ -60,6 +62,7 @@ povos: $(KERNEL_BIN) $(BOOT_BIN)
 	./scripts/check_bootloader_sectors.sh $(ARCH)
 	./scripts/patch_size.sh
 	dd if=/dev/zero bs=1 count=512 >> $(POVOS_BIN)
+	truncate -s %512 $(POVOS_BIN)
 
 $(KERNEL_BIN): $(OBJ)
 	$(LD) $(KERNEL_LDFLAGS) --oformat binary -o $@ $^
@@ -71,6 +74,10 @@ $(BOOT_BIN): $(BOOT_ASM)
 .PHONY: qemu
 qemu:
 	$(QEMU) -drive format=raw,file=$(POVOS_BIN) -display sdl -serial stdio
+
+.PHONY: bochs
+bochs:
+	$(BOCHS) -f $(BOCHSRC)
 
 .PHONY: disas
 disas:
