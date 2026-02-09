@@ -162,7 +162,7 @@ static const char* keycode_str[_KEY_MAX] = {
     [KEY_SYSTEM_WAKE]    = "KEY_SYSTEM_WAKE",
 };
 
-const char* keycode_from_string(keycode_t key)
+const char* keycode_to_string(keycode_t key)
 {
   if (key < _KEY_MAX && key >= 0 && keycode_str[key] != NULL)
   {

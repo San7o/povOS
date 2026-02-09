@@ -177,6 +177,6 @@ typedef enum keycode {
 } keycode_t;
 
 // Convert keycode to string
-const char* keycode_from_string(keycode_t key);
+const char* keycode_to_string(keycode_t key);
 
 #endif // POVOS_KERNEL_INPUT_KEYCODES_H

@@ -14,11 +14,12 @@ GDB  ?= gdb
 
 OBJ     =
 
-SUBPROJECTS_MAKE_CONF = kernel/make.conf \
-                        kernel/input/make.conf \
-                        libk/make.conf \
-                        arch/$(ARCH)/make.conf \
-                        drivers/make.conf \
+SUBPROJECTS_MAKE_CONF = kernel/make.conf        \
+                        kernel/input/make.conf  \
+                        kernel/mm/make.conf     \
+                        libk/make.conf          \
+                        arch/$(ARCH)/make.conf  \
+                        drivers/make.conf       \
                         drivers/video/make.conf \
                         drivers/input/make.conf
 

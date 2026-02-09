@@ -7,6 +7,12 @@ Memory management
 Setup proper memory management.
 
 
+Boot
+----
+
+Support EFI boot
+
+
 Better Video
 ------------
 
