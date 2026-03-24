@@ -4,6 +4,7 @@
 // Github:  @San7o
 
 #include <kernel/debug.h>   // implements
+#include <kernel/mm/paging.h>
 #include <drivers/uart.h>
 #include <drivers/video/vga.h>
 
@@ -97,4 +98,34 @@ void debug_print_memory_map_uart(bios_mmap_entry_t *mmap,
   }
   
   return;
+}
+
+void debug_print_pmmgr_bitfield(pmmgr_t *pmmgr)
+{
+  if (!pmmgr) return;
+  
+  uart_write_str(UART_COM1, "[debug] [pmmgr] Bitfield of size ");
+  uart_write_hex(UART_COM1, pmmgr->size);
+  uart_write_str(UART_COM1, ":\n");
+  uart_write_str(UART_COM1, "[debug] [pmmgr] [0x0000000000000000] ");
+  
+  for (u64_t i = 0; i < pmmgr->size; ++i)
+  {
+
+    for (int bit = 0; bit < 8; ++bit)
+    {
+      int val = (pmmgr->bitfield[i] >> bit) & 1;
+      uart_write_str(UART_COM1, (val == 1) ? "1" : "0");      
+    }
+
+    if ((i + 1) % 8 == 0)
+    {
+      uart_write_str(UART_COM1, "\n");
+      uart_write_str(UART_COM1, "[debug] [pmmgr] [");
+      uart_write_hex(UART_COM1, (i + 1) * 8 * PAGE_SIZE);
+      uart_write_str(UART_COM1, "] ");
+    }
+  }
+  
+  uart_write_str(UART_COM1, "\n");
 }

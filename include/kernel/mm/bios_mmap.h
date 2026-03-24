@@ -3,7 +3,6 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-
 #ifndef POVOS_KERNEL_MM_BIOS_MMAP_H
 #define POVOS_KERNEL_MM_BIOS_MMAP_H
 
@@ -16,6 +15,9 @@
 //
 
 #include <libk/stddef.h>
+
+#define BIOS_MMAP_NUM_ENTRIES_ADDR   ((void*)0x6000)
+#define BIOS_MMAP_ENTRIES_ADDR       ((void*)0x6004)
 
 #define BIOS_MMAP_TYPE_AVAILABLE          1
 #define BIOS_MMAP_TYPE_RESERVED           2

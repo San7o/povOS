@@ -96,7 +96,9 @@ clean:
 	rm -f $(BOOT_BIN) $(KERNEL_BIN) $(KERNEL_BIN).elf $(POVOS_BIN) $(OBJ)
 
 %.o: %.c
-	$(CC) $(CFLAGS) -o $@ $^
+	@echo " [CC] "$@
+	@$(CC) $(CFLAGS) -o $@ $^
 
 %.o: %.asm
-	$(ASM) $(ASFLAGS) $< -o $@
+	@echo " [AS] "$@
+	@$(ASM) $(ASFLAGS) $< -o $@

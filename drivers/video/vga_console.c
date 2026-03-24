@@ -1,6 +1,6 @@
 #include <drivers/video/vga.h>   // implements
 
-void vga_console_draw(const textbuffer_t *textbuffer)
+static void vga_console_draw(const textbuffer_t *textbuffer)
 {
   if (!textbuffer) return;
 
@@ -15,13 +15,13 @@ void vga_console_draw(const textbuffer_t *textbuffer)
   return;
 }
 
-void vga_console_set_cursor(unsigned int x, unsigned int y)
+static void vga_console_set_cursor(unsigned int x, unsigned int y)
 {
   vga_set_cursor(x, y);
   return;
 }
 
-void vga_console_clear(void)
+static void vga_console_clear(void)
 {
   vga_clear(VGA_STYLE_BW);
   return;

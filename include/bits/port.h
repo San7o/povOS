@@ -18,7 +18,7 @@ void port_outw(port_t  port,
 
 // Return content read from [port]
 unsigned char  port_inb(port_t port);
-unsigned short port_inw(u16_t port);
+unsigned short port_inw(port_t port);
 
 
 #endif // POVOS_KERNEL_PORT_H

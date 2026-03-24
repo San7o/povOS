@@ -57,12 +57,13 @@ int kernel_main(void)
   // Setup memory management
   //
 
-  u32_t *mmap_num_entries = (void*) 0x5000;
-  bios_mmap_entry_t *mmap = (void*) 0x5004;
+  u32_t *mmap_num_entries = BIOS_MMAP_NUM_ENTRIES_ADDR;
+  bios_mmap_entry_t *mmap = BIOS_MMAP_ENTRIES_ADDR;
   debug_print_memory_map_uart(mmap, *mmap_num_entries);
 
   pmmgr_t pmmgr;
   pmmgr_init(&pmmgr, mmap, *mmap_num_entries);
+  debug_print_pmmgr_bitfield(&pmmgr);
   
   vmmgr_t vmmgr;
   vmmgr_setup(&vmmgr);
@@ -79,7 +80,7 @@ int kernel_main(void)
   debug_print_vga();
   debug_write_uart();
   debug_dump_regs_uart();
-  breakpoint();
+  // breakpoint();
 
   //
   // Setup tty

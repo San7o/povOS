@@ -11,15 +11,15 @@
   ;; PT    -> 0x4000 (Page table) Contains 512 entries, each mapping a
   ;;                 4KB page
   ;;
-  ;; We want to clear the memory in those areas and the set up the
+  ;; We want to clear the memory in those areas and then set up the
   ;; page table structure
   ;; 
   ;; Each table in the page table has 512 entries, all of which are 8
   ;; bytes (one quadword or 64 bits) long. In this step, we'll be
-  ;; identity mapping ONLY the lowest 2 MB of memory, since this is
-  ;; all we need for now. Note that this only requires one page table,
-  ;; so the upper 511 entries in the PML4T, PDPT and PDT will all be
-  ;; NULL.
+  ;; identity mapping ONLY the lowest 4 MB of memory, since this is
+  ;; all we need for now. Note that this only requires two page
+  ;; tables, so the upper 511 entries in the PML4T and PDPT will all
+  ;; be NULL, and PDT will have 2 entries.
   ;; 
   ;; Once we have the zeroth address in all pointing to our page
   ;; table, we will need to create a identity map, which will point
@@ -87,7 +87,7 @@ init_pt_protected:
   ;; Set edi back to PML4T[0]
   mov edi, cr3
 
-  ;; Set up the first entry of each table
+  ;; Set up the first entry of each table, and the first two of PDT
   ;;
   ;; This part can be a little confusing. The key is knowing that the
   ;; page tables MUST be page aligned. This means the lower 12 bits of
@@ -95,9 +95,9 @@ init_pt_protected:
   ;; table entry can use the lower 12 bits as flags for that entry.
   ;;
   ;; You may notice that we're setting our flags to "0x003", because
-  ;; we care most about bits 0 and 1. Bit - is the "exists" bit, and
+  ;; we care most about bits 0 and 1. Bit 0 is the "exists" bit, and
   ;; is only set if the entry corresponds to another page table (for
-  ;; the PML4T. PDPT and PDT) or a page of physical memory (int the
+  ;; the PML4T, PDPT and PDT) or a page of physical memory (in the
   ;; PT).  Obviously we want to set this. Bit 1 is the "read/write"
   ;; bit, which allows us to view and modifly the given entry. Since
   ;; we want our OS to have full control, we'll set this as well.
@@ -114,6 +114,8 @@ init_pt_protected:
   add edi, 0x1000               ; Go to PDT[0]
   mov dword[edi], 0x4003        ; Set PDT[0] to address 0x4000 (PT)
                                 ; with flags 0x0003
+  mov dword[edi + 8], 0x5003    ; PDT[1] -> PT at 0x5000
+  mov dword[edi + 12], 0        ; Upper 32 bits
 
   ;; Fill in the final page table
   ;; NOTE: edi is at 0x3000
@@ -139,7 +141,8 @@ init_pt_protected:
   add edi, 0x1000               ; Go to PT[0]
   mov ebx, 0x00000003           ; EBX has address 0x0000 with flags
                                 ; 0x0003
-  mov ecx, 512                  ; Do the operating 512 times
+  mov ecx, 1024                 ; Do the operating (512 * 2) times,
+                                ; filling two tables
 
   .add_page_entry_protected:
     ;; a = address, x = index of page table, falgs are entry flags

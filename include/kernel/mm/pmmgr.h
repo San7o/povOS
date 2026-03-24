@@ -11,7 +11,7 @@
 // -----------------------
 //
 // Responsible for keeping track of which parts of the available
-// hardware memory (usually ram) are free/in-use. It allocated fixed
+// hardware memory (usually ram) are free/in-use. It allocates fixed
 // size blocks (PAGE_SIZE).
 //
 
@@ -19,7 +19,7 @@
 #include <libk/stddef.h>
 
 typedef struct pmmgr {
-  u64_t *bitfield;
+  u8_t *bitfield;
   u64_t size;
 } pmmgr_t;
 
