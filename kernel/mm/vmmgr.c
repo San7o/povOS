@@ -6,6 +6,8 @@
 #include <kernel/mm/vmmgr.h>   // implements
 #include <libk/string.h>
 
+#define PAGE_ALIGN_UP(x) (((x) + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1))
+
 void vmmgr_setup(vmmgr_t *vmmgr)
 {
   if (!vmmgr) return;
@@ -30,7 +32,7 @@ vaddr_t* vmm_alloc(vmmgr_t *vmmgr,
   if (!vmmgr) return NULL;
 
   // Align the length to the nearest page
-  length = ((length + PAGE_SIZE + 1) / PAGE_SIZE) * PAGE_SIZE;
+  length = PAGE_ALIGN_UP(length);
 
 
   // TODO

@@ -1,19 +1,16 @@
-povOS
-=====
+# povOS
 
 x86_64 operating system.
 
-Author:  Giovanni Santini
-Mail:    giovanni.santini@proton.me
-License: MIT
+- Author:  Giovanni Santini
+- Mail:    giovanni.santini@proton.me
+- License: MIT
 
 
-Features
---------
+## Features
 
 - custom bootloader
 - custom standard library
-- GDT and paging
 - drivers:
   - ps2
   - uart
@@ -26,12 +23,14 @@ Features
   - textbuffer
   - console
   - tty
+  - memory management
+    - physical memory management
+    - paging (not dynamic yet, pages are allocated during boot)
+    - virtual memory manager (TODO)
 
-The implementation is clean and readable, headers = documentation.
+The implementation is clean and readable, headers are documentation.
 
-
-The boot sequence
------------------
+## The boot sequence
 
 The BIOS boot sequence for x86_64 looks like this:
 
