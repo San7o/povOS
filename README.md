@@ -6,7 +6,6 @@ x86_64 operating system.
 - Mail:    giovanni.santini@proton.me
 - License: MIT
 
-
 ## Features
 
 - custom bootloader

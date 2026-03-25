@@ -129,3 +129,16 @@ void debug_print_pmmgr_bitfield(pmmgr_t *pmmgr)
   
   uart_write_str(UART_COM1, "\n");
 }
+
+void debug_vga_draw_flag(void)
+{
+  for (int x = 0; x < 320 / 3; ++x)
+    for (int y = 0; y < 200; ++y)    
+      vga_draw_pixel(x, y, VGA_COLOR_GREEN);
+  for (int x = 0; x < 320 / 3; ++x)
+    for (int y = 0; y < 200; ++y)    
+      vga_draw_pixel(320 / 3 + x, y, VGA_COLOR_WHITE);
+  for (int x = 0; x < 320 / 3; ++x)
+    for (int y = 0; y < 200; ++y)    
+      vga_draw_pixel(320 / 3 * 2 + x, y, VGA_COLOR_RED);
+}

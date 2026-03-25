@@ -245,12 +245,11 @@ int pmmgr_init(pmmgr_t *pmmgr, bios_mmap_entry_t *mmap,
             available = false;
         }
       }
-
       // Check bitfield
       if (available)
       {
-        if (this_page.start >= (u64_t)pmmgr->bitfield
-            && this_page.end < (u64_t)pmmgr->bitfield + bitfield_pages * PAGE_SIZE)
+        if (this_page.start < (u64_t)pmmgr->bitfield + bitfield_pages * PAGE_SIZE
+            && this_page.end >= (u64_t)pmmgr->bitfield)
           available = false;
       }
 

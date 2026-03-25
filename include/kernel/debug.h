@@ -14,6 +14,7 @@
 //
 
 #include <drivers/input/keyboard.h>
+#include <drivers/video/vga.h>
 #include <kernel/input/input.h>
 #include <kernel/mm/bios_mmap.h>
 #include <kernel/mm/pmmgr.h>
@@ -29,5 +30,6 @@ void debug_dump_input_loop(input_t *input);
 void debug_print_memory_map_uart(bios_mmap_entry_t *mmap,
                                  u32_t num_entries);
 void debug_print_pmmgr_bitfield(pmmgr_t *pmmgr);
+void debug_vga_draw_flag(void);
 
 #endif // POVOS_KERNEL_DEBUG_H

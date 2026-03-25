@@ -37,14 +37,14 @@ int kernel_main(void)
     return EXIT_FAILURE;
   }
 
-  if (vga_is_alpha_disabled() == true)
+  if (!vga_is_text_mode())
   {
     vga_clear(VGA_STYLE_RED);
     vga_print(0, "VGA alphanumeric mode is disabled", VGA_STYLE_BW);
     return EXIT_FAILURE;
   }
 
-  if (uart_init_port(UART_COM1) != true)
+  if (!uart_init_port(UART_COM1))
   {
     vga_clear(VGA_STYLE_RED);
     vga_print(0, "Error initializing uart", VGA_STYLE_BW);
@@ -86,9 +86,10 @@ int kernel_main(void)
   // Setup tty
   //
   
-  textbuffer_entry_t buff[VGA_BUFFER_SIZE] = {0};
+  textbuffer_entry_t buff[VGA_TEXT_BUFFER_SIZE] = {0};
   textbuffer_t textbuffer;
-  textbuffer_init(&textbuffer, buff, VGA_WIDTH, VGA_HEIGHT, 0, 0);
+  textbuffer_init(&textbuffer, buff,
+                  VGA_TEXT_BUFFER_WIDTH, VGA_TEXT_BUFFER_HEIGHT, 0, 0);
 
   tty_t tty;
   tty_init(&tty, &textbuffer, TEXTBUFFER_STYLE_BW, &vga_console);
@@ -103,9 +104,12 @@ int kernel_main(void)
   tty_write(&tty, povos_banner, strlen(povos_banner));
   tty_flush(&tty);
 
+  //vga_set_graphics_mode();
+  //debug_vga_draw_flag();
+  
   // Read and print keyboard input
   debug_dump_input_loop(&input);
-  
+
   while(1) {}
   
   return EXIT_SUCCESS;
