@@ -20,6 +20,7 @@ x86_64 operating system.
   - IDT and ISR
   - input (supports multiple keyboard layouts)
   - textbuffer
+  - framebuffer
   - console
   - tty
   - memory management

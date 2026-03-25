@@ -33,6 +33,9 @@ typedef struct textbuffer_entry {
   textbuffer_style_t   style;
 } textbuffer_entry_t;
 
+#define TEXTBUFFER_ENTRY_MAKE(_c, _style) \
+  (textbuffer_entry_t) { .c = _c, .style = _style }
+
 typedef struct textbuffer {
   textbuffer_entry_t   *buff;
   unsigned int          width;
@@ -55,37 +58,17 @@ void textbuffer_init(textbuffer_t *textbuffer,
                      unsigned int cursor_y);
 
 // Write at cursor position and advance cursor
-
 void textbuffer_write(textbuffer_t *textbuffer,
-                      char c,
-                      textbuffer_color_t foreground,
-                      textbuffer_color_t background);
-void textbuffer_write_style(textbuffer_t *textbuffer,
-                            char c,
-                            textbuffer_style_t style);
-void textbuffer_write_entry(textbuffer_t *textbuffer,
-                            textbuffer_entry_t entry);
-
+                      textbuffer_entry_t entry);
 // Write at x and y position
-
 void textbuffer_write_pos(textbuffer_t *textbuffer,
-                          char c,
-                          unsigned char foreground_color,
-                          unsigned char background_color,
+                          textbuffer_entry_t entry,
                           unsigned int x,
                           unsigned int y);
-void textbuffer_write_pos_style(textbuffer_t *textbuffer,
-                                char c,
-                                textbuffer_style_t style,
-                                unsigned int x,
-                                unsigned int y);
-void textbuffer_write_pos_entry(textbuffer_t *textbuffer,
-                                textbuffer_entry_t entry,
-                                unsigned int x,
-                                unsigned int y);
 
-textbuffer_entry_t textbuffer_read(textbuffer_t *textbuffer,
-                                   unsigned int x, unsigned int y);
+textbuffer_entry_t
+textbuffer_read(textbuffer_t *textbuffer,
+                unsigned int x, unsigned int y);
 
 // Cursor
 

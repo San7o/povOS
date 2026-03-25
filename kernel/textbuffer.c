@@ -36,78 +36,21 @@ void textbuffer_init(textbuffer_t *textbuffer,
 }
 
 void textbuffer_write(textbuffer_t *textbuffer,
-                      char c,
-                      unsigned char foreground_color,
-                      unsigned char background_color)
+                      textbuffer_entry_t entry)
 {
   if (!textbuffer) return;
-  
-  textbuffer_write_pos(textbuffer, c,
-                       foreground_color,
-                       background_color,
+
+  textbuffer_write_pos(textbuffer, entry,
                        textbuffer->cursor_x,
                        textbuffer->cursor_y);
   textbuffer_cursor_advance(textbuffer);
   return;
 }
 
-void textbuffer_write_style(textbuffer_t *textbuffer,
-                            char c,
-                            textbuffer_style_t style)
-{
-  if (!textbuffer) return;
-
-  textbuffer_write_pos_style(textbuffer, c, style,
-                             textbuffer->cursor_x,
-                             textbuffer->cursor_y);
-  textbuffer_cursor_advance(textbuffer);
-  return;
-}
-
-void textbuffer_write_entry(textbuffer_t *textbuffer,
-                            textbuffer_entry_t entry)
-{
-  if (!textbuffer) return;
-
-  textbuffer_write_pos_entry(textbuffer, entry,
-                             textbuffer->cursor_x,
-                             textbuffer->cursor_y);
-  textbuffer_cursor_advance(textbuffer);
-  return;
-}
-
-
 void textbuffer_write_pos(textbuffer_t *textbuffer,
-                          char c,
-                          textbuffer_color_t foreground,
-                          textbuffer_color_t background,
+                          textbuffer_entry_t entry,
                           unsigned int x,
                           unsigned int y)
-{
-  textbuffer_write_pos_style(textbuffer, c,
-                             (textbuffer_style_t) {
-                               .foreground = foreground,
-                               .background = background },
-                             x, y);
-  return;
-}
-
-void textbuffer_write_pos_style(textbuffer_t *textbuffer,
-                                char c,
-                                textbuffer_style_t style,
-                                unsigned int x,
-                                unsigned int y)
-{
-  textbuffer_write_pos_entry(textbuffer,
-                             (textbuffer_entry_t) { .c = c, .style = style },
-                             x, y);
-  return;
-}
-
-void textbuffer_write_pos_entry(textbuffer_t *textbuffer,
-                                textbuffer_entry_t entry,
-                                unsigned int x,
-                                unsigned int y)
 {
   if (!textbuffer || x >= textbuffer->width || y >= textbuffer->height
       || x < 0 || y < 0)

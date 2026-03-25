@@ -25,7 +25,7 @@ void tty_write_input(tty_t *tty, input_event_t event)
 
   if (event.type == INPUT_EVENT_TYPE_CHAR)
   {
-    textbuffer_write_style(tty->textbuffer, event.e.c, tty->style);
+    textbuffer_write(tty->textbuffer, TEXTBUFFER_ENTRY_MAKE(event.e.c, tty->style));
     return;
   }
 
@@ -33,13 +33,13 @@ void tty_write_input(tty_t *tty, input_event_t event)
   {
   case KEY_BACKSPACE:
     textbuffer_cursor_regress(tty->textbuffer);
-    textbuffer_write_style(tty->textbuffer, ' ', tty->style);
+    textbuffer_write(tty->textbuffer, TEXTBUFFER_ENTRY_MAKE(' ', tty->style));
     textbuffer_cursor_regress(tty->textbuffer);
     break;
   case KEY_ENTER:
     textbuffer_cursor_newline(tty->textbuffer);
-    textbuffer_write_style(tty->textbuffer, '>', tty->style);
-    textbuffer_write_style(tty->textbuffer, ' ', tty->style);
+    textbuffer_write(tty->textbuffer, TEXTBUFFER_ENTRY_MAKE('>', tty->style));
+    textbuffer_write(tty->textbuffer, TEXTBUFFER_ENTRY_MAKE(' ', tty->style));
     break;
   default:
     break;
@@ -61,13 +61,13 @@ void tty_write(tty_t *tty, const char *buf, size_t len)
       textbuffer_cursor_newline(tty->textbuffer);
       break;        
     case '\t':
-      textbuffer_write_style(tty->textbuffer, ' ', tty->style);
-      textbuffer_write_style(tty->textbuffer, ' ', tty->style);
-      textbuffer_write_style(tty->textbuffer, ' ', tty->style);
-      textbuffer_write_style(tty->textbuffer, ' ', tty->style);
+      textbuffer_write(tty->textbuffer, TEXTBUFFER_ENTRY_MAKE(' ', tty->style));
+      textbuffer_write(tty->textbuffer, TEXTBUFFER_ENTRY_MAKE(' ', tty->style));
+      textbuffer_write(tty->textbuffer, TEXTBUFFER_ENTRY_MAKE(' ', tty->style));
+      textbuffer_write(tty->textbuffer, TEXTBUFFER_ENTRY_MAKE(' ', tty->style));
       break;
     default:
-      textbuffer_write_style(tty->textbuffer, c, tty->style);
+      textbuffer_write(tty->textbuffer, TEXTBUFFER_ENTRY_MAKE(c, tty->style));
       break;
     }
   }
