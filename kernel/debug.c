@@ -5,6 +5,7 @@
 
 #include <kernel/debug.h>   // implements
 #include <kernel/mm/paging.h>
+#include <kernel/time.h>
 #include <drivers/uart.h>
 #include <drivers/video/vga.h>
 
@@ -61,11 +62,24 @@ void debug_write_uart(void)
 
 void debug_dump_input_loop(input_t *input)
 {
+  u64_t previous_time_s = 0;
   while(1) {
+
+    // Tick seconds
+    if (time_ms / 1000 > previous_time_s)
+    {
+      previous_time_s = time_ms / 1000;
+      
+      uart_write_str(UART_COM1, "[isr] [pit 0] time: ");
+      uart_write_hex(UART_COM1, time_ms / 1000);
+      uart_write_str(UART_COM1, " s\n");
+    }
+    
     input_event_t event = input_events_get(input);
     if (event.type == INPUT_EVENT_TYPE_NONE) continue;
     
     debug_dump_input_event_uart(event);
+
   }
 }
 

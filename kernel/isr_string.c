@@ -5,7 +5,7 @@
 
 #include "isr_string.h"
 
-const char *isr_exception_string[] = {
+const char *isr_exception_string[ISR_EXCEPTION_COUNT] = {
     "Division by Zero",
     "Debug",
     "Non-Maskable Interrupt",

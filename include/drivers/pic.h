@@ -50,9 +50,9 @@
 
 // Each PIC (master or slave) have a command and data port.
 #define PIC_MASTER_CMD        PIC1
-#define PIC_MASTER_DATA   (PIC1+1)
+#define PIC_MASTER_DATA       (PIC1+1)
 #define PIC_SLAVE_CMD         PIC2
-#define PIC_SLAVE_DATA     (PIC2+1)
+#define PIC_SLAVE_DATA        (PIC2+1)
 
 //
 // Commands

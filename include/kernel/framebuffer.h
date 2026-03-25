@@ -23,8 +23,8 @@ typedef struct framebuffer {
 
 void framebuffer_init(framebuffer_t *fb, u8_t *buff, u64_t width, u64_t height);
 void framebuffer_clear(framebuffer_t *fb, u8_t color);
-void framebuffer_draw_pixel(framebuffer_t *fb, int x, int y, u8_t color);
-void framebuffer_draw_rect(framebuffer_t *fb, int x, int y,
+void framebuffer_draw_pixel(framebuffer_t *fb, u64_t x, u64_t y, u8_t color);
+void framebuffer_draw_rect(framebuffer_t *fb, u64_t x, u64_t y,
                            int h, int w, u8_t color);
 
 #endif // POVOS_KERNEL_FRAMEBUFFER_H

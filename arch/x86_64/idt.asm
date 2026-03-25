@@ -42,6 +42,7 @@
   ;; Imported symbols
   extern isr_common_handler
   extern isr_keyboard_handler
+  extern isr_pit_channel_0_handler
   extern idt_descriptor
   extern idt
 
@@ -292,13 +293,13 @@ isr31:
   push qword 31                   ; isr number
   ISR_HANDLER isr_common_handler
   
-  ;; 32: Mouse Interrupt
+  ;; 32: PIT Interrupt
 isr32:
   push qword 0
   push qword 32                   ; isr number
 
   ;; Does nothing special for now
-  ISR_HANDLER isr_common_handler
+  ISR_HANDLER isr_pit_channel_0_handler
   
   ;; 33: Keyboard Interrupt
 isr33:

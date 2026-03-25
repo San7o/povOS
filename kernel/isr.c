@@ -5,6 +5,7 @@
 
 #include <kernel/isr.h>   // implements
 #include <kernel/debug.h>
+#include <kernel/time.h>
 #include <drivers/uart.h>
 #include <drivers/ps2.h>
 #include <drivers/pic.h>
@@ -16,7 +17,10 @@ void isr_common_handler(u8_t  isr_number,
                         u64_t error_code)
 {
   uart_write_str(UART_COM1, "[isr] ");
-  uart_write_str(UART_COM1, isr_exception_string[isr_number]);
+  if (isr_number < ISR_EXCEPTION_COUNT)
+    uart_write_str(UART_COM1, isr_exception_string[isr_number]);
+  else
+    uart_write_hex(UART_COM1, isr_number);
   uart_write_str(UART_COM1, ", error code: ");
   uart_write_hex(UART_COM1, error_code);
   uart_putc(UART_COM1, '\n');
@@ -46,6 +50,18 @@ void isr_keyboard_handler(u8_t  isr_number,
   // debug_dump_keyboard_event_uart(event);
 
  exit:
+  pic_ack();
+  return;
+}
+
+void isr_pit_channel_0_handler(u8_t  isr_number,
+                               u64_t error_code)
+{
+  (void) isr_number;
+  (void) error_code;
+
+  time_ms++;
+  
   pic_ack();
   return;
 }

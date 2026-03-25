@@ -17,6 +17,7 @@
 #include <kernel/console.h>
 #include <kernel/tty.h>
 #include <drivers/pic.h>
+#include <drivers/pit.h>
 #include <drivers/uart.h>
 #include <drivers/video/vga.h>
 #include <drivers/input/keyboard.h>
@@ -72,6 +73,8 @@ int kernel_main(void)
   //
   // Setup interrupts
   //
+
+  pit_set_count(1193); // one tick per millisecond
   
   pic_remap();  // Chage overlapping IRQ numbers
   idt_set();    // Setup the IDT

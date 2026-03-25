@@ -14,15 +14,17 @@ x86_64 operating system.
   - ps2
   - uart
   - vga
-  - pic
+  - pic (Programmable Interrupt Controller)
+  - pit (Programmable Interrupt Timer)
   - keyboard
 - kernel:
-  - IDT and ISR
+  - IDT (Interrupt Descriptor Tabe) and ISR (Interrupt Service Routines)
   - input (supports multiple keyboard layouts)
   - textbuffer
   - framebuffer
   - console
   - tty
+  - time tracking
   - memory management
     - physical memory management
     - paging (not dynamic yet, pages are allocated during boot)
