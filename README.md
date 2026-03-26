@@ -1,6 +1,6 @@
-# povOS
+![](./povos-banner.jpeg)
 
-x86_64 operating system.
+povOS is an x86_64 operating system.
 
 - Author:  Giovanni Santini
 - Mail:    giovanni.santini@proton.me
