@@ -5,6 +5,7 @@
 
 #include <drivers/uart.h>   // implements
 #include <bits/port.h>
+#include <libk/stdlib.h>
 
 bool uart_init_port(port_t port)
 {
@@ -90,4 +91,87 @@ void uart_write_hex(port_t port, u64_t num)
   }
 
   return;
+}
+
+int uart_printf(port_t port, const char* fmt, ...)
+{
+  va_list list;
+  va_start(list, fmt);
+  int ret = uart_vprintf(port, fmt, list);
+  va_end(list);
+
+  return ret;
+}
+
+int uart_vprintf(port_t port, const char* fmt, va_list args)
+{
+  while (*fmt)
+  {
+    if (*fmt == '%')
+    {
+      fmt++;
+      switch (*fmt)
+      {
+      case 'd':
+      case 'i': {
+        char buf[32];
+        itoa(va_arg(args, int), buf, 10);
+        uart_write_str(port, buf);
+        break;
+      }
+      case 'x': {
+        char buf[32];
+        itoa(va_arg(args, unsigned int), buf, 16);
+        uart_write_str(port, "0x");
+        uart_write_str(port, buf);
+        break;
+      }
+      case 's': {
+        char* s = va_arg(args, char*);
+        if (!s) s = "(null)";
+        uart_write_str(port, s);        
+        break;
+      }
+      case 'f': {
+        double f = va_arg(args, double);
+        char buf[64];
+        // Handle negative
+        if (f < 0)
+        {
+          uart_putc(port, '-');
+          f = -f;
+        }
+        // Integer part
+        long i_part = (long)f;
+        itoa(i_part, buf, 10);
+        uart_write_str(port, buf);
+        uart_putc(port, '.');
+        // Fractional part (6 decimal places)
+        long f_part = (long)((f - (double)i_part) * 1000000.0 + 0.5);
+        itoa(f_part, buf, 10);
+        // Add leading zeros to fraction if necessary
+        int len = 0; while(buf[len]) len++;
+        for(int z = 0; z < (6 - len); z++)
+          uart_putc(port, '0');
+        uart_write_str(port, buf);
+        break;
+      }
+      case '%': {
+        uart_putc(port, '%');
+        break;
+      }
+      default: {
+        uart_putc(port, '%');
+        uart_putc(port, *fmt);
+        break;
+      }
+      }
+    }
+    else
+    {
+      uart_putc(port, *fmt);
+    }
+    fmt++;
+  }
+  return 0;
 }

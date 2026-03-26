@@ -64,6 +64,7 @@
 //
 
 #include <libk/stdbool.h>
+#include <stdarg.h>
 #include <bits/port.h>
 
 //
@@ -75,5 +76,8 @@ bool uart_is_transmit_ready(port_t port);
 void uart_putc(port_t port, u8_t c);
 void uart_write_str(port_t port, const char *str);
 void uart_write_hex(port_t port, u64_t num);
+
+int uart_printf(port_t port, const char* fmt, ...);
+int uart_vprintf(port_t port, const char* fmt, va_list args);
 
 #endif // POVOS_DRIVERS_UART_H

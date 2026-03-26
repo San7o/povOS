@@ -1,19 +1,5 @@
 TODO
 ====
 
-Memory management
------------------
-
 - virtual memory manager
-
-
-Boot
-----
-
-Support EFI boot
-
-
-Other
------
-
-- timers
+- support EFI boot

@@ -13,11 +13,9 @@ void debug_dump_keyboard_event_uart(keyboard_event_t event)
 {
   const char* key_str = keycode_to_string(event.key);
 
-  uart_write_str(UART_COM1, "[debug] [keyboard_event] ");
-  uart_write_str(UART_COM1, (event.pressed) ? "pressed  " : "released ");
-  uart_write_str(UART_COM1, key_str);
-  uart_putc(UART_COM1, '\n');
-  
+  uart_printf(UART_COM1, "[debug] [keyboard_event] %s %s\n",
+              (event.pressed) ? "pressed  " : "released ", key_str);
+
   return;
 }
 
@@ -54,9 +52,7 @@ void debug_print_vga(void)
 
 void debug_write_uart(void)
 {
-  uart_write_str(UART_COM1, "[debug] Hello, from povOS! ");
-  uart_write_hex(UART_COM1, 0x6969);
-  uart_putc(UART_COM1, '\n');
+  uart_printf(UART_COM1, "[debug] Hello, from povOS! %x\n", 0x6969);
   return;
 }
 
@@ -69,10 +65,8 @@ void debug_dump_input_loop(input_t *input)
     if (time_ms / 1000 > previous_time_s)
     {
       previous_time_s = time_ms / 1000;
-      
-      uart_write_str(UART_COM1, "[isr] [pit 0] time: ");
-      uart_write_hex(UART_COM1, time_ms / 1000);
-      uart_write_str(UART_COM1, " s\n");
+
+      uart_printf(UART_COM1, "[isr] [pit 0] time: %d s\n", time_ms / 1000);
     }
     
     input_event_t event = input_events_get(input);
@@ -117,15 +111,13 @@ void debug_print_memory_map_uart(bios_mmap_entry_t *mmap,
 void debug_print_pmmgr_bitfield(pmmgr_t *pmmgr)
 {
   if (!pmmgr) return;
-  
-  uart_write_str(UART_COM1, "[debug] [pmmgr] Bitfield of size ");
-  uart_write_hex(UART_COM1, pmmgr->size);
-  uart_write_str(UART_COM1, ":\n");
+
+  uart_printf(UART_COM1, "[debug] [pmmgr] Bitfield of size %d:\n",
+              pmmgr->size);
   uart_write_str(UART_COM1, "[debug] [pmmgr] [0x0000000000000000] ");
   
   for (u64_t i = 0; i < pmmgr->size; ++i)
   {
-
     for (int bit = 0; bit < 8; ++bit)
     {
       int val = (pmmgr->bitfield[i] >> bit) & 1;
@@ -141,7 +133,7 @@ void debug_print_pmmgr_bitfield(pmmgr_t *pmmgr)
     }
   }
   
-  uart_write_str(UART_COM1, "\n");
+  uart_putc(UART_COM1, '\n');
 }
 
 void debug_vga_draw_flag(void)
