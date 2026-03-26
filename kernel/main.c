@@ -19,6 +19,7 @@
 #include <kernel/tty.h>
 #include <drivers/pic.h>
 #include <drivers/pit.h>
+#include <drivers/hpet.h>
 #include <drivers/uart.h>
 #include <drivers/acpi.h>
 #include <drivers/video/vga.h>
@@ -72,9 +73,24 @@ int kernel_main(void)
   vmmgr_setup(&vmmgr);
   vmmgr_activate(&vmmgr);
 
-  size_t acpi_rsdp = acpi_locate_rsdp(mmap, *mmap_num_entries);
-  if (acpi_rsdp == 0)
+  acpi_rsdp_t* acpi_rsdp = acpi_locate_rsdp(mmap, *mmap_num_entries);
+  if (!acpi_rsdp)
+  {
     printk("[error] Could not find ACPI RSDP table\n");
+  }
+  /*
+  // ACPI tables are saved in memory that is not mapped in pages,
+  // so we cannot acces them yet
+  else
+  {
+    hpet_acpi_sdt_t* hpet = acpi_locate_sdt(acpi_rsdp, "HPET");
+    if (!hpet)
+      printk("[error] Could not find HPET timer\n");
+    else
+      printk("[info] Found HPET timer\n");
+  }
+  */
+  
   
   //
   // Setup interrupts

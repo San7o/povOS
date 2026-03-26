@@ -7,6 +7,7 @@
 #include <kernel/range.h>
 #include <libk/string.h>
 #include <libk/stdio.h>
+#include <libk/stddef.h>
 
 // The ACPI RSDP is identified by a "RSD PTR " string (notice
 // the space at the end) and can be confirmed via a checksum.
@@ -50,7 +51,7 @@ static size_t acpi_locate_rsdp_range(range_t range)
 
 // We don't know where the pointer is, so we need to check possible
 // memory locations for the identifier.
-size_t acpi_locate_rsdp(bios_mmap_entry_t *mmap, u32_t mmap_num_entries)
+acpi_rsdp_t* acpi_locate_rsdp(bios_mmap_entry_t *mmap, u32_t mmap_num_entries)
 {
   range_t range;
   
@@ -73,7 +74,7 @@ size_t acpi_locate_rsdp(bios_mmap_entry_t *mmap, u32_t mmap_num_entries)
 
     size_t addr = acpi_locate_rsdp_range(range);
     if (addr != 0)
-      return addr;
+      return (acpi_rsdp_t*) addr;
   }
   
   // Second, check EBDA (Extended BIOS Data Area), 0x00080000 - 0x0009FFFF
@@ -87,7 +88,7 @@ size_t acpi_locate_rsdp(bios_mmap_entry_t *mmap, u32_t mmap_num_entries)
   };
   size_t addr = acpi_locate_rsdp_range(range);
   if (addr != 0)
-    return addr;
+    return (acpi_rsdp_t*) addr;
   
   // Third, check BIOS read-only memory space between 0x000E0000 and
   // 0x000FFFFF
@@ -97,7 +98,55 @@ size_t acpi_locate_rsdp(bios_mmap_entry_t *mmap, u32_t mmap_num_entries)
   };
   addr = acpi_locate_rsdp_range(range);
   if (addr != 0)
-    return addr;
+    return (acpi_rsdp_t*) addr;
   
-  return 0;
+  return NULL;
+}
+
+void* acpi_locate_sdt(acpi_rsdp_t* rsdp, const char signature[4])
+{
+  if (!rsdp) return NULL;
+
+  if (rsdp->revision == ACPI_VERSION_1)
+  {
+    // ACPI 1.0
+    acpi_rsdt_t* rsdt = (void*)(unsigned long int)rsdp->rsdt_address;
+    if (!rsdt) return NULL;
+    if (strcmp((char*)rsdt->header.signature, "RSDT") != 0) return NULL;
+
+    // Iterate over the entires, looking for [signature]
+    u32_t* entry_ptr_array = (void*)(unsigned long int)rsdt->entries_ptr;
+    unsigned int entry_len =
+      (rsdt->header.length - sizeof(acpi_sdt_header_t)) / 4;
+    for (unsigned int i = 0; i < entry_len; ++i)
+    {
+      acpi_sdt_header_t *entry_ptr = (void*)(unsigned long int)entry_ptr_array[i];
+      if (!entry_ptr) return NULL;
+      if (strcmp((char*)entry_ptr->signature, signature) == 0)
+        return (void*) entry_ptr;
+      
+    }
+    return NULL;
+  }
+  else
+  {
+    // ACPI 2.0
+    acpi_xsdt_t* xsdt = (acpi_xsdt_t*)rsdp->xsdt_address;
+    if (!xsdt) return NULL;
+    if (strcmp((char*)xsdt->header.signature, "XSDT") != 0) return NULL;
+    
+    // Iterate over the entires, looking for [signature]
+    u64_t* entry_ptr_array = (void*)xsdt->entries_ptr;
+    unsigned int entry_len =
+      (xsdt->header.length - sizeof(acpi_sdt_header_t)) / 4;
+    for (unsigned int i = 0; i < entry_len; ++i)
+    {
+      acpi_sdt_header_t *entry_ptr = (void*)entry_ptr_array[i];
+      if (!entry_ptr) return NULL;
+      if (strcmp((char*)entry_ptr->signature, signature) == 0)
+        return (void*) entry_ptr;
+    }
+    return NULL;
+  }
+  return NULL;
 }

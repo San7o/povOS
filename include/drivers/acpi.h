@@ -27,8 +27,6 @@
 #define ACPI_VERSION_1 0
 #define ACPI_VERSION_2 2
 
-// TODO: identifiers
-
 //
 // Root System Description Pointer
 //
@@ -60,7 +58,7 @@ typedef struct acpi_rsdp {
   // fields. The sum of all bytes & 0xF must be 0.
   u8_t  extended_checksum;
   u8_t  reserved[3];
-} acpi_rsdp_t;
+} __attribute__((packed)) acpi_rsdp_t;
 
 //
 // System Description Table Header
@@ -85,7 +83,7 @@ typedef struct acpi_sdt_header {
   // Compiler.
   u32_t creator_id;
   u32_t creator_revision;
-} acpi_sdt_header_t;
+} __attribute__((packed)) acpi_sdt_header_t;
 
 //
 // System Description Table (used in ACPI 1.0)
@@ -96,8 +94,8 @@ typedef struct acpi_rsdt {
   // An array of 32-bit physical addresses that point to other system
   // description table headers. Its size can be calculated from the
   // length field at the stop of this structure.
-  u32_t *entries;
-} acpi_rsdt_t;
+  u32_t entries_ptr;
+} __attribute__((packed)) acpi_rsdt_t;
 
 //
 // Extended System Description Table (used in ACPI 2.0)
@@ -107,8 +105,8 @@ typedef struct acpi_xsdt {
   // header.signature is "XSDT"
   acpi_sdt_header_t header;
   // Addresses are 64 bit here.
-  u64_t *entries;
-} acpi_xsdt_t;
+  u64_t entries_ptr;
+} __attribute__((packed)) acpi_xsdt_t;
 
 #define ACPI_ADDRSPACE_SYSTEM_MEMORY             0x00
 #define ACPI_ADDRSPACE_SYSTEM_IO                 0x01
@@ -263,6 +261,7 @@ typedef struct acpi_fadt
 
 // Find the address of the RSDP
 // Returns NULL (0) if not found
-size_t acpi_locate_rsdp(bios_mmap_entry_t *mmap, u32_t mmap_num_entries);
+acpi_rsdp_t* acpi_locate_rsdp(bios_mmap_entry_t *mmap, u32_t mmap_num_entries);
+void* acpi_locate_sdt(acpi_rsdp_t* rsdp, const char signature[4]);
 
 #endif // POVOS_DRIVERS_ACPI_H
