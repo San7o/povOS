@@ -17,6 +17,7 @@ x86_64 operating system.
   - pic (Programmable Interrupt Controller)
   - pit (Programmable Interrupt Timer)
   - keyboard
+  - ACPI
 - kernel:
   - IDT (Interrupt Descriptor Tabe) and ISR (Interrupt Service Routines)
   - input (supports multiple keyboard layouts)

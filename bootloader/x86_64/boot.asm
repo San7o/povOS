@@ -22,8 +22,9 @@
   ;; Memory Layout
   ;; -------------
   ;;
-  ;; Before going any further, you should have a picture in mind of
-  ;; how the memory is layed out in most BIOSes:
+  ;; Before going any further, you should see a picture of how the
+  ;; memory is layed out in most BIOSes. Keep in mind that this is not
+  ;; standardized and there are differences between bioses.
   ;;
   ;; / ==================================================================== \
   ;; | Address Range (Hex)     | Size    | Description                      |

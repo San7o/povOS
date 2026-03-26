@@ -6,6 +6,7 @@
 #include <libk/stdlib.h>
 #include <libk/stdbool.h>
 #include <libk/string.h>
+#include <libk/stdio.h>
 #include <kernel/mm/pmmgr.h>
 #include <kernel/mm/vmmgr.h>
 #include <kernel/mm/bios_mmap.h>
@@ -19,6 +20,7 @@
 #include <drivers/pic.h>
 #include <drivers/pit.h>
 #include <drivers/uart.h>
+#include <drivers/acpi.h>
 #include <drivers/video/vga.h>
 #include <drivers/input/keyboard.h>
 
@@ -70,6 +72,10 @@ int kernel_main(void)
   vmmgr_setup(&vmmgr);
   vmmgr_activate(&vmmgr);
 
+  size_t acpi_rsdp = acpi_locate_rsdp(mmap, *mmap_num_entries);
+  if (acpi_rsdp == 0)
+    printk("[error] Could not find ACPI RSDP table\n");
+  
   //
   // Setup interrupts
   //

@@ -6,15 +6,9 @@
 #include <kernel/mm/pmmgr.h>   // implements
 #include <kernel/mm/paging.h>
 #include <kernel/utils.h>
-
+#include <kernel/range.h>
 #include <libk/stdbool.h>
-
-#include <drivers/uart.h>  // used for debug prints
-
-typedef struct range {
-  size_t start;
-  size_t end;
-} range_t;
+#include <libk/stdio.h>
 
 // Memory will not be allocated in these intervals "[a; b)"
 // Note: ranges must not overlap!
@@ -187,12 +181,9 @@ int pmmgr_init(pmmgr_t *pmmgr, bios_mmap_entry_t *mmap,
                                            mmap,
                                            mmap_num_entries);
 
-    // Useful debug prints
-    uart_write_str(UART_COM1, "[debug] [pmmgr] range_candidate.start = ");
-    uart_write_hex(UART_COM1, range_candidate.start);
-    uart_write_str(UART_COM1, ", range_candidate.end = ");
-    uart_write_hex(UART_COM1, range_candidate.end);
-    uart_write_str(UART_COM1, "\n");
+    // Useful debug print
+    printk("[debug] [pmmgr] range_candidate.start = %x, range_candidate.end = %x\n",
+           range_candidate.start, range_candidate.end);
 
     if (range_candidate.end - range_candidate.start >= bitfield_pages * PAGE_SIZE)
       // We have found a good candidate

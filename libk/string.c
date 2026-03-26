@@ -14,7 +14,7 @@ size_t strlen(const char *s)
   return len;
 }
 
-int strcmp(const unsigned char *s1, const unsigned char *s2)
+int strcmp(const char *s1, const char *s2)
 {
   while (*s1 == *s2 && (*s1 != '\0' && *s2 != '\0')) { s1++; s2++; }
   if (*s1 == '\0' && *s2 == '\0') return 0;
@@ -23,7 +23,7 @@ int strcmp(const unsigned char *s1, const unsigned char *s2)
   return ((*s1 > *s2) ? 1 : -1);
 }
 
-int strncmp(const unsigned char *s1, const unsigned char *s2, size_t n)
+int strncmp(const char *s1, const char *s2, size_t n)
 {
   while (*s1 == *s2 && (*s1 != '\0' && *s2 != '\0') && n > 0)
   { s1++; s2++; n--; }

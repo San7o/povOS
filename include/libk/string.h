@@ -9,8 +9,8 @@
 #include <libk/stddef.h>
 
 size_t strlen(const char *s);
-int strcmp(const unsigned char *s1, const unsigned char *s2);
-int strncmp(const unsigned char *s1, const unsigned char *s2, size_t n);
+int strcmp(const char *s1, const char *s2);
+int strncmp(const char *s1, const char *s2, size_t n);
 
 void *memset(void *buf, u8_t c, size_t n);
 
