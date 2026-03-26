@@ -2,6 +2,8 @@
 
 # Use this script to create a live usb and boot the OS on real hardware
 
+set -e
+
 # Set this accordin to your device
 DEV=/dev/sda
 

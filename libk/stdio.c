@@ -11,7 +11,7 @@ int printk(const char* fmt, ...)
 {
   va_list list;
   va_start(list, fmt);
-  int ret = uart_vprintf(UART_COM1, fmt, list);
+  int ret = uart_vprintf(uart_port1, fmt, list);
   va_end(list);
 
   return ret;

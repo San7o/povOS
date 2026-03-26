@@ -48,7 +48,7 @@ int kernel_main(void)
     return EXIT_FAILURE;
   }
 
-  if (!uart_init_port(UART_COM1))
+  if (!uart_init_port(&uart_port1))
   {
     vga_clear(VGA_STYLE_RED);
     vga_print(0, "Error initializing uart", VGA_STYLE_BW);
@@ -78,12 +78,13 @@ int kernel_main(void)
   {
     printk("[error] Could not find ACPI RSDP table\n");
   }
+  
   /*
   // ACPI tables are saved in memory that is not mapped in pages,
   // so we cannot acces them yet
   else
   {
-    hpet_acpi_sdt_t* hpet = acpi_locate_sdt(acpi_rsdp, "HPET");
+    hpet_acpi_sdt_t* hpet = acpi_locate_sdt(acpi_rsdp, HPET_ACPI_SIGNATURE);
     if (!hpet)
       printk("[error] Could not find HPET timer\n");
     else

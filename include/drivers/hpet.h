@@ -19,6 +19,8 @@
 
 #include <drivers/acpi.h>
 
+#define HPET_ACPI_SIGNATURE "HPET"
+
 typedef struct hpet_acpi_sdt {
     acpi_sdt_header_t header;
     u32_t event_timer_block_id;

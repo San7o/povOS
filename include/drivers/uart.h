@@ -67,17 +67,31 @@
 #include <stdarg.h>
 #include <bits/port.h>
 
+typedef struct uart_port {
+  port_t port;
+  bool   initialized;
+} uart_port_t;
+
+extern uart_port_t uart_port1;
+extern uart_port_t uart_port2;
+extern uart_port_t uart_port3;
+extern uart_port_t uart_port4;
+extern uart_port_t uart_port5;
+extern uart_port_t uart_port6;
+extern uart_port_t uart_port7;
+extern uart_port_t uart_port8;
+
 //
 // Functions
 //
 
-bool uart_init_port(port_t port);
-bool uart_is_transmit_ready(port_t port);
-void uart_putc(port_t port, u8_t c);
-void uart_write_str(port_t port, const char *str);
-void uart_write_hex(port_t port, u64_t num);
+bool uart_init_port(uart_port_t *uart_port);
+bool uart_is_transmit_ready(uart_port_t uart_port);
+void uart_putc(uart_port_t uart_port, u8_t c);
+void uart_write_str(uart_port_t uart_port, const char *str);
+void uart_write_hex(uart_port_t uart_port, u64_t num);
 
-int uart_printf(port_t port, const char* fmt, ...);
-int uart_vprintf(port_t port, const char* fmt, va_list args);
+int uart_printf(uart_port_t uart_port, const char* fmt, ...);
+int uart_vprintf(uart_port_t uart_port, const char* fmt, va_list args);
 
 #endif // POVOS_DRIVERS_UART_H

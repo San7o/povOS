@@ -13,7 +13,7 @@ void debug_dump_keyboard_event_uart(keyboard_event_t event)
 {
   const char* key_str = keycode_to_string(event.key);
 
-  uart_printf(UART_COM1, "[debug] [keyboard_event] %s %s\n",
+  uart_printf(uart_port1, "[debug] [keyboard_event] %s %s\n",
               (event.pressed) ? "pressed  " : "released ", key_str);
 
   return;
@@ -21,24 +21,24 @@ void debug_dump_keyboard_event_uart(keyboard_event_t event)
 
 void debug_dump_input_event_uart(input_event_t event)
 {
-  uart_write_str(UART_COM1, "[debug] [input_event] ");
+  uart_write_str(uart_port1, "[debug] [input_event] ");
 
   switch (event.type)
   {
   case INPUT_EVENT_TYPE_KEYBOARD: ;
     const char* key_str = keycode_to_string(event.e.key.key);
-    uart_write_str(UART_COM1, (event.e.key.pressed) ? "pressed " : "released ");
-    uart_write_str(UART_COM1, key_str);
+    uart_write_str(uart_port1, (event.e.key.pressed) ? "pressed " : "released ");
+    uart_write_str(uart_port1, key_str);
     break;
   case INPUT_EVENT_TYPE_CHAR:
-    uart_putc(UART_COM1, event.e.c);
+    uart_putc(uart_port1, event.e.c);
     break;
   default:
-    uart_write_str(UART_COM1, "unknown");
+    uart_write_str(uart_port1, "unknown");
     break;
   }
   
-  uart_putc(UART_COM1, '\n');
+  uart_putc(uart_port1, '\n');
   return;
 }
 
@@ -52,7 +52,7 @@ void debug_print_vga(void)
 
 void debug_write_uart(void)
 {
-  uart_printf(UART_COM1, "[debug] Hello, from povOS! %x\n", 0x6969);
+  uart_printf(uart_port1, "[debug] Hello, from povOS! %x\n", 0x6969);
   return;
 }
 
@@ -66,7 +66,7 @@ void debug_dump_input_loop(input_t *input)
     {
       previous_time_s = time_ms / 1000;
 
-      uart_printf(UART_COM1, "[isr] [pit 0] time: %d s\n", time_ms / 1000);
+      uart_printf(uart_port1, "[isr] [pit 0] time: %d s\n", time_ms / 1000);
     }
     
     input_event_t event = input_events_get(input);
@@ -82,27 +82,27 @@ void debug_print_memory_map_uart(bios_mmap_entry_t *mmap,
 {
   if (!mmap) return;
   
-  uart_write_str(UART_COM1, "[debug] [memory map] Memory map entries: ");
-  uart_write_hex(UART_COM1, (u64_t) num_entries);
-  uart_putc(UART_COM1, '\n');
+  uart_write_str(uart_port1, "[debug] [memory map] Memory map entries: ");
+  uart_write_hex(uart_port1, (u64_t) num_entries);
+  uart_putc(uart_port1, '\n');
 
   for (u32_t i = 0; i < num_entries && i < 50; ++i)
   {
     u64_t base = (u64_t)mmap[i].base_low | ((u64_t) mmap[i].base_high << 32);
-    uart_write_str(UART_COM1, "[debug] [mmap] base: ");
-    uart_write_hex(UART_COM1, base);
+    uart_write_str(uart_port1, "[debug] [mmap] base: ");
+    uart_write_hex(uart_port1, base);
 
     u64_t length = (u64_t)mmap[i].length_low | ((u64_t) mmap[i].base_high << 32);
-    uart_write_str(UART_COM1, ", length: ");
-    uart_write_hex(UART_COM1, length);
+    uart_write_str(uart_port1, ", length: ");
+    uart_write_hex(uart_port1, length);
 
-    uart_write_str(UART_COM1, ", type: ");
-    uart_write_hex(UART_COM1, (u64_t) mmap[i].type);
+    uart_write_str(uart_port1, ", type: ");
+    uart_write_hex(uart_port1, (u64_t) mmap[i].type);
     
-    uart_write_str(UART_COM1, ", acpi: ");
-    uart_write_hex(UART_COM1, (u64_t) mmap[i].acpi);
+    uart_write_str(uart_port1, ", acpi: ");
+    uart_write_hex(uart_port1, (u64_t) mmap[i].acpi);
 
-    uart_putc(UART_COM1, '\n');
+    uart_putc(uart_port1, '\n');
   }
   
   return;
@@ -112,28 +112,28 @@ void debug_print_pmmgr_bitfield(pmmgr_t *pmmgr)
 {
   if (!pmmgr) return;
 
-  uart_printf(UART_COM1, "[debug] [pmmgr] Bitfield of size %d:\n",
+  uart_printf(uart_port1, "[debug] [pmmgr] Bitfield of size %d:\n",
               pmmgr->size);
-  uart_write_str(UART_COM1, "[debug] [pmmgr] [0x0000000000000000] ");
+  uart_write_str(uart_port1, "[debug] [pmmgr] [0x0000000000000000] ");
   
   for (u64_t i = 0; i < pmmgr->size; ++i)
   {
     for (int bit = 0; bit < 8; ++bit)
     {
       int val = (pmmgr->bitfield[i] >> bit) & 1;
-      uart_write_str(UART_COM1, (val == 1) ? "1" : "0");      
+      uart_write_str(uart_port1, (val == 1) ? "1" : "0");      
     }
 
     if ((i + 1) % 8 == 0)
     {
-      uart_write_str(UART_COM1, "\n");
-      uart_write_str(UART_COM1, "[debug] [pmmgr] [");
-      uart_write_hex(UART_COM1, (i + 1) * 8 * PAGE_SIZE);
-      uart_write_str(UART_COM1, "] ");
+      uart_write_str(uart_port1, "\n");
+      uart_write_str(uart_port1, "[debug] [pmmgr] [");
+      uart_write_hex(uart_port1, (i + 1) * 8 * PAGE_SIZE);
+      uart_write_str(uart_port1, "] ");
     }
   }
   
-  uart_putc(UART_COM1, '\n');
+  uart_putc(uart_port1, '\n');
 }
 
 void debug_vga_draw_flag(void)
