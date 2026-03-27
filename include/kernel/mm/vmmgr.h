@@ -10,6 +10,11 @@
 // Virtual Memory Manager
 // ----------------------
 //
+// The virtual memory manager sits between the physical allocator and
+// anything that needs virtual memory. It finds a free region in
+// virtual address space, then allocates physical frames from the
+// Physical Memory Manager and maps it via paging.
+//
 
 #include <libk/stddef.h>
 #include <kernel/mm/paging.h>
@@ -27,6 +32,7 @@ typedef struct vmmgr_obj {
   void*    base;
   size_t   length;
   size_t   flags;
+  bool     mapped;
 } vmmgr_obj_t;
 
 typedef struct vmmgr {
