@@ -19,29 +19,31 @@
 #include <libk/stddef.h>
 #include <libk/stdbool.h>
 #include <kernel/mm/paging.h>
+#include <kernel/mm/free_list_allocator.h>
+
+#define VMMGR_MAX_OBJECTS 1024
 
 typedef u64_t virt_addr_t;
 
-typedef enum vmmgr_object_flags {
-  VMMGR_OBJ_FLAG_NONE    = 0,
-  VMMGR_OBJ_FLAG_WRITE   = (1 << 0),
-  VMMGR_OBJ_FLAG_EXEC    = (1 << 1),
-  VMMGR_OBJ_FLAG_USER    = (1 << 2),
-} vmmgr_obj_flags_t;
+#define VMMGR_FLAG_NONE    0
+#define VMMGR_FLAG_WRITE   (1 << 0)
+#define VMMGR_FLAG_EXEC    (1 << 1)
+#define VMMGR_FLAG_USER    (1 << 2)
+typedef u64_t vmmgr_flags_t;
 
 typedef struct vmmgr_obj {
-  void*    base;
-  size_t   length;
-  size_t   flags;
-  bool     mapped;
+  virt_addr_t    base;
+  size_t         length;
+  bool           mapped;
+  vmmgr_flags_t flags;
 } vmmgr_obj_t;
 
 typedef struct vmmgr {
+  // Virtual address space allocator
+  free_list_alloc_t vas_allocator;
   page_table_t  *pml4t;
-  vmmgr_obj_t   *objects;
+  vmmgr_obj_t objects[VMMGR_MAX_OBJECTS];
 } vmmgr_t;
-
-typedef void* vaddr_t;
 
 //
 // Functions
@@ -50,9 +52,11 @@ typedef void* vaddr_t;
 void vmmgr_setup(vmmgr_t *vmmgr);
 void vmmgr_activate(vmmgr_t *vmmgr);
 
-vaddr_t* vmm_alloc(vmmgr_t *vmmgr,
-                   size_t length,
-                   vmmgr_obj_flags_t flags);
+// Allocates multiples of PAGE_SIZE of virtual and physical memory,
+// sets up the translation between them
+virt_addr_t vmm_alloc(vmmgr_t *vmmgr,
+                      size_t length,
+                      vmmgr_flags_t flags);
 
 // Invalidate TLB for this virtual address
 //

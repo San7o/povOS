@@ -12,7 +12,9 @@ void vmmgr_setup(vmmgr_t *vmmgr)
 {
   if (!vmmgr) return;
   vmmgr->pml4t   = paging_pml4t_init();
-  vmmgr->objects = NULL;
+  // We start at 0x400000 since the memory beofre this is already
+  // identity mapped my default in the physical memory manager
+  free_list_alloc_init(&vmmgr->vas_allocator, (void*)0x400000, 0xFFFFFFFFFFFFFFFF);
   return;
 }
 
@@ -22,19 +24,19 @@ void vmmgr_activate(vmmgr_t *vmmgr)
   paging_load(vmmgr->pml4t);
   return;
 }
-  
-vaddr_t* vmm_alloc(vmmgr_t *vmmgr,
-                   size_t length,
-                   vmmgr_obj_flags_t flags)
+
+virt_addr_t vmm_alloc(vmmgr_t *vmmgr,
+                      size_t length,
+                      vmmgr_flags_t flags)
 {
   (void) flags;
   
-  if (!vmmgr) return NULL;
+  if (!vmmgr) return 0;
 
   // Align the length to the nearest page
   length = PAGE_ALIGN_UP(length);
 
   // TODO
   
-  return NULL;
+  return 0;
 }
