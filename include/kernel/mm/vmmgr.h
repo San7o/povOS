@@ -35,7 +35,7 @@ typedef struct vmmgr_obj {
   virt_addr_t    base;
   size_t         length;
   bool           mapped;
-  vmmgr_flags_t flags;
+  vmmgr_flags_t  flags;
 } vmmgr_obj_t;
 
 typedef struct vmmgr {

@@ -4,6 +4,8 @@
 // Github:  @San7o
 
 #include <kernel/mm/vmmgr.h>   // implements
+#include <kernel/mm/pmmgr.h>
+#include <kernel/mm/paging.h>
 #include <libk/string.h>
 
 #define PAGE_ALIGN_UP(x) (((x) + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1))
@@ -14,7 +16,8 @@ void vmmgr_setup(vmmgr_t *vmmgr)
   vmmgr->pml4t   = paging_pml4t_init();
   // We start at 0x400000 since the memory beofre this is already
   // identity mapped my default in the physical memory manager
-  free_list_alloc_init(&vmmgr->vas_allocator, (void*)0x400000, 0xFFFFFFFFFFFFFFFF);
+  free_list_alloc_init(&vmmgr->vas_allocator,
+                       (void*)0x400000, 0xFFFFFFFFFFFFFFFF);
   return;
 }
 
@@ -29,14 +32,38 @@ virt_addr_t vmm_alloc(vmmgr_t *vmmgr,
                       size_t length,
                       vmmgr_flags_t flags)
 {
-  (void) flags;
-  
   if (!vmmgr) return 0;
 
   // Align the length to the nearest page
   length = PAGE_ALIGN_UP(length);
-
-  // TODO
+  unsigned int pages = length / PAGE_SIZE;
+  virt_addr_t  addr = (virt_addr_t)free_list_alloc_malloc(&vmmgr->vas_allocator,
+                                                          length);
+  page_entry_flags_t pflags = {0};
   
-  return 0;
+  for (unsigned int i = 0; i < pages; ++i)
+  {
+    phys_addr_t paddr = pmmgr_alloc_page();
+    virt_addr_t vaddr = addr + i * PAGE_SIZE;
+    paging_add_entry(vmmgr->pml4t,
+                     (void*) paddr,
+                     (void*) vaddr,
+                     pflags);
+  }
+
+  for (int i = 0; i < VMMGR_MAX_OBJECTS; ++i)
+  {
+    if (!vmmgr->objects[i].mapped)
+    {
+      vmmgr->objects[i] = (vmmgr_obj_t) {
+        .base   = addr,
+        .length = length,
+        .mapped = true,
+        .flags  = flags,
+      };
+      break;
+    }
+ }
+  
+  return addr;
 }

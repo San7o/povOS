@@ -48,10 +48,10 @@ page_table_t *paging_pml4t_init(void)
   return pml4t;
 }
 
-void page_add_entry(page_table_t       *pml4t,
-                    void               *phys_addr,
-                    void               *virt_addr,
-                    page_entry_flags_t  flags)
+void paging_add_entry(page_table_t       *pml4t,
+                      void               *phys_addr,
+                      void               *virt_addr,
+                      page_entry_flags_t  flags)
 {
   u64_t virt = (u64_t)virt_addr;
 
