@@ -17,6 +17,7 @@
 //
 
 #include <libk/stddef.h>
+#include <libk/stdbool.h>
 #include <kernel/mm/paging.h>
 
 typedef u64_t virt_addr_t;
@@ -54,6 +55,8 @@ vaddr_t* vmm_alloc(vmmgr_t *vmmgr,
                    vmmgr_obj_flags_t flags);
 
 // Invalidate TLB for this virtual address
-void vmmgr_invalidate_tlb(virt_addr_t addr);
+//
+// Implemented in assembly
+void vmm_invalidate_tlb(virt_addr_t addr);
 
 #endif // POVOS_KERNEL_MM_VMMGR_H

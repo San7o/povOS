@@ -107,5 +107,5 @@ void page_add_entry(page_table_t       *pml4t,
   pte->pwt      = flags.pwt;
   pte->pcd      = flags.pcd;
 
-  vmmgr_invalidate_tlb(virt);
+  vmm_invalidate_tlb(virt);
 }

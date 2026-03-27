@@ -4,7 +4,7 @@
   global disable_interrupts
   global breakpoint
   global paging_load
-  global vmmgr_invalidate_tlb
+  global vmm_invalidate_tlb
 
 enable_interrupts:
   sti
@@ -25,6 +25,6 @@ paging_load:
 
  ;; Invalidates any translation lookaside buffer (TLB) entries
  ;; specified with the source operand in [rdi]
-vmmgr_invalidate_tlb:
+vmm_invalidate_tlb:
   invlpg [rdi]
   ret
