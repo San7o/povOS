@@ -1,5 +1,5 @@
 TODO
 ====
 
-- virtual memory manager
-- support EFI boot
+- testing framework
+- support EFI boot 

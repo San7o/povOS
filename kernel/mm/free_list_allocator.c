@@ -41,10 +41,6 @@ void free_list_alloc_init(free_list_alloc_t *fla, void* memory, size_t size)
 
 void *free_list_alloc_malloc(free_list_alloc_t *fla, size_t size)
 {
-  #ifdef FREE_LIST_ALLOC_DEBUG
-  printf("DEBUG: free_list_alloc_malloc: called with size %ld\n", size);
-  #endif
-
   if (!fla)
     goto exit;
 
@@ -63,11 +59,6 @@ void *free_list_alloc_malloc(free_list_alloc_t *fla, size_t size)
     fla->free_chunks.chunks[i].start = fla->free_chunks.chunks[i].start + size;
     fla->free_chunks.chunks[i].size  = fla->free_chunks.chunks[i].size - size;
 
-    #ifdef FREE_LIST_ALLOC_DEBUG
-    printf("DEBUG: free_list_alloc_malloc: allocated %ld at chunk %p\n",
-           size, used_chunk->start);
-    #endif
-
     return (void*)used_chunk->start;
   }
 
@@ -77,10 +68,6 @@ void *free_list_alloc_malloc(free_list_alloc_t *fla, size_t size)
 
 void free_list_alloc_free(free_list_alloc_t *fla, void *ptr)
 {
-  #ifdef FREE_LIST_ALLOC_DEBUG
-  printf("DEBUG: free_list_alloc_free: called with ptr %p\n", ptr);
-  #endif
-
   if (!fla)
     goto exit;
   
@@ -88,12 +75,6 @@ void free_list_alloc_free(free_list_alloc_t *fla, void *ptr)
     free_list_alloc_chunk_list_get(&fla->used_chunks, ptr);
   if (!used_chunk)
     goto exit;
-
-  #ifdef FREE_LIST_ALLOC_DEBUG
-  printf("DEBUG: free_list_alloc_free: found used chunk start = %p, size = %ld\n",
-         (void*)used_chunk->start,
-         used_chunk->size);
-  #endif
 
   free_list_alloc_chunk_t *free_chunk_after = NULL;
   free_list_alloc_chunk_t *free_chunk_before = NULL;
@@ -109,9 +90,6 @@ void free_list_alloc_free(free_list_alloc_t *fla, void *ptr)
 
   if (free_chunk_before && free_chunk_after)
   {
-    #ifdef FREE_LIST_ALLOC_DEBUG
-    printf("DEBUG: free_list_alloc_free: free chunks were found before and after ptr\n");
-    #endif
     free_chunk_before->size += used_chunk->size + free_chunk_after->size;
     free_list_alloc_chunk_list_remove(&fla->used_chunks, used_chunk->start);
     free_list_alloc_chunk_list_remove(&fla->free_chunks, free_chunk_before->start);
@@ -119,27 +97,17 @@ void free_list_alloc_free(free_list_alloc_t *fla, void *ptr)
   }
   if (free_chunk_before)
   {
-    #ifdef FREE_LIST_ALLOC_DEBUG
-    printf("DEBUG: free_list_alloc_free: free chunks were found before ptr\n");
-    #endif
     free_chunk_before->size += used_chunk->size;
     free_list_alloc_chunk_list_remove(&fla->used_chunks, used_chunk->start);
     goto exit;
   }
   if (free_chunk_after)
   {
-    #ifdef FREE_LIST_ALLOC_DEBUG
-    printf("DEBUG: free_list_alloc_free: free chunks were found after ptr\n");
-    #endif
     free_chunk_after->start = used_chunk->start;
     free_chunk_after->size += used_chunk->size;
     free_list_alloc_chunk_list_remove(&fla->used_chunks, used_chunk->start);
     goto exit;
   }
-
-  #ifdef FREE_LIST_ALLOC_DEBUG
-  printf("DEBUG: free_list_alloc_free: no free chunks found before or after prt\n");
-  #endif
 
   free_list_alloc_chunk_list_add(&fla->free_chunks,
                                  used_chunk->start,
