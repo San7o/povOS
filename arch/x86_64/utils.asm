@@ -3,6 +3,8 @@
   global enable_interrupts
   global disable_interrupts
   global breakpoint
+  global paging_load
+  global vmmgr_invalidate_tlb
 
 enable_interrupts:
   sti
@@ -14,4 +16,15 @@ disable_interrupts:
 
 breakpoint:
   int3
+  ret
+
+  ;; Load the PML4 table, adrress at [rdi] which needs to be page aligned
+paging_load:
+  mov cr3, rdi
+  ret
+
+ ;; Invalidates any translation lookaside buffer (TLB) entries
+ ;; specified with the source operand in [rdi]
+vmmgr_invalidate_tlb:
+  invlpg [rdi]
   ret

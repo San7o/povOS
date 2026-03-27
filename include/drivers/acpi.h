@@ -261,7 +261,7 @@ typedef struct acpi_fadt
 
 // Find the address of the RSDP
 // Returns NULL (0) if not found
-acpi_rsdp_t* acpi_locate_rsdp(bios_mmap_entry_t *mmap, u32_t mmap_num_entries);
+acpi_rsdp_t* acpi_locate_rsdp(void);
 void* acpi_locate_sdt(acpi_rsdp_t* rsdp, const char signature[4]);
 
 #endif // POVOS_DRIVERS_ACPI_H

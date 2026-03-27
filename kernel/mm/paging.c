@@ -4,61 +4,108 @@
 // Github:  @San7o
 
 #include <kernel/mm/paging.h>   // implements
+#include <kernel/mm/pmmgr.h>
+#include <kernel/mm/vmmgr.h>
+#include <libk/string.h>
 
-void paging_setup(paging_tables_t *tables)
+page_table_t *paging_pml4t_init(void)
 {
-  if (!tables) return;
-  
-  // Link PML4 to PDPT
-  // We shift the physical address right by 12 because the struct 
-  // bit-field for 'address' is 40 bits (covering bits 12-51).
-  tables->pml4_table.entries[0].address = ((u64_t)&tables->pdpt_table) >> 12;
-  tables->pml4_table.entries[0].present = 1;
-  tables->pml4_table.entries[0].rw = 1;
+  // Identity map the first 4 megabytes
+  page_table_t *pt0 = (void*)pmmgr_alloc_page();
+  for (int i = 0; i < 512; ++i)
+  {
+    pt0->entries[i].address = (i * PAGE_SIZE) >> 12; 
+    pt0->entries[i].present = 1;
+    pt0->entries[i].rw = 1;
+  }
 
-  // Link PDPT to PD
-  tables->pdpt_table.entries[0].address = ((u64_t)&tables->pd_table) >> 12;
-  tables->pdpt_table.entries[0].present = 1;
-  tables->pdpt_table.entries[0].rw = 1;
+  page_table_t *pt1 = (void*)pmmgr_alloc_page();
+  for (int i = 0; i < 512; ++i)
+  {
+    pt1->entries[i].address = (0x200000 + i * PAGE_SIZE) >> 12; 
+    pt1->entries[i].present = 1;
+    pt1->entries[i].rw = 1;
+  }
 
-  // Link PD to PT
-  tables->pd_table.entries[0].address = ((u64_t)&tables->pt_table) >> 12;
-  tables->pd_table.entries[0].present = 1;
-  tables->pd_table.entries[0].rw = 1;
+  page_table_t *pd = (void*)pmmgr_alloc_page();
+  pd->entries[0].address = ((u64_t)pt0) >> 12;
+  pd->entries[0].present = 1;
+  pd->entries[0].rw = 1;
+  pd->entries[1].address = ((u64_t)pt1) >> 12;
+  pd->entries[1].present = 1;
+  pd->entries[1].rw = 1;
 
-  // Map the first 4KB page to physical address 0x0
-  tables->pt_table.entries[0].address = 0 >> 12; 
-  tables->pt_table.entries[0].present = 1;
-  tables->pt_table.entries[0].rw = 1;
+  page_table_t *pdpt = (void*)pmmgr_alloc_page();
+  pdpt->entries[0].address = ((u64_t)pd) >> 12;
+  pdpt->entries[0].present = 1;
+  pdpt->entries[0].rw = 1;
     
-  return;
+  page_table_t* pml4t = (void*)pmmgr_alloc_page();
+  pml4t->entries[0].address = ((u64_t)pdpt) >> 12;
+  pml4t->entries[0].present = 1;
+  pml4t->entries[0].rw = 1;
+
+  return pml4t;
 }
 
-void paging_load(paging_tables_t *tables)
+void page_add_entry(page_table_t       *pml4t,
+                    void               *phys_addr,
+                    void               *virt_addr,
+                    page_entry_flags_t  flags)
 {
-  if (!tables) return;
+  u64_t virt = (u64_t)virt_addr;
 
-  (void) tables;
+  // Extract indices for each level from the virtual address
+  u64_t pml4_idx = (virt >> 39) & 0x1FF;
+  u64_t pdpt_idx = (virt >> 30) & 0x1FF;
+  u64_t pd_idx   = (virt >> 21) & 0x1FF;
+  u64_t pt_idx   = (virt >> 12) & 0x1FF;
 
-  // TODO: figure out how to always get the physical address of
-  //       the pointer to tables. Probably will have to walk the
-  //       table manually.
-  
-  return;
-}
+  // Level 1: PML4 -> PDPT
+  page_entry_t *pml4e = &pml4t->entries[pml4_idx];
+  if (!pml4e->present)
+  {
+    page_table_t *pdpt = (void*)pmmgr_alloc_page();
+    memset(pdpt, 0, PAGE_SIZE);
+    pml4e->address = ((u64_t)pdpt) >> 12;
+    pml4e->present = 1;
+    pml4e->rw      = 1;
+  }
+  page_table_t *pdpt = (page_table_t*)(pml4e->address << 12);
 
+  // Level 2: PDPT -> PD
+  page_entry_t *pdpte = &pdpt->entries[pdpt_idx];
+  if (!pdpte->present)
+  {
+    page_table_t *pd = (void*)pmmgr_alloc_page();
+    memset(pd, 0, PAGE_SIZE);
+    pdpte->address = ((u64_t)pd) >> 12;
+    pdpte->present = 1;
+    pdpte->rw      = 1;
+  }
+  page_table_t *pd = (page_table_t*)(pdpte->address << 12);
 
-void paging_add_entry(paging_tables_t      *tables,
-                      void                 *phys_addr,
-                      void                 *virt_addr,
-                      paging_entry_flags_t  flags)
-{
-  (void) tables;
-  (void) phys_addr;
-  (void) virt_addr;
-  (void) flags;
-  
-  // TODO
-  
-  return;
+  // Level 3: PD -> PT
+  page_entry_t *pde = &pd->entries[pd_idx];
+  if (!pde->present)
+  {
+    page_table_t *pt = (void*)pmmgr_alloc_page();
+    memset(pt, 0, PAGE_SIZE);
+    pde->address = ((u64_t)pt) >> 12;
+    pde->present = 1;
+    pde->rw      = 1;
+  }
+  page_table_t *pt = (page_table_t*)(pde->address << 12);
+
+  // Level 4: PT -> page
+  page_entry_t *pte = &pt->entries[pt_idx];
+  pte->address  = ((u64_t)phys_addr) >> 12;
+  pte->present  = flags.present;
+  pte->rw       = flags.rw;
+  pte->user     = flags.user;
+  pte->nx       = flags.nx;
+  pte->pwt      = flags.pwt;
+  pte->pcd      = flags.pcd;
+
+  vmmgr_invalidate_tlb(virt);
 }

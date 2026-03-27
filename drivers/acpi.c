@@ -51,12 +51,16 @@ static size_t acpi_locate_rsdp_range(range_t range)
 
 // We don't know where the pointer is, so we need to check possible
 // memory locations for the identifier.
-acpi_rsdp_t* acpi_locate_rsdp(bios_mmap_entry_t *mmap, u32_t mmap_num_entries)
+acpi_rsdp_t* acpi_locate_rsdp(void)
 {
+  u32_t *mmap_num_entries = BIOS_MMAP_NUM_ENTRIES_ADDR;
+  bios_mmap_entry_t *mmap = BIOS_MMAP_ENTRIES_ADDR;
+  if (!mmap_num_entries || !mmap) return NULL;
+  
   range_t range;
   
   // First, check the memory map
-  for (u32_t i = 0; i < mmap_num_entries; ++i)
+  for (u32_t i = 0; i < *mmap_num_entries; ++i)
   {
     if (mmap[i].type != BIOS_MMAP_TYPE_ACPI_RECLAIMABLE)
       continue;

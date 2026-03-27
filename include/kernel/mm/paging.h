@@ -10,17 +10,36 @@
 // Paging
 // ------
 //
+// 64 bit paging (aka Physical Address Extension) has 4 levels of
+// tables, each one containing 512 entries.
+//
+//   PML4T -> 0x1000 (Page Map Level 4 Table)
+//   PDPT  -> 0x2000 (Page Directory Pointer Table)
+//   PDT   -> 0x3000 (Page Directory Table)
+//   PT    -> 0x4000 (Page table) Contains 512 entries, each mapping a
+//                    4KB page
+//
+// The virtual address bit breakdown is:
+//
+//  63       48 47    39 38    30 29    21 20    12 11      0
+//  [  unused  ] [pml4] [ pdpt ] [  pd  ] [  pt  ] [ offset ]
+//                 9bit   9bit     9bit     9bit      12bit
+//
 
 #include <libk/stddef.h>
 
-typedef enum paging_entry_flags {
-  PAGING_ENTRY_FLAG_NONE   = 0,
-  PAGING_ENTRY_FLAG_WRITE  = (1 << 0),
-  PAGING_ENTRY_FLAG_EXEC   = (1 << 1),
-  PAGING_ENTRY_FLAG_USER   = (1 << 2),
-} paging_entry_flags_t;
+typedef u64_t virt_ptr_t;
 
-// This is a single page entry
+typedef struct page_entry_flags {
+  u64_t present    : 1;
+  u64_t rw         : 1;
+  u64_t user       : 1;
+  u64_t pwt        : 1;
+  u64_t nx         : 1;
+  u64_t pcd        : 1;
+} page_entry_flags_t;
+
+// This is a single page entry (uses 4 bytes)
 typedef struct __attribute__((packed)) {
   u64_t present    : 1;  // P, must be 0
   u64_t rw         : 1;  // R/W, if 0 writes may not be allowed
@@ -35,30 +54,30 @@ typedef struct __attribute__((packed)) {
   u64_t address    : 40; // Physical address (shifted right 12 bits)
   u64_t available  : 11; // More custom bits
   u64_t nx         : 1;  // XD, No Execute
-} paging_entry_t;
+} page_entry_t;
 
 #define PAGE_SIZE   4096
 
-typedef struct __attribute__((aligned(PAGE_SIZE))) paging_table {
-  paging_entry_t   entries[1 << 9];
-} paging_table_t;
+// A single level, takes up 4KB size
+typedef struct __attribute__((aligned(PAGE_SIZE))) page_table {
+  page_entry_t   entries[1 << 9];
+} page_table_t;
 
-// 4-level -aging
-typedef struct paging_tables {
-  paging_table_t   pml4_table;
-  paging_table_t   pdpt_table;
-  paging_table_t   pd_table;
-  paging_table_t   pt_table;
-} paging_tables_t;
+// Allocate a new page map level 4 table
+//
+// Initialized it by identity mapping the first 4MB or memory. Does
+// not activate the page table, use `paging_load` for that.
+//
+// Retruns a pointer to the PML4 table, or NULL if unsuccessful 
+page_table_t *paging_pml4t_init(void);
 
-// Link up the paging tables but does not load them in cr3
-void paging_setup(paging_tables_t *tables);
-// Load the paging tables into cr3
-void paging_load(paging_tables_t  *tables);
+// Load the PML4 table into cr3
+// Implemented in assembly
+void paging_load(page_table_t *pml4t);
 
-void paging_add_entry(paging_tables_t      *tables,
-                      void                 *phys_addr,
-                      void                 *virt_addr,
-                      paging_entry_flags_t  flags);
+void paging_add_entry(page_table_t       *pml4t,
+                      void               *phys_addr,
+                      void               *virt_addr,
+                      page_entry_flags_t  flags);
 
 #endif // POVOS_KERNEL_MM_PAGING_H

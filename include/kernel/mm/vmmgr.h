@@ -14,6 +14,8 @@
 #include <libk/stddef.h>
 #include <kernel/mm/paging.h>
 
+typedef u64_t virt_addr_t;
+
 typedef enum vmmgr_object_flags {
   VMMGR_OBJ_FLAG_NONE    = 0,
   VMMGR_OBJ_FLAG_WRITE   = (1 << 0),
@@ -28,7 +30,7 @@ typedef struct vmmgr_obj {
 } vmmgr_obj_t;
 
 typedef struct vmmgr {
-  paging_tables_t   pt;
+  page_table_t  *pml4t;
   vmmgr_obj_t   *objects;
 } vmmgr_t;
 
@@ -44,5 +46,8 @@ void vmmgr_activate(vmmgr_t *vmmgr);
 vaddr_t* vmm_alloc(vmmgr_t *vmmgr,
                    size_t length,
                    vmmgr_obj_flags_t flags);
+
+// Invalidate TLB for this virtual address
+void vmmgr_invalidate_tlb(virt_addr_t addr);
 
 #endif // POVOS_KERNEL_MM_VMMGR_H

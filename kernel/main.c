@@ -61,19 +61,17 @@ int kernel_main(void)
   // Setup memory management
   //
 
-  u32_t *mmap_num_entries = BIOS_MMAP_NUM_ENTRIES_ADDR;
-  bios_mmap_entry_t *mmap = BIOS_MMAP_ENTRIES_ADDR;
-  debug_print_memory_map_uart(mmap, *mmap_num_entries);
+  debug_print_memory_map_uart();
 
-  pmmgr_t pmmgr;
-  pmmgr_init(&pmmgr, mmap, *mmap_num_entries);
-  debug_print_pmmgr_bitfield(&pmmgr);
-  
+  pmmgr_init();
+  debug_print_pmmgr_bitfield();
+
   vmmgr_t vmmgr;
   vmmgr_setup(&vmmgr);
   vmmgr_activate(&vmmgr);
+  debug_print_pmmgr_bitfield();
 
-  acpi_rsdp_t* acpi_rsdp = acpi_locate_rsdp(mmap, *mmap_num_entries);
+  acpi_rsdp_t* acpi_rsdp = acpi_locate_rsdp();
   if (!acpi_rsdp)
   {
     printk("[error] Could not find ACPI RSDP table\n");

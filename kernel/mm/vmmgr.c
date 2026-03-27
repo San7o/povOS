@@ -11,15 +11,15 @@
 void vmmgr_setup(vmmgr_t *vmmgr)
 {
   if (!vmmgr) return;
-  memset(&vmmgr->pt, 0, sizeof(vmmgr->pt));
-  paging_setup(&vmmgr->pt);
+  vmmgr->pml4t   = paging_pml4t_init();
+  vmmgr->objects = NULL;
   return;
 }
 
 void vmmgr_activate(vmmgr_t *vmmgr)
 {
   if (!vmmgr) return;
-  paging_load(&vmmgr->pt);
+  paging_load(vmmgr->pml4t);
   return;
 }
   
@@ -33,7 +33,6 @@ vaddr_t* vmm_alloc(vmmgr_t *vmmgr,
 
   // Align the length to the nearest page
   length = PAGE_ALIGN_UP(length);
-
 
   // TODO
   

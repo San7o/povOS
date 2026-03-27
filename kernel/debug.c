@@ -8,6 +8,8 @@
 #include <kernel/time.h>
 #include <drivers/uart.h>
 #include <drivers/video/vga.h>
+#include <kernel/mm/bios_mmap.h>
+#include <kernel/mm/pmmgr.h>
 
 void debug_dump_keyboard_event_uart(keyboard_event_t event)
 {
@@ -77,16 +79,17 @@ void debug_dump_input_loop(input_t *input)
   }
 }
 
-void debug_print_memory_map_uart(bios_mmap_entry_t *mmap,
-                                 u32_t num_entries)
+void debug_print_memory_map_uart(void)
 {
-  if (!mmap) return;
+  u32_t *mmap_num_entries = BIOS_MMAP_NUM_ENTRIES_ADDR;
+  bios_mmap_entry_t *mmap = BIOS_MMAP_ENTRIES_ADDR;
+  if (!mmap_num_entries || !mmap) return;
   
   uart_write_str(uart_port1, "[debug] [memory map] Memory map entries: ");
-  uart_write_hex(uart_port1, (u64_t) num_entries);
+  uart_write_hex(uart_port1, (u64_t) *mmap_num_entries);
   uart_putc(uart_port1, '\n');
 
-  for (u32_t i = 0; i < num_entries && i < 50; ++i)
+  for (u32_t i = 0; i < *mmap_num_entries && i < 50; ++i)
   {
     u64_t base = (u64_t)mmap[i].base_low | ((u64_t) mmap[i].base_high << 32);
     uart_write_str(uart_port1, "[debug] [mmap] base: ");
@@ -108,19 +111,17 @@ void debug_print_memory_map_uart(bios_mmap_entry_t *mmap,
   return;
 }
 
-void debug_print_pmmgr_bitfield(pmmgr_t *pmmgr)
+void debug_print_pmmgr_bitfield(void)
 {
-  if (!pmmgr) return;
-
   uart_printf(uart_port1, "[debug] [pmmgr] Bitfield of size %d:\n",
-              pmmgr->size);
+              pmmgr.size);
   uart_write_str(uart_port1, "[debug] [pmmgr] [0x0000000000000000] ");
   
-  for (u64_t i = 0; i < pmmgr->size; ++i)
+  for (u64_t i = 0; i < pmmgr.size; ++i)
   {
     for (int bit = 0; bit < 8; ++bit)
     {
-      int val = (pmmgr->bitfield[i] >> bit) & 1;
+      int val = (pmmgr.bitfield[i] >> bit) & 1;
       uart_write_str(uart_port1, (val == 1) ? "1" : "0");      
     }
 

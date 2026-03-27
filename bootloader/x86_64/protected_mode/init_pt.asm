@@ -153,7 +153,11 @@ init_pt_protected:
                                   ; x++
     loop .add_page_entry_protected ; Decrement ecx and loop again
 
-  ;; Set up PAE paging, but don't enable it quite yet
+  ;; Set up PAE (Physical Address Extension) paging, but don't enable
+  ;; it quite yet. PAE defines a page table hierarchy of three levels
+  ;; (instead of two), with table entries of 64 bits each instead of
+  ;; 32, allowing these CPUs to directly access a physical address
+  ;; space larger than 4 gigabytes (232 bytes).
   ;;
   ;; Here we're basically telling the CPU that we want to use paging,
   ;; but not quite yet. We're enabling the feature, but not using it.
@@ -162,6 +166,6 @@ init_pt_protected:
   mov cr4, eax
 
   ;; Now we should have a page table that identities maps the lowest
-  ;; 2MB of physical memory into virtual memory
+  ;; 4MB of physical memory into virtual memory
   popad
   ret

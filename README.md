@@ -28,7 +28,7 @@ povOS is an operating system for the x86_64 architecture.
   - time tracking
   - memory management
     - physical memory management
-    - paging (not dynamic yet, pages are allocated during boot)
+    - paging
     - virtual memory manager (TODO)
 
 The implementation is clean and readable, headers are documentation.

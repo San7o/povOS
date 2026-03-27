@@ -9,8 +9,13 @@
 #include <kernel/range.h>
 #include <libk/stdbool.h>
 #include <libk/stdio.h>
+#include <libk/string.h>
+
+pmmgr_t pmmgr;
 
 // Memory will not be allocated in these intervals "[a; b)"
+// Memory mapped IO regions should be put here
+//
 // Note: ranges must not overlap!
 range_t reserved_ranges[] = {
   { 0x0, 0x200000 }, // First 2MB (bios, kernel and some imporant
@@ -139,17 +144,19 @@ static range_t get_next_avail_range(range_t range_bounds,
   return next_range;
 }
 
-// Here we want to manually allocate pmmgr->bitfield in the physical
+// Here we want to manually allocate pmmgr.bitfield in the physical
 // memory, then initialize it based on available pages.
-int pmmgr_init(pmmgr_t *pmmgr, bios_mmap_entry_t *mmap,
-               u32_t mmap_num_entries)
+int pmmgr_init(void)
 {
-  if (!pmmgr || !mmap) return -1;
+  u32_t *mmap_num_entries = BIOS_MMAP_NUM_ENTRIES_ADDR;
+  bios_mmap_entry_t *mmap = BIOS_MMAP_ENTRIES_ADDR;
 
+  if (!mmap || !mmap_num_entries) return -1;
+  
   // Get minimum and maximum available address
   size_t max_addr = 0;
   size_t min_addr = (size_t) (void*) -1;
-  for (u32_t i = 0; i < mmap_num_entries; ++i)
+  for (u32_t i = 0; i < *mmap_num_entries; ++i)
   {
     if (mmap[i].type != BIOS_MMAP_TYPE_AVAILABLE)
       continue;
@@ -166,10 +173,10 @@ int pmmgr_init(pmmgr_t *pmmgr, bios_mmap_entry_t *mmap,
   range_t bitfield_range = (range_t){ .start = min_addr, .end = max_addr};
 
   // Calculate size of bitfield
-  u64_t available_region = bitfield_range.end - bitfield_range.start;
-  u64_t available_pages  = available_region / PAGE_SIZE;
+  u64_t available_region   = bitfield_range.end - bitfield_range.start;
+  u64_t available_pages    = available_region / PAGE_SIZE;
   u64_t bitfield_len_bytes = available_pages / 8;
-  u64_t bitfield_pages = bitfield_len_bytes / PAGE_SIZE;
+  u64_t bitfield_pages     = bitfield_len_bytes / PAGE_SIZE;
   if (bitfield_len_bytes % PAGE_SIZE != 0) bitfield_pages++;
 
   // Find a range in physical memory bit enough to store the bitfield
@@ -179,7 +186,7 @@ int pmmgr_init(pmmgr_t *pmmgr, bios_mmap_entry_t *mmap,
   {
     range_candidate = get_next_avail_range(bitfield_range,
                                            mmap,
-                                           mmap_num_entries);
+                                           *mmap_num_entries);
 
     // Useful debug print
     printk("[debug] [pmmgr] range_candidate.start = %x, range_candidate.end = %x\n",
@@ -193,14 +200,14 @@ int pmmgr_init(pmmgr_t *pmmgr, bios_mmap_entry_t *mmap,
     bitfield_range.start = range_candidate.start + 1;
   }
 
-  pmmgr->bitfield = (u8_t*) range_candidate.start;
-  pmmgr->size = bitfield_len_bytes;
+  pmmgr.bitfield = (u8_t*) range_candidate.start;
+  pmmgr.size     = bitfield_len_bytes;
 
   // Fill the bitfield
 
   for (u64_t i = 0; i < bitfield_pages * PAGE_SIZE; ++i)
   {
-    pmmgr->bitfield[i] = 0;
+    pmmgr.bitfield[i] = 0;
     for (int bit = 0; bit < 8; ++bit)
     {
       bool available = true;
@@ -210,7 +217,7 @@ int pmmgr_init(pmmgr_t *pmmgr, bios_mmap_entry_t *mmap,
       };
 
       // Check mmap
-      for (u32_t i = 0; i < mmap_num_entries; ++i)
+      for (u32_t i = 0; i < *mmap_num_entries; ++i)
       {
         // We only check unavailable memory regions
         if (mmap[i].type == BIOS_MMAP_TYPE_AVAILABLE)
@@ -239,15 +246,46 @@ int pmmgr_init(pmmgr_t *pmmgr, bios_mmap_entry_t *mmap,
       // Check bitfield
       if (available)
       {
-        if (this_page.start < (u64_t)pmmgr->bitfield + bitfield_pages * PAGE_SIZE
-            && this_page.end >= (u64_t)pmmgr->bitfield)
+        if (this_page.start < (u64_t)pmmgr.bitfield + bitfield_pages * PAGE_SIZE
+            && this_page.end >= (u64_t)pmmgr.bitfield)
           available = false;
       }
 
       if (available)
-        pmmgr->bitfield[i] |= (1 << bit);
+        pmmgr.bitfield[i] |= (1 << bit);
     }
   }
   
   return 0;
+}
+
+phys_addr_t pmmgr_alloc_page(void)
+{
+  for (u64_t i = 0; i < pmmgr.size; ++i)
+  {
+    for (unsigned int bit = 0; bit < 8; ++bit)
+    {
+      if (pmmgr.bitfield[i] & (1 << bit))
+      {
+        // Free page found
+        
+        pmmgr.bitfield[i] &= ~(1 << bit);
+        void* addr = (void*)(u64_t)((i * 8 + bit) * PAGE_SIZE);
+        memset(addr, 0, PAGE_SIZE);
+        return (phys_addr_t)addr;
+      }
+    }
+  }
+
+  return 0;
+}
+
+void pmmgr_free_page(phys_addr_t page)
+{
+  u64_t addr  = (u64_t)page;
+  u64_t frame = addr / PAGE_SIZE;
+  u64_t byte  = frame / 8;
+  u64_t bit   = frame % 8;
+
+  pmmgr.bitfield[byte] &= ~(1 << bit);
 }
