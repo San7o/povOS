@@ -33,7 +33,7 @@ int kernel_main(void)
   //
   // Sanity checks
   //
-  
+
   if (vga_get_memory_map() != 0b11)
   {
     vga_clear(VGA_STYLE_RED);
@@ -55,6 +55,7 @@ int kernel_main(void)
     return EXIT_FAILURE;
   }
 
+  
   // Checks successfull
 
   //
@@ -69,14 +70,24 @@ int kernel_main(void)
   vmmgr_t vmmgr;
   vmmgr_setup(&vmmgr);
   vmmgr_activate(&vmmgr);
-  debug_print_pmmgr_bitfield();
+  //debug_print_pmmgr_bitfield();
 
+  size_t heap_size = 4 * 1024 * 1024;
+  void* heap_mem = (void*)vmm_alloc(&vmmgr, heap_size, VMMGR_FLAG_WRITE);
+  debug_print_pmmgr_bitfield();
+  (void) heap_mem;
+
+  /*
+  free_list_alloc_t heap;
+  free_list_alloc_init(&heap, heap_mem, heap_size);
+  */
+  
   acpi_rsdp_t* acpi_rsdp = acpi_locate_rsdp();
   if (!acpi_rsdp)
   {
     printk("[error] Could not find ACPI RSDP table\n");
   }
-  
+
   /*
   // ACPI tables are saved in memory that is not mapped in pages,
   // so we cannot acces them yet

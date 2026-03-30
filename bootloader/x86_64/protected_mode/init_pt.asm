@@ -87,6 +87,11 @@ init_pt_protected:
   ;; Set edi back to PML4T[0]
   mov edi, cr3
 
+  ;; Use the recursive mapping trick
+  ;; Set PML4T[511] to point to PML4T itself (0x1000)
+  mov dword [edi + 4088], 0x1003 ; Address 0x1000 + Flags 0x03
+  mov dword [edi + 4092], 0      ; Upper 32 bits
+
   ;; Set up the first entry of each table, and the first two of PDT
   ;;
   ;; This part can be a little confusing. The key is knowing that the

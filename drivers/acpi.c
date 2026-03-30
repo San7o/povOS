@@ -59,7 +59,33 @@ acpi_rsdp_t* acpi_locate_rsdp(void)
   
   range_t range;
   
-  // First, check the memory map
+  // First, check EBDA (Extended BIOS Data Area), 0x00080000 - 0x0009FFFF
+  u16_t* ebda_seg = (void*)0x40E;
+  size_t ebda_physical_addr = ((size_t)(*ebda_seg)) << 4;
+  printk("[acpi] EBDA located at: %x\n", ebda_physical_addr);
+
+  range = (range_t){
+    .start = ebda_physical_addr,
+    .end   = ebda_physical_addr + 1024,
+  };
+  size_t addr = acpi_locate_rsdp_range(range);
+  if (addr != 0)
+    return (acpi_rsdp_t*) addr;
+  
+  // Second, check BIOS read-only memory space between 0x000E0000 and
+  // 0x000FFFFF
+  range = (range_t){
+    .start = 0x000E0000,
+    .end   = 0x000FFFFF,
+  };
+  addr = acpi_locate_rsdp_range(range);
+  if (addr != 0)
+    return (acpi_rsdp_t*) addr;
+
+  
+  // For last, check the memory map
+  // Note that this code assumes you can read the memory, meaning that
+  // it is identity mapped, otherwise it will cause a CPU triple fault.
   for (u32_t i = 0; i < *mmap_num_entries; ++i)
   {
     if (mmap[i].type != BIOS_MMAP_TYPE_ACPI_RECLAIMABLE)
@@ -81,28 +107,6 @@ acpi_rsdp_t* acpi_locate_rsdp(void)
       return (acpi_rsdp_t*) addr;
   }
   
-  // Second, check EBDA (Extended BIOS Data Area), 0x00080000 - 0x0009FFFF
-  u16_t* ebda_seg = (void*)0x40E;
-  size_t ebda_physical_addr = ((size_t)(*ebda_seg)) << 4;
-  printk("[acpi] EBDA located at: %x\n", ebda_physical_addr);
-
-  range = (range_t){
-    .start = ebda_physical_addr,
-    .end   = ebda_physical_addr + 1024,
-  };
-  size_t addr = acpi_locate_rsdp_range(range);
-  if (addr != 0)
-    return (acpi_rsdp_t*) addr;
-  
-  // Third, check BIOS read-only memory space between 0x000E0000 and
-  // 0x000FFFFF
-  range = (range_t){
-    .start = 0x000E0000,
-    .end   = 0x000FFFFF,
-  };
-  addr = acpi_locate_rsdp_range(range);
-  if (addr != 0)
-    return (acpi_rsdp_t*) addr;
   
   return NULL;
 }

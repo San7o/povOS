@@ -7,12 +7,16 @@ vgaromimage: file="/usr/share/bochs/VGABIOS-lgpl-latest"
 
 # We use floppy now since the kernel is so small that bochs does not
 # recognise it as a disk
-floppya: 1_44="povos", status=inserted
-boot: floppy
+# floppya: 1_44="povos", status=inserted
+# boot: floppy
 
-# ata0: enabled=1, ioaddr1=0x1f0, ioaddr2=0x3f0, irq=14
-# ata0-master: type=disk, path="povos", mode=flat, cylinders=0, heads=0, spt=0
-# boot: disk
+# Use hard disk, required the image to be at least 10M big
+ata0: enabled=1, ioaddr1=0x1f0, ioaddr2=0x3f0, irq=14
+ata0-master: type=disk, path="povos", mode=flat
+boot: disk
+
+# Uart
+com1: enabled=1, mode=term, dev=/dev/stdout
 
 # Log file for debugging
 log: bochsout.txt

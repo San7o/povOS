@@ -271,7 +271,6 @@ phys_addr_t pmmgr_alloc_page(void)
         
         pmmgr.bitfield[i] &= ~(1 << bit);
         void* addr = (void*)(u64_t)((i * 8 + bit) * PAGE_SIZE);
-        memset(addr, 0, PAGE_SIZE);
         return (phys_addr_t)addr;
       }
     }

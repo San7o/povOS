@@ -45,10 +45,10 @@ virt_addr_t vmm_alloc(vmmgr_t *vmmgr,
   {
     phys_addr_t paddr = pmmgr_alloc_page();
     virt_addr_t vaddr = addr + i * PAGE_SIZE;
-    paging_add_entry(vmmgr->pml4t,
-                     (void*) paddr,
+    paging_add_entry((void*) paddr,
                      (void*) vaddr,
                      pflags);
+    //memset((void*)vaddr, 0, PAGE_SIZE);
   }
 
   for (int i = 0; i < VMMGR_MAX_OBJECTS; ++i)

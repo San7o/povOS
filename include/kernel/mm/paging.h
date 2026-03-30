@@ -63,6 +63,32 @@ typedef struct __attribute__((aligned(PAGE_SIZE))) page_table {
   page_entry_t   entries[1 << 9];
 } page_table_t;
 
+//
+// Recursive Trick
+// ---------------
+//
+// TODO: we have some long long explaination to do here...
+//
+
+// Our index of choice
+#define RECURSIVE_SLOT 511UL
+// The base prefix for the recursive window (Sign-extended for 64-bit)
+#define RECURSIVE_BASE (0xFFFF000000000000ULL | (RECURSIVE_SLOT << 39))
+// Get the address of the PML4 itself
+// By using the slot 4 times, the CPU lands on the PML4 as a data page
+#define GET_PML4T_VADDR() \
+  ((u64_t*)(RECURSIVE_BASE | (RECURSIVE_SLOT << 30) | (RECURSIVE_SLOT << 21) | (RECURSIVE_SLOT << 12)))
+// Get the address of a specific PDPT
+// (Requires the PML4 index of the target address)
+#define GET_PDPT_VADDR(vaddr) \
+  ((u64_t*)(RECURSIVE_BASE | (RECURSIVE_SLOT << 30) | (RECURSIVE_SLOT << 21) | (((u64_t)(vaddr) >> 27) & 0x00000000001FF000ULL)))
+// Get the address of a specific Page Directory (PD)
+#define GET_PD_VADDR(vaddr) \
+  ((u64_t*)(RECURSIVE_BASE | (RECURSIVE_SLOT << 30) | (((u64_t)(vaddr) >> 18) & 0x000000003FFFF000ULL)))
+// Get the address of a specific Page Table (PT)
+#define GET_PT_VADDR(vaddr) \
+  ((u64_t*)(RECURSIVE_BASE | (((u64_t)(vaddr) >> 9) & 0x0000007FFFFFF000ULL)))
+
 // Allocate a new page map level 4 table
 //
 // Initialized it by identity mapping the first 4MB or memory. Does
@@ -75,8 +101,7 @@ page_table_t *paging_pml4t_init(void);
 // Implemented in assembly
 void paging_load(page_table_t *pml4t);
 
-void paging_add_entry(page_table_t       *pml4t,
-                      void               *phys_addr,
+void paging_add_entry(void               *phys_addr,
                       void               *virt_addr,
                       page_entry_flags_t  flags);
 

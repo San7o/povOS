@@ -77,6 +77,7 @@ qemu:
 
 .PHONY: bochs
 bochs:
+	truncate -s 10M $(POVOS_BIN)
 	$(BOCHS) -f $(BOCHSRC) -q
 
 .PHONY: disas

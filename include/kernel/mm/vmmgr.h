@@ -41,8 +41,8 @@ typedef struct vmmgr_obj {
 typedef struct vmmgr {
   // Virtual address space allocator
   free_list_alloc_t vas_allocator;
-  page_table_t  *pml4t;
-  vmmgr_obj_t objects[VMMGR_MAX_OBJECTS];
+  page_table_t     *pml4t;
+  vmmgr_obj_t       objects[VMMGR_MAX_OBJECTS];
 } vmmgr_t;
 
 //
@@ -55,7 +55,7 @@ void vmmgr_activate(vmmgr_t *vmmgr);
 // Allocates multiples of PAGE_SIZE of virtual and physical memory,
 // sets up the translation between them
 virt_addr_t vmm_alloc(vmmgr_t *vmmgr,
-                      size_t length,
+                      size_t length_bytes,
                       vmmgr_flags_t flags);
 
 // Invalidate TLB for this virtual address
