@@ -10,6 +10,7 @@
 #include <kernel/mm/pmmgr.h>
 #include <kernel/mm/vmmgr.h>
 #include <kernel/mm/bios_mmap.h>
+#include <kernel/mm/heap.h>
 #include <kernel/idt.h>
 #include <kernel/debug.h>
 #include <kernel/utils.h>
@@ -73,14 +74,11 @@ int kernel_main(void)
   //debug_print_pmmgr_bitfield();
 
   size_t heap_size = 4 * 1024 * 1024;
-  void* heap_mem = (void*)vmm_alloc(&vmmgr, heap_size, VMMGR_FLAG_WRITE);
-  debug_print_pmmgr_bitfield();
-  (void) heap_mem;
+  heap_init(&vmmgr, heap_size);
+  void* some_mem = kmalloc(1024);
+  (void) some_mem;
 
-  /*
-  free_list_alloc_t heap;
-  free_list_alloc_init(&heap, heap_mem, heap_size);
-  */
+  debug_print_pmmgr_bitfield();
   
   acpi_rsdp_t* acpi_rsdp = acpi_locate_rsdp();
   if (!acpi_rsdp)
