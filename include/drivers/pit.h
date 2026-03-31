@@ -26,9 +26,9 @@
 // again (in mode 2 - periodic operation), or simple stay idle (mode 0
 // - one shot operation).
 //
-#define PIT_CHANNEL_0_DATA_PORT    0x40   // r/w
-#define PIT_CHANNEL_1_DATA_PORT    0x41   // r/w
-#define PIT_CHANNEL_2_DATA_PORT    0x42   // r/w
+#define PIT_CHANNEL_0_DATA_PORT    0x40   // r/w  generates IRQ 0
+#define PIT_CHANNEL_1_DATA_PORT    0x41   // r/w  unusable
+#define PIT_CHANNEL_2_DATA_PORT    0x42   // r/w  connected to speaker
 //
 // PIT_MODE_REGISTER
 //
