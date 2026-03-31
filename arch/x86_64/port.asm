@@ -1,8 +1,10 @@
   global port_outb
   global port_outw
+  global port_outdw
   global port_inb
   global port_inw
-
+  global port_indw
+  
   ;; 
   ;; out - x86_64
   ;; ------------
@@ -52,7 +54,26 @@ port_outw:
   pop rdx
   pop rax
   ret
-    
+
+  ;; -----------------------------------------------------------------
+  ;; Writes `esi` value into port `dx`
+port_outdw:
+  
+  push rax
+  push rdx
+
+  xor rax, rax
+  xor rdx, rdx
+  
+  mov eax, esi
+  mov dx, di
+  out dx, eax
+
+  pop rdx
+  pop rax
+  ret
+  
+  
   ;; 
   ;; in - x86_64
   ;; -----------
@@ -93,6 +114,22 @@ port_inw:
 
   mov dx, di
   in ax, dx
+  
+  pop rdx
+  ret
+
+  
+  ;; -----------------------------------------------------------------
+  ;; Returns in `eax` the value from port `di`
+port_indw:
+
+  push rdx
+
+  xor rax, rax
+  xor rdx, rdx
+
+  mov dx, di
+  in eax, dx
   
   pop rdx
   ret

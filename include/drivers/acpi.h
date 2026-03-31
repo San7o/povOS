@@ -33,7 +33,7 @@
 // This is the "entry point" to all ACPI informationm it contains
 // a pointer to the RSDT.
 typedef struct acpi_rsdp {
-  // "RSD PTR "
+  #define ACPI_RSDP_SIGNATURE "RSD PTR "
   u8_t  signature[8];
   // This is the checksum of the fields defined in the ACPI 1.0
   // specification. Summing up the first 20 bytes of this table
@@ -65,7 +65,8 @@ typedef struct acpi_rsdp {
 //
 // Common header for several tables
 typedef struct acpi_sdt_header {
-  u8_t  signature[4];
+  #define ACPI_SDT_SIGNATURE_SIZE 4
+  u8_t  signature[ACPI_SDT_SIGNATURE_SIZE];
   // Length, in bytes, of the entire table. The length implies the
   // number of entry fields (n) at the end of the table (after the
   // header).
@@ -85,16 +86,17 @@ typedef struct acpi_sdt_header {
   u32_t creator_revision;
 } __attribute__((packed)) acpi_sdt_header_t;
 
+
 //
 // System Description Table (used in ACPI 1.0)
 //
 typedef struct acpi_rsdt {
-  // header.signature is "RSDT"
+  #define ACPI_RSDT_SIGNATURE "RSDT"
   acpi_sdt_header_t header;
   // An array of 32-bit physical addresses that point to other system
   // description table headers. Its size can be calculated from the
   // length field at the stop of this structure.
-  u32_t entries_ptr;
+  u32_t entries[];
 } __attribute__((packed)) acpi_rsdt_t;
 
 //
@@ -102,10 +104,10 @@ typedef struct acpi_rsdt {
 //
 // Same as RSDT header, but entries addresses are 64 bit wide.
 typedef struct acpi_xsdt {
-  // header.signature is "XSDT"
+  #define ACPI_XSDT_SIGNATURE "XSDT"
   acpi_sdt_header_t header;
   // Addresses are 64 bit here.
-  u64_t entries_ptr;
+  u64_t entries[];
 } __attribute__((packed)) acpi_xsdt_t;
 
 #define ACPI_ADDRSPACE_SYSTEM_MEMORY             0x00

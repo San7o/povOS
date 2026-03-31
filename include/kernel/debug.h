@@ -28,5 +28,6 @@ void debug_dump_input_loop(input_t *input);
 void debug_print_memory_map_uart(void);
 void debug_print_pmmgr_bitfield(void);
 void debug_vga_draw_flag(void);
+void debug_enumerate_pci_devices(void);
 
 #endif // POVOS_KERNEL_DEBUG_H

@@ -85,21 +85,17 @@ int kernel_main(void)
   {
     printk("[error] Could not find ACPI RSDP table\n");
   }
-
-  /*
-  // ACPI tables are saved in memory that is not mapped in pages,
-  // so we cannot acces them yet
   else
   {
+    printk("[info] Found ACPI RSDP at: %x\n", acpi_rsdp);
+    
     hpet_acpi_sdt_t* hpet = acpi_locate_sdt(acpi_rsdp, HPET_ACPI_SIGNATURE);
     if (!hpet)
       printk("[error] Could not find HPET timer\n");
     else
       printk("[info] Found HPET timer\n");
   }
-  */
-  
-  
+
   //
   // Setup interrupts
   //
@@ -113,6 +109,7 @@ int kernel_main(void)
   debug_print_vga();
   debug_write_uart();
   debug_dump_regs_uart();
+  debug_enumerate_pci_devices();
   // breakpoint();
 
   //

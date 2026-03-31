@@ -11,13 +11,14 @@ povOS is an operating system for the x86_64 architecture.
 - custom bootloader
 - custom standard library
 - drivers:
-  - ps2
-  - uart
-  - vga
-  - pic (Programmable Interrupt Controller)
-  - pit (Programmable Interrupt Timer)
-  - keyboard
+  - PS/2
+  - UART
+  - VGA
+  - PIC (Programmable Interrupt Controller)
+  - PIT (Programmable Interrupt Timer)
+  - Keyboard
   - ACPI
+  - PCI
 - kernel:
   - IDT (Interrupt Descriptor Tabe) and ISR (Interrupt Service Routines)
   - input (supports multiple keyboard layouts)
@@ -34,6 +35,26 @@ povOS is an operating system for the x86_64 architecture.
     - heap
 
 The implementation is clean and readable, headers are documentation.
+
+## Usage
+
+Compile and run with qemu:
+
+```
+make -B && make qemu
+```
+
+Compile and run with bochs:
+
+```
+make -B && make bochs
+```
+
+Run inside GDB (with debug info):
+
+```
+./scripts/debug x86_64
+```
 
 ## The boot sequence
 

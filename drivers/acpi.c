@@ -5,6 +5,9 @@
 
 #include <drivers/acpi.h>   // implements
 #include <kernel/range.h>
+#include <kernel/mm/pmmgr.h>
+#include <kernel/mm/paging.h>
+#include <kernel/mm/layout.h>
 #include <libk/string.h>
 #include <libk/stdio.h>
 #include <libk/stddef.h>
@@ -13,7 +16,7 @@
 // the space at the end) and can be confirmed via a checksum.
 static size_t acpi_locate_rsdp_range(range_t range)
 {
-  const char *id = "RSD PTR ";
+  const char *id = ACPI_RSDP_SIGNATURE;
   unsigned int id_len = strlen(id);
   char* addr = (void*)range.start;
 
@@ -38,7 +41,6 @@ static size_t acpi_locate_rsdp_range(range_t range)
           goto next;
       }
       
-      printk("[acpi] Found ACPI RSDP at %x\n", addr);
       return (size_t)addr;
     }
 
@@ -115,23 +117,41 @@ void* acpi_locate_sdt(acpi_rsdp_t* rsdp, const char signature[4])
 {
   if (!rsdp) return NULL;
 
+  page_entry_flags_t page_flags = {
+    .present = 1,
+    .rw = 1,
+  };
+  
   if (rsdp->revision == ACPI_VERSION_1)
   {
     // ACPI 1.0
-    acpi_rsdt_t* rsdt = (void*)(unsigned long int)rsdp->rsdt_address;
-    if (!rsdt) return NULL;
-    if (strcmp((char*)rsdt->header.signature, "RSDT") != 0) return NULL;
+    phys_addr_t rsdt_phys = (phys_addr_t)rsdp->rsdt_address;
+    if (rsdt_phys == 0) return NULL;
+
+    // Map a virtual address to rsdt_phys
+    acpi_rsdt_t* rsdt_virt = MM_PHYS_TO_VIRT(rsdt_phys);
+    paging_add_entry((void*)rsdt_phys, rsdt_virt, page_flags);
+    
+    if (strncmp((char*)rsdt_virt->header.signature,
+                ACPI_RSDT_SIGNATURE,
+                ACPI_SDT_SIGNATURE_SIZE)
+        != 0) return NULL;
 
     // Iterate over the entires, looking for [signature]
-    u32_t* entry_ptr_array = (void*)(unsigned long int)rsdt->entries_ptr;
     unsigned int entry_len =
-      (rsdt->header.length - sizeof(acpi_sdt_header_t)) / 4;
+      (rsdt_virt->header.length - sizeof(acpi_sdt_header_t)) / 4;
     for (unsigned int i = 0; i < entry_len; ++i)
     {
-      acpi_sdt_header_t *entry_ptr = (void*)(unsigned long int)entry_ptr_array[i];
-      if (!entry_ptr) return NULL;
-      if (strcmp((char*)entry_ptr->signature, signature) == 0)
-        return (void*) entry_ptr;
+      phys_addr_t entry_phys = rsdt_virt->entries[i];
+      if (entry_phys == 0) continue;
+
+      // Map a virtual address to rsdt_phys
+      acpi_sdt_header_t* entry_virt = MM_PHYS_TO_VIRT(entry_phys);
+      paging_add_entry((void*)entry_phys, entry_virt, page_flags);
+      
+      if (strncmp((char*)entry_virt->signature, signature,
+                  ACPI_SDT_SIGNATURE_SIZE) == 0)
+        return (void*) entry_virt;
       
     }
     return NULL;
@@ -139,20 +159,33 @@ void* acpi_locate_sdt(acpi_rsdp_t* rsdp, const char signature[4])
   else
   {
     // ACPI 2.0
-    acpi_xsdt_t* xsdt = (acpi_xsdt_t*)rsdp->xsdt_address;
-    if (!xsdt) return NULL;
-    if (strcmp((char*)xsdt->header.signature, "XSDT") != 0) return NULL;
+    phys_addr_t xsdt_phys = (phys_addr_t)rsdp->xsdt_address;
+    if (xsdt_phys == 0) return NULL;
+
+    // Map xsdt_virt to xsdt_phys
+    acpi_xsdt_t* xsdt_virt = MM_PHYS_TO_VIRT(xsdt_phys);
+    paging_add_entry((void*)xsdt_phys, xsdt_virt, page_flags);
     
+    if (strncmp((char*)xsdt_virt->header.signature,
+                ACPI_XSDT_SIGNATURE,
+                ACPI_SDT_SIGNATURE_SIZE)
+        != 0) return NULL;
+
     // Iterate over the entires, looking for [signature]
-    u64_t* entry_ptr_array = (void*)xsdt->entries_ptr;
     unsigned int entry_len =
-      (xsdt->header.length - sizeof(acpi_sdt_header_t)) / 4;
+      (xsdt_virt->header.length - sizeof(acpi_sdt_header_t)) / 4;
     for (unsigned int i = 0; i < entry_len; ++i)
     {
-      acpi_sdt_header_t *entry_ptr = (void*)entry_ptr_array[i];
-      if (!entry_ptr) return NULL;
-      if (strcmp((char*)entry_ptr->signature, signature) == 0)
-        return (void*) entry_ptr;
+      acpi_sdt_header_t *entry_phys = (void*)xsdt_virt->entries[i];
+      if (entry_phys == 0) return NULL;
+
+      // Map a virtual address to rsdt_phys
+      acpi_sdt_header_t* entry_virt = MM_PHYS_TO_VIRT(entry_phys);
+      paging_add_entry((void*)entry_phys, entry_virt, page_flags);
+      
+      if (strncmp((char*)entry_virt->signature, signature,
+                 ACPI_SDT_SIGNATURE_SIZE) == 0)
+        return (void*) entry_virt;
     }
     return NULL;
   }

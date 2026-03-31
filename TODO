@@ -1,7 +1,13 @@
 TODO
 ====
 
-- memory allocator
+Kernel:
+
 - testing framework
 - tasks + scheduler
-- support EFI boot 
+- support EFI boot
+- higher half kernel
+
+Drivers:
+
+- HPET
