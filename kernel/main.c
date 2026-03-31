@@ -11,6 +11,7 @@
 #include <kernel/mm/vmmgr.h>
 #include <kernel/mm/bios_mmap.h>
 #include <kernel/mm/heap.h>
+#include <kernel/mm/layout.h>
 #include <kernel/idt.h>
 #include <kernel/debug.h>
 #include <kernel/utils.h>
@@ -20,9 +21,9 @@
 #include <kernel/tty.h>
 #include <drivers/pic.h>
 #include <drivers/pit.h>
-#include <drivers/hpet.h>
 #include <drivers/uart.h>
 #include <drivers/acpi.h>
+#include <drivers/hpet.h>
 #include <drivers/video/vga.h>
 #include <drivers/input/keyboard.h>
 
@@ -79,7 +80,8 @@ int kernel_main(void)
   (void) some_mem;
 
   debug_print_pmmgr_bitfield();
-  
+
+  void* hpet_base_reg = NULL;
   acpi_rsdp_t* acpi_rsdp = acpi_locate_rsdp();
   if (!acpi_rsdp)
   {
@@ -89,11 +91,21 @@ int kernel_main(void)
   {
     printk("[info] Found ACPI RSDP at: %x\n", acpi_rsdp);
     
-    hpet_acpi_sdt_t* hpet = acpi_locate_sdt(acpi_rsdp, HPET_ACPI_SIGNATURE);
+    hpet_acpi_sdt_t *hpet = acpi_locate_sdt(acpi_rsdp, HPET_ACPI_SIGNATURE);
     if (!hpet)
       printk("[error] Could not find HPET timer\n");
     else
-      printk("[info] Found HPET timer\n");
+      printk("[info] Found HPET timer, register at address: %x\n", hpet->address);
+
+    // Map hpet->address
+    page_entry_flags_t page_flags = {
+      .present = 1,
+      .rw = 1,
+    };
+    hpet_base_reg = MM_PHYS_TO_VIRT(hpet->address);
+    paging_add_entry((void*)hpet->address, hpet_base_reg, page_flags);
+
+    hpet_enable(hpet_base_reg, false);
   }
 
   //
@@ -138,7 +150,7 @@ int kernel_main(void)
   //debug_vga_draw_flag();
   
   // Read and print keyboard input
-  debug_dump_input_loop(&input);
+  debug_dump_input_loop(&input, (void*)hpet_base_reg);
 
   while(1) {}
   

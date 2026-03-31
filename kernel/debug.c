@@ -9,6 +9,7 @@
 #include <drivers/uart.h>
 #include <drivers/video/vga.h>
 #include <drivers/pci.h>
+#include <drivers/hpet.h>
 #include <kernel/mm/bios_mmap.h>
 #include <kernel/mm/pmmgr.h>
 
@@ -59,7 +60,7 @@ void debug_write_uart(void)
   return;
 }
 
-void debug_dump_input_loop(input_t *input)
+void debug_dump_input_loop(input_t *input, void* hpet_base_reg)
 {
   u64_t previous_time_s = 0;
   while(1) {
@@ -69,7 +70,13 @@ void debug_dump_input_loop(input_t *input)
     {
       previous_time_s = time_ms / 1000;
 
-      uart_printf(uart_port1, "[isr] [pit 0] time: %d s\n", time_ms / 1000);
+      uart_printf(uart_port1, "[debug] [isr] [pit 0] time: %d s\n", time_ms / 1000);
+
+      if (hpet_base_reg)
+      {
+        u64_t hpet_counter = hpet_poll(hpet_base_reg);
+        uart_printf(uart_port1, "[debug] [hpet] counter: %d\n", hpet_counter);
+      }
     }
     
     input_event_t event = input_events_get(input);

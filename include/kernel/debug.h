@@ -24,7 +24,7 @@ void debug_dump_keyboard_event_uart(keyboard_event_t event);
 void debug_dump_input_event_uart(input_event_t event);
 void debug_print_vga(void);
 void debug_write_uart(void);
-void debug_dump_input_loop(input_t *input);
+void debug_dump_input_loop(input_t *input, void* hpet_base_reg);
 void debug_print_memory_map_uart(void);
 void debug_print_pmmgr_bitfield(void);
 void debug_vga_draw_flag(void);

@@ -15,6 +15,7 @@ povOS is an operating system for the x86_64 architecture.
   - UART
   - VGA
   - PIC (Programmable Interrupt Controller)
+  - HPEC (High Precision Event Timer)
   - PIT (Programmable Interrupt Timer)
   - Keyboard
   - ACPI
