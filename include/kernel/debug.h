@@ -20,6 +20,7 @@
 // Implemented in assembly
 void debug_dump_regs_uart(void);
 
+void debug_dump_regs_uart2(void);
 void debug_dump_keyboard_event_uart(keyboard_event_t event);
 void debug_dump_input_event_uart(input_event_t event);
 void debug_print_vga(void);

@@ -120,9 +120,11 @@ int kernel_main(void)
   // Tests
   debug_print_vga();
   debug_write_uart();
-  debug_dump_regs_uart();
   debug_enumerate_pci_devices();
   // breakpoint();
+
+  debug_dump_regs_uart();
+  debug_dump_regs_uart2();
 
   //
   // Setup tty

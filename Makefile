@@ -42,7 +42,7 @@ CFLAGS  = --target=$(ARCH)-elf \
           -nodefaultlibs \
           -fno-builtin \
           -Wall -Wextra -Werror \
-          -I include
+          -I include -I arch/${ARCH}/include
 KERNEL_LDFLAGS  = -T kernel/linker.ld
 ASFLAGS         = -f elf64
 BOOT_BIN    = bootloader/$(ARCH)/boot

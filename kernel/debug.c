@@ -12,6 +12,35 @@
 #include <drivers/hpet.h>
 #include <kernel/mm/bios_mmap.h>
 #include <kernel/mm/pmmgr.h>
+#include <arch/cpu_regs.h>
+
+void debug_dump_regs_uart2(void)
+{
+#ifdef __x86_64__
+  cpu_regs_t regs;
+  regs_save(&regs);
+
+  uart_printf(uart_port1, "[debug] [regs2] rax: %x\n", regs.rax);
+  uart_printf(uart_port1, "[debug] [regs2] rbx: %x\n", regs.rbx);
+  uart_printf(uart_port1, "[debug] [regs2] rcx: %x\n", regs.rcx);
+  uart_printf(uart_port1, "[debug] [regs2] rdx: %x\n", regs.rdx);
+  uart_printf(uart_port1, "[debug] [regs2] rsi: %x\n", regs.rsi);
+  uart_printf(uart_port1, "[debug] [regs2] rdi: %x\n", regs.rdi);
+  uart_printf(uart_port1, "[debug] [regs2] rsp: %x\n", regs.rsp);
+  uart_printf(uart_port1, "[debug] [regs2] rbp: %x\n", regs.rbp);
+  uart_printf(uart_port1, "[debug] [regs2] r8:  %x\n", regs.r8);
+  uart_printf(uart_port1, "[debug] [regs2] r9:  %x\n", regs.r9);
+  uart_printf(uart_port1, "[debug] [regs2] r10: %x\n", regs.r10);
+  uart_printf(uart_port1, "[debug] [regs2] r11: %x\n", regs.r11);
+  uart_printf(uart_port1, "[debug] [regs2] r12: %x\n", regs.r12);
+  uart_printf(uart_port1, "[debug] [regs2] r13: %x\n", regs.r13);
+  uart_printf(uart_port1, "[debug] [regs2] r14: %x\n", regs.r14);
+  uart_printf(uart_port1, "[debug] [regs2] r15: %x\n", regs.r15);
+  uart_printf(uart_port1, "[debug] [regs2] rip: %x\n", regs.rip);
+  uart_printf(uart_port1, "[debug] [regs2] rflags: %x\n", regs.rflags);
+  uart_printf(uart_port1, "[debug] [regs2] cr3: %x\n",    regs.cr3);
+#endif
+}
 
 void debug_dump_keyboard_event_uart(keyboard_event_t event)
 {
