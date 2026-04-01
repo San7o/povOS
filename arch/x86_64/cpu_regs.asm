@@ -1,7 +1,9 @@
   [bits 64]
 
   global regs_save
-  
+  global cpu_do_context_switch
+
+  ;; -----------------------------------------------------------------
   ;; Save all registers in [rdi], which must be a pointer to a
   ;; cpu_regs_t struct.
 regs_save:
@@ -35,4 +37,12 @@ regs_save:
   mov [rdi + 144], rax
 
   pop rax
+  ret
+
+  ;; -----------------------------------------------------------------
+  ;; Perform context switching to cpu_regs_t passed in rdi
+cpu_do_context_switch:
+
+  ;; TODO
+  
   ret

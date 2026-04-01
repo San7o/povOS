@@ -34,7 +34,7 @@ povOS is an operating system for the x86_64 architecture.
     - virtual memory manager
     - free-list based memory allocator
     - heap
-  - multithreading: work in progress
+  - multitasking: work in progress
 
 The implementation is clean and readable, headers are documentation.
 

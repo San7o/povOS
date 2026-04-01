@@ -14,6 +14,15 @@ size_t strlen(const char *s)
   return len;
 }
 
+size_t strnlen(const char *s, size_t n)
+{
+  if (!s) return 0;
+  
+  size_t len = 0;
+  while(*s++ != '\0') { len++; };
+  return (len < n) ? len : n;
+}
+
 int strcmp(const char *s1, const char *s2)
 {
   while (*s1 == *s2 && (*s1 != '\0' && *s2 != '\0')) { s1++; s2++; }
@@ -32,6 +41,29 @@ int strncmp(const char *s1, const char *s2, size_t n)
   if (*s1 == '\0') return -1;
   if (*s2 == '\0') return 1;
   return ((*s1 > *s2) ? 1 : -1);
+}
+
+char *strncpy(char *dst, const char *src, size_t size)
+{
+  size_t  dlen;
+  dlen = strnlen(src, size);
+  return memset(mempcpy(dst, src, dlen), 0, size - dlen);
+}
+
+void *memcpy(void *dest, const void *src, size_t n)
+{
+  u8_t* dest_byte = dest;
+  const u8_t* src_byte  = src;
+  for (size_t i = 0; i < n; ++i)
+    dest_byte[i] = src_byte[i];
+
+  return dest;
+}
+
+void *mempcpy(void *dest, const void *src, size_t n)
+{
+  memcpy(dest, src, n);
+  return dest + n;
 }
 
 void *memset(void *buf, u8_t c, size_t n)

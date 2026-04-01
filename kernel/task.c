@@ -4,8 +4,7 @@
 // Github:  @San7o
 
 #include <kernel/task.h>   // implements
-
-task_t *current_task = NULL;
+#include <libk/string.h>
 
 // Initialize current_task
 void task_init(void)
@@ -13,14 +12,18 @@ void task_init(void)
   // TODO
 }
 
-task_t *task_create(cpu_regs_t regs)
+task_t task_create(cpu_regs_t regs, vmmgr_t *vmmgr,
+                   const char name[TASK_NAME_LEN])
 {
-  (void) regs;
-  // TODO
-
-  task_t task = {
-  };
-  (void) task;
+  static u64_t task_id = 0;
+  task_id++;
   
-  return NULL;
+  task_t task = {
+    .id    = task_id,
+    .regs  = regs,
+    .vmmgr = vmmgr,
+  };
+  strncpy(&task.name[0], name, TASK_NAME_LEN);
+  
+  return task;
 }

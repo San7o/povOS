@@ -8,6 +8,8 @@
 
 #include <kernel/task.h>
 
-void sched_switch_to(cpu_regs_t regs, task_t *task);
+extern task_t current_task;
+
+void sched_switch_to(task_t task);
 
 #endif // POVOS_KERNEL_SCHED_H
