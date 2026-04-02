@@ -9,3 +9,5 @@ Kernel:
 - higher half kernel
 
 Drivers:
+
+- ATA (PIO mode)
