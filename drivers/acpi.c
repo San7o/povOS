@@ -118,7 +118,6 @@ void* acpi_locate_sdt(acpi_rsdp_t* rsdp, const char signature[4])
   if (!rsdp) return NULL;
 
   page_entry_flags_t page_flags = {
-    .present = 1,
     .rw = 1,
   };
   

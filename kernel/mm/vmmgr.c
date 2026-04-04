@@ -14,7 +14,7 @@ void vmmgr_setup(vmmgr_t *vmmgr)
 {
   if (!vmmgr) return;
   vmmgr->pml4t   = paging_pml4t_init();
-  // We start at 0x400000 since the memory beofre this is already
+  // We start at 0x400000 since the memory before this is already
   // identity mapped my default in the physical memory manager
   free_list_alloc_init(&vmmgr->vas_allocator,
                        (void*)0x400000, 0xFFFFFFFFFFFFFFFF);
@@ -40,6 +40,12 @@ virt_addr_t vmm_alloc(vmmgr_t *vmmgr,
   virt_addr_t  addr = (virt_addr_t)free_list_alloc_malloc(&vmmgr->vas_allocator,
                                                           length);
   page_entry_flags_t pflags = {0};
+  if (flags & VMMGR_FLAG_WRITE)
+    pflags.rw = 1;
+  if (flags & VMMGR_FLAG_EXEC)
+    pflags.nx = 0;
+  if (flags & VMMGR_FLAG_USER)
+    pflags.user = 1;
   
   for (unsigned int i = 0; i < pages; ++i)
   {
@@ -48,7 +54,6 @@ virt_addr_t vmm_alloc(vmmgr_t *vmmgr,
     paging_add_entry((void*) paddr,
                      (void*) vaddr,
                      pflags);
-    //memset((void*)vaddr, 0, PAGE_SIZE);
   }
 
   for (int i = 0; i < VMMGR_MAX_OBJECTS; ++i)

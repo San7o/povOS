@@ -86,12 +86,12 @@ typedef struct cpu_regs {
   // MMX Registers...
   // SSE registers...
   
-} cpu_regs_t;
+} __attribute__((packed)) cpu_regs_t;
 
 // Save all registers in [regs]
 void regs_save(cpu_regs_t *regs);
 
 // Perform context switching
-void cpu_do_context_switch(cpu_regs_t regs);
+void cpu_do_context_switch(cpu_regs_t *regs);
 
 #endif // POVOS_ARCH_X86_64_CPU_REGS_H

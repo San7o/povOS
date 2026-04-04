@@ -14,6 +14,7 @@ page_table_t *paging_pml4t_init(void)
   page_table_t *pt0 = (void*)pmmgr_alloc_page();
   for (int i = 0; i < 512; ++i)
   {
+    memset(&pt0->entries[i], 0, sizeof(page_entry_t));
     pt0->entries[i].address = (i * PAGE_SIZE) >> 12; 
     pt0->entries[i].present = 1;
     pt0->entries[i].rw = 1;
@@ -22,25 +23,31 @@ page_table_t *paging_pml4t_init(void)
   page_table_t *pt1 = (void*)pmmgr_alloc_page();
   for (int i = 0; i < 512; ++i)
   {
+    memset(&pt1->entries[i], 0, sizeof(page_entry_t));
     pt1->entries[i].address = (0x200000 + i * PAGE_SIZE) >> 12; 
     pt1->entries[i].present = 1;
     pt1->entries[i].rw = 1;
   }
 
   page_table_t *pd = (void*)pmmgr_alloc_page();
+  memset(&pd->entries[0], 0, sizeof(page_entry_t));
   pd->entries[0].address = ((u64_t)pt0) >> 12;
   pd->entries[0].present = 1;
   pd->entries[0].rw = 1;
+  
+  memset(&pd->entries[1], 0, sizeof(page_entry_t));
   pd->entries[1].address = ((u64_t)pt1) >> 12;
   pd->entries[1].present = 1;
   pd->entries[1].rw = 1;
 
   page_table_t *pdpt = (void*)pmmgr_alloc_page();
+  memset(&pdpt->entries[1], 0, sizeof(page_entry_t));
   pdpt->entries[0].address = ((u64_t)pd) >> 12;
   pdpt->entries[0].present = 1;
   pdpt->entries[0].rw = 1;
     
   page_table_t* pml4t = (void*)pmmgr_alloc_page();
+  memset(&pml4t->entries[1], 0, sizeof(page_entry_t));
   pml4t->entries[0].address = ((u64_t)pdpt) >> 12;
   pml4t->entries[0].present = 1;
   pml4t->entries[0].rw = 1;
@@ -113,7 +120,7 @@ void paging_add_entry(void               *phys_addr,
   // Level 4: PT -> page
   page_entry_t *pte = &pt->entries[pt_idx];
   pte->address  = ((u64_t)phys_addr) >> 12;
-  pte->present  = flags.present;
+  pte->present  = 1;
   pte->rw       = flags.rw;
   pte->user     = flags.user;
   pte->nx       = flags.nx;

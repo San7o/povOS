@@ -16,10 +16,12 @@
 #include <drivers/input/keyboard.h>
 #include <drivers/video/vga.h>
 #include <kernel/input/input.h>
+#include <arch/cpu_regs.h>
 
 // Implemented in assembly
 void debug_dump_regs_uart(void);
 
+void debug_dump_regs_uart3(cpu_regs_t regs);
 void debug_dump_regs_uart2(void);
 void debug_dump_keyboard_event_uart(keyboard_event_t event);
 void debug_dump_input_event_uart(input_event_t event);
@@ -31,5 +33,7 @@ void debug_print_pmmgr_bitfield(void);
 void debug_vga_draw_flag(void);
 void debug_enumerate_pci_devices(void);
 void debug_sleep(void);
+// A functions that prints something in a loop
+void debug_test_task_fn(void);
 
 #endif // POVOS_KERNEL_DEBUG_H

@@ -13,14 +13,10 @@
 #include <drivers/hpet.h>
 #include <kernel/mm/bios_mmap.h>
 #include <kernel/mm/pmmgr.h>
-#include <arch/cpu_regs.h>
 
-void debug_dump_regs_uart2(void)
+void debug_dump_regs_uart3(cpu_regs_t regs)
 {
 #ifdef __x86_64__
-  cpu_regs_t regs;
-  regs_save(&regs);
-
   uart_printf(uart_port1, "[debug] [regs2] rax: %x\n", regs.rax);
   uart_printf(uart_port1, "[debug] [regs2] rbx: %x\n", regs.rbx);
   uart_printf(uart_port1, "[debug] [regs2] rcx: %x\n", regs.rcx);
@@ -41,6 +37,13 @@ void debug_dump_regs_uart2(void)
   uart_printf(uart_port1, "[debug] [regs2] rflags: %x\n", regs.rflags);
   uart_printf(uart_port1, "[debug] [regs2] cr3: %x\n",    regs.cr3);
 #endif
+}
+
+void debug_dump_regs_uart2(void)
+{
+  cpu_regs_t regs;
+  regs_save(&regs);
+  debug_dump_regs_uart3(regs);
 }
 
 void debug_dump_keyboard_event_uart(keyboard_event_t event)
@@ -213,4 +216,13 @@ void debug_sleep(void)
   sleep(1);
   uart_printf(uart_port1, "Sleeping 3...\n");
   sleep_ms(1000);
+}
+
+void debug_test_task_fn(void)
+{
+  while(1)
+  {
+    uart_printf(uart_port1, "Test task!\n");
+    sleep(1);
+  }
 }

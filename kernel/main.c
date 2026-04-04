@@ -99,7 +99,6 @@ int kernel_main(void)
 
     // Map hpet->address
     page_entry_flags_t page_flags = {
-      .present = 1,
       .rw = 1,
     };
     hpet_base_reg = MM_PHYS_TO_VIRT(hpet->address);
@@ -122,10 +121,10 @@ int kernel_main(void)
   debug_write_uart();
   debug_enumerate_pci_devices();
   // breakpoint();
-
+  
   debug_dump_regs_uart();
   debug_dump_regs_uart2();
-
+  
   //
   // Setup tty
   //
@@ -151,6 +150,14 @@ int kernel_main(void)
   //vga_set_graphics_mode();
   //debug_vga_draw_flag();
   debug_sleep();
+
+  
+  u64_t *stack_top = (u64_t*)(kmalloc(4096) + 4096);
+  cpu_regs_t regs;
+  regs_save(&regs);
+  regs.rip = (u64_t)(void*)debug_test_task_fn;
+  regs.rsp = (u64_t)stack_top;
+  cpu_do_context_switch(&regs);
   
   // Read and print keyboard input
   debug_dump_input_loop(&input, (void*)hpet_base_reg);

@@ -189,6 +189,40 @@ debug_dump_regs_uart:
   mov rsi, `\n`
   call uart_putc
 
+  ;; rip
+  mov rdi, [uart_port1]
+  mov rsi, debug_dump_regs_uart_rip_str
+  call uart_write_str
+  mov rdi, [uart_port1]
+  mov rsi, [rsp+24]
+  call uart_write_hex
+  mov rdi, [uart_port1]
+  mov rsi, `\n`
+  call uart_putc
+  
+  ;; rflags
+  mov rdi, [uart_port1]
+  mov rsi, debug_dump_regs_uart_rflags_str
+  call uart_write_str
+  mov rdi, [uart_port1]
+  pushfq
+  pop rsi
+  call uart_write_hex
+  mov rdi, [uart_port1]
+  mov rsi, `\n`
+  call uart_putc
+
+  ;; cr3
+  mov rdi, [uart_port1]
+  mov rsi, debug_dump_regs_uart_cr3_str
+  call uart_write_str
+  mov rdi, [uart_port1]
+  mov rsi, cr3
+  call uart_write_hex
+  mov rdi, [uart_port1]
+  mov rsi, `\n`
+  call uart_putc
+  
   pop rax
   pop rsi
   pop rdi
@@ -210,3 +244,6 @@ debug_dump_regs_uart_r12_str:   db `[debug] [regs] r12: `, 0
 debug_dump_regs_uart_r13_str:   db `[debug] [regs] r13: `, 0
 debug_dump_regs_uart_r14_str:   db `[debug] [regs] r14: `, 0
 debug_dump_regs_uart_r15_str:   db `[debug] [regs] r15: `, 0
+debug_dump_regs_uart_rip_str:   db `[debug] [regs] rip: `, 0
+debug_dump_regs_uart_rflags_str:   db `[debug] [regs] rflags: `, 0
+debug_dump_regs_uart_cr3_str:   db `[debug] [regs] cr3: `, 0

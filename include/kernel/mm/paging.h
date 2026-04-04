@@ -31,7 +31,6 @@
 typedef u64_t virt_ptr_t;
 
 typedef struct page_entry_flags {
-  u64_t present    : 1;
   u64_t rw         : 1;
   u64_t user       : 1;
   u64_t pwt        : 1;
@@ -41,7 +40,7 @@ typedef struct page_entry_flags {
 
 // This is a single page entry (uses 4 bytes)
 typedef struct __attribute__((packed)) {
-  u64_t present    : 1;  // P, must be 0
+  u64_t present    : 1;  // 1 present, 0 not present
   u64_t rw         : 1;  // R/W, if 0 writes may not be allowed
   u64_t user       : 1;  // U/S, if 0 user-mode accesses are not allowed
   u64_t pwt        : 1;  // Page-level write-through
