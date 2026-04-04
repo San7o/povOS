@@ -150,6 +150,7 @@ int kernel_main(void)
 
   //vga_set_graphics_mode();
   //debug_vga_draw_flag();
+  debug_sleep();
   
   // Read and print keyboard input
   debug_dump_input_loop(&input, (void*)hpet_base_reg);

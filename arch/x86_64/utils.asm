@@ -5,6 +5,7 @@
   global breakpoint
   global paging_load
   global vmm_invalidate_tlb
+  global halt_cpu
 
 enable_interrupts:
   sti
@@ -34,6 +35,6 @@ vmm_invalidate_tlb:
   ;; -----------------------------------------------------------------
   ;; Halt the CPU until the next external interrupt occurs,
   ;  effectively putting the processor in a low-power state.
-halt:
+halt_cpu:
   hlt
   ret

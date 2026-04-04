@@ -3,6 +3,7 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
+#include <libk/unistd.h>
 #include <kernel/debug.h>   // implements
 #include <kernel/mm/paging.h>
 #include <kernel/time.h>
@@ -202,4 +203,14 @@ void debug_enumerate_pci_devices(void)
                   bus, slot, pci_dv.vendor_id, pci_dv.device_id);
     }
   }
+}
+
+void debug_sleep(void)
+{
+  uart_printf(uart_port1, "Sleeping 1...\n");
+  sleep(1);
+  uart_printf(uart_port1, "Sleeping 2...\n");
+  sleep(1);
+  uart_printf(uart_port1, "Sleeping 3...\n");
+  sleep_ms(1000);
 }

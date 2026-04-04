@@ -26,6 +26,6 @@ void enable_interrupts(void);
 
 // Halt the CPU until the next external interrupt occurs, effectively
 // putting the processor in a low-power state.
-void halt(void);
+void halt_cpu(void);
 
 #endif // POVOS_KERNEL_UTILS_H

@@ -3,7 +3,6 @@ TODO
 
 Kernel:
 
-- sleep
 - testing framework
 - tasks + scheduler
 - support EFI boot
