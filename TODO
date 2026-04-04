@@ -4,7 +4,7 @@ TODO
 Kernel:
 
 - testing framework
-- tasks + scheduler
+- scheduler
 - support EFI boot
 - higher half kernel
 

@@ -38,7 +38,7 @@ povOS is an operating system for the x86_64 architecture.
   - multitasking
     - tasks
     - context switching
-    - scheduler: TODO
+    - scheduler: work in progress
 
 The implementation is clean and readable, headers are documentation.
 

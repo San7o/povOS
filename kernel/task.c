@@ -14,12 +14,8 @@ void task_init(void)
 
 task_t task_create(cpu_regs_t regs, vmmgr_t *vmmgr,
                    const char name[TASK_NAME_LEN])
-{
-  static u64_t task_id = 0;
-  task_id++;
-  
+{  
   task_t task = {
-    .id    = task_id,
     .regs  = regs,
     .vmmgr = vmmgr,
   };

@@ -13,7 +13,6 @@
 #define TASK_NAME_LEN 16
 
 typedef struct task {
-  u64_t       id;
   char        name[TASK_NAME_LEN];
   cpu_regs_t  regs;
   vmmgr_t    *vmmgr;
