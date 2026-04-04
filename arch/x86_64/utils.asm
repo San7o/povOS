@@ -18,13 +18,22 @@ breakpoint:
   int3
   ret
 
+  ;; -----------------------------------------------------------------
   ;; Load the PML4 table, adrress at [rdi] which needs to be page aligned
 paging_load:
   mov cr3, rdi
   ret
 
- ;; Invalidates any translation lookaside buffer (TLB) entries
- ;; specified with the source operand in [rdi]
+  ;; -----------------------------------------------------------------
+  ;; Invalidates any translation lookaside buffer (TLB) entries
+  ;; specified with the source operand in [rdi]
 vmm_invalidate_tlb:
   invlpg [rdi]
+  ret
+
+  ;; -----------------------------------------------------------------
+  ;; Halt the CPU until the next external interrupt occurs,
+  ;  effectively putting the processor in a low-power state.
+halt:
+  hlt
   ret
