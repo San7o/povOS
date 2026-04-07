@@ -30,7 +30,7 @@ typedef struct hpet_acpi_sdt {
   u8_t  id;
   u16_t min_ticks;
   u8_t  page_protection;
-} __attribute__((packed)) hpet_acpi_sdt_t;
+} _packed hpet_acpi_sdt_t;
 
 // Offset from hpet_acpi_sdt_t->addresss
 #define HPET_GENERAL_CAPABILITIES_REGISTER_OFFSET   0x0    // r

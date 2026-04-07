@@ -6,6 +6,8 @@
 #ifndef POVOS_ARCH_X86_64_CPU_REGS_H
 #define POVOS_ARCH_X86_64_CPU_REGS_H
 
+#include <kernel/macros.h>
+
 //
 // Struct containing CPU registers, used for context switching
 //
@@ -86,7 +88,7 @@ typedef struct cpu_regs {
   // MMX Registers...
   // SSE registers...
   
-} __attribute__((packed)) cpu_regs_t;
+} _packed cpu_regs_t;
 
 // Save all registers in [regs]
 void regs_save(cpu_regs_t *regs);

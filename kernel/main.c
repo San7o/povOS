@@ -23,6 +23,7 @@
 #include <drivers/pit.h>
 #include <drivers/uart.h>
 #include <drivers/acpi.h>
+#include <drivers/pcie.h>
 #include <drivers/hpet.h>
 #include <drivers/video/vga.h>
 #include <drivers/input/keyboard.h>
@@ -149,8 +150,7 @@ int kernel_main(void)
 
   //vga_set_graphics_mode();
   //debug_vga_draw_flag();
-  debug_sleep();
-
+  //debug_sleep();
   
   u64_t *stack_top = (u64_t*)(kmalloc(4096) + 4096);
   cpu_regs_t regs;
@@ -158,6 +158,12 @@ int kernel_main(void)
   regs.rip = (u64_t)(void*)debug_test_task_fn;
   regs.rsp = (u64_t)stack_top;
   //cpu_do_context_switch(&regs);
+
+  pcie_acpi_sdt_t* pcie_sdt = acpi_locate_sdt(acpi_rsdp, PCIE_ACPI_SIGNATURE);
+  if (!pcie_sdt)
+    printk("[error] Could now locate PCIe sdt\n");
+  else 
+    printk("[info] Found PCIe sdt\n");
   
   // Read and print keyboard input
   debug_dump_input_loop(&input, (void*)hpet_base_reg);

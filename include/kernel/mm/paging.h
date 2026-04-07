@@ -26,6 +26,7 @@
 //                 9bit   9bit     9bit     9bit      12bit
 //
 
+#include <kernel/macros.h>
 #include <libk/stddef.h>
 
 typedef u64_t virt_ptr_t;
@@ -39,7 +40,7 @@ typedef struct page_entry_flags {
 } page_entry_flags_t;
 
 // This is a single page entry (uses 4 bytes)
-typedef struct __attribute__((packed)) {
+typedef struct _packed {
   u64_t present    : 1;  // 1 present, 0 not present
   u64_t rw         : 1;  // R/W, if 0 writes may not be allowed
   u64_t user       : 1;  // U/S, if 0 user-mode accesses are not allowed

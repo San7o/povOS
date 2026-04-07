@@ -22,6 +22,7 @@
 //
 
 #include <kernel/mm/bios_mmap.h>
+#include <kernel/macros.h>
 #include <libk/stddef.h>
 
 #define ACPI_VERSION_1 0
@@ -58,7 +59,7 @@ typedef struct acpi_rsdp {
   // fields. The sum of all bytes & 0xF must be 0.
   u8_t  extended_checksum;
   u8_t  reserved[3];
-} __attribute__((packed)) acpi_rsdp_t;
+} _packed acpi_rsdp_t;
 
 //
 // System Description Table Header
@@ -84,7 +85,7 @@ typedef struct acpi_sdt_header {
   // Compiler.
   u32_t creator_id;
   u32_t creator_revision;
-} __attribute__((packed)) acpi_sdt_header_t;
+} _packed acpi_sdt_header_t;
 
 
 //
@@ -97,7 +98,7 @@ typedef struct acpi_rsdt {
   // description table headers. Its size can be calculated from the
   // length field at the stop of this structure.
   u32_t entries[];
-} __attribute__((packed)) acpi_rsdt_t;
+} _packed acpi_rsdt_t;
 
 //
 // Extended System Description Table (used in ACPI 2.0)
@@ -108,7 +109,7 @@ typedef struct acpi_xsdt {
   acpi_sdt_header_t header;
   // Addresses are 64 bit here.
   u64_t entries[];
-} __attribute__((packed)) acpi_xsdt_t;
+} _packed acpi_xsdt_t;
 
 #define ACPI_ADDRSPACE_SYSTEM_MEMORY             0x00
 #define ACPI_ADDRSPACE_SYSTEM_IO                 0x01
@@ -149,7 +150,7 @@ typedef struct acpi_addr
   // The 64-bit address of the data structure or register in the given
   // address space (relative to the processor)
   u64_t address;
-} acpi_addr_t;
+} _packed acpi_addr_t;
 
 // Power management profiles
 #define ACPI_PM_PROFILE_UNSPECIFIED        0
@@ -259,11 +260,11 @@ typedef struct acpi_fadt
   acpi_addr_t x_pm_timer_block;
   acpi_addr_t x_gpe0_block;
   acpi_addr_t x_gpe1_block;
-} acpi_fadt_t;
+} _packed acpi_fadt_t;
 
 // Find the address of the RSDP
 // Returns NULL (0) if not found
 acpi_rsdp_t* acpi_locate_rsdp(void);
-void* acpi_locate_sdt(acpi_rsdp_t* rsdp, const char signature[4]);
+void*        acpi_locate_sdt(acpi_rsdp_t* rsdp, const char signature[4]);
 
 #endif // POVOS_DRIVERS_ACPI_H

@@ -46,6 +46,7 @@
 //  - task: used for hardware taks switching (removed in x86_64)
 //
 
+#include <kernel/macros.h>
 #include <libk/stddef.h>
 #include <libk/stdbool.h>
 
@@ -54,7 +55,7 @@
 //
 // An entry in the IDT (which is called a "gate") has the following
 // structure:
-typedef struct __attribute__((packed)) idt_gate {
+typedef struct _packed idt_gate {
     u16_t base_low;       // Low 16 bits of the address to jump to
     u16_t cs_selector;    // Code segment selector
     u8_t  ist;            // bits 0..2 holds Interrupt Stack Table
@@ -131,7 +132,7 @@ extern idt_gate_t idt[IDT_ENTRIES];
 // offset is the linear address of the IDT (not the physical address,
 // paging applies).
 //
-typedef struct __attribute__((packed)) idt_descriptor {
+typedef struct _packed idt_descriptor {
   u16_t          size;     // 1 - sizeof(idt_interrupt_gate_64)
   u64_t          offset;   // address of idt
 } idt_descriptor_t;

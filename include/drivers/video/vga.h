@@ -199,6 +199,7 @@
 //
 
 #include <kernel/console.h>
+#include <kernel/macros.h>
 #include <libk/stddef.h>
 #include <libk/stdbool.h>
 
@@ -247,10 +248,10 @@ typedef struct vga_style {
 // VGA_TEXT_BUFFER_SIZE.
 
 // An entry in the vga text buffer
-typedef struct  __attribute__((packed)) vga_text_entry {
+typedef struct vga_text_entry {
   u8_t value;
   u8_t style;   // use VGA_STYLE_BYTES(style)
-} vga_text_entry_t;
+} _packed vga_text_entry_t;
 
 #define VGA_TEXT_BUFFER_START      0x000B8000
 #define VGA_TEXT_BUFFER_WIDTH      80
