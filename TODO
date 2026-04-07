@@ -3,14 +3,18 @@ TODO
 
 Kernel:
 
+- scheduler implementation
 - testing framework
-- scheduler
 - virtual filesystem
 - support EFI boot
 - higher half kernel
 
 Drivers:
 
-- PCI: convert vendor+devices to names (using a table)
 - PCIe
-- ATA (PIO mode)
+- ATA (PIO mode for now)
+- SMBus
+
+Chores:
+
+- PCI: convert vendor+devices to names (using a table)

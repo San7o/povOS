@@ -16,7 +16,8 @@
 // attaching hardware devices in a computer. PCI slots are the big
 // long slots you can find in a regular motherboard. PCI is now
 // replaced by PCIe (PCI Express) which uses memory mapped IO instead
-// of ports.
+// of ports, however the new standard is still compatible with the old
+// PCI so we can still use it.
 //
 // PCI devices are little-endian (don't forget this or it will hunt
 // you).

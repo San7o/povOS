@@ -157,7 +157,7 @@ int kernel_main(void)
   regs_save(&regs);
   regs.rip = (u64_t)(void*)debug_test_task_fn;
   regs.rsp = (u64_t)stack_top;
-  cpu_do_context_switch(&regs);
+  //cpu_do_context_switch(&regs);
   
   // Read and print keyboard input
   debug_dump_input_loop(&input, (void*)hpet_base_reg);

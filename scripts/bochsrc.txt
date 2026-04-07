@@ -20,3 +20,5 @@ com1: enabled=1, mode=term, dev=/dev/stdout
 
 # Log file for debugging
 log: bochsout.txt
+
+clock: sync=realtime
