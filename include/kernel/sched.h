@@ -9,7 +9,7 @@
 #include <kernel/task.h>
 #include <libk/stdbool.h>
 
-#define SCHED_MAX_TASKS
+#define SCHED_MAX_TASKS 1024
 
 typedef u64_t task_id_t;
 

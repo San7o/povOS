@@ -49,6 +49,10 @@ BOOT_BIN    = bootloader/$(ARCH)/boot
 BOOT_ASM    = bootloader/$(ARCH)/boot.asm
 KERNEL_BIN  = kernel/kernel
 POVOS_BIN   = povos
+QEMU_FLAGS  = -M pc-q35-9.0 \
+              -drive format=raw,file=$(POVOS_BIN),if=ide \
+              -display sdl \
+              -serial stdio
 
 #
 # Targets
@@ -73,7 +77,8 @@ $(BOOT_BIN): $(BOOT_ASM)
 
 .PHONY: qemu
 qemu:
-	$(QEMU) -drive format=raw,file=$(POVOS_BIN) -display sdl -serial stdio
+	truncate -s 10M $(POVOS_BIN)
+	$(QEMU) $(QEMU_FLAGS)
 
 .PHONY: bochs
 bochs:
@@ -95,6 +100,10 @@ debug:
 .PHONY: clean
 clean:
 	rm -f $(BOOT_BIN) $(KERNEL_BIN) $(KERNEL_BIN).elf $(POVOS_BIN) $(OBJ)
+
+.PHONY: devices
+devices:
+	 $(QEMU) -device help
 
 %.o: %.c
 	@echo " [CC] "$@
