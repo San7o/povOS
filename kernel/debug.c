@@ -203,9 +203,10 @@ void debug_enumerate_pci_devices(void)
 
         if (pci_dv.vendor_id == PCI_DEVICE_VENDOR_NONE)
           continue;
-      
-        uart_printf(uart_port1, "[info] Bus %d, Slot %d: Vendor: %x, Device: %x, Func: %d\n", 
-                    bus, slot, pci_dv.vendor_id, pci_dv.device_id, func);
+
+        uart_printf(uart_port1, "[info] Bus %d, Slot %d: Vendor: %s (%x), Device: %s (%x), Func: %d\n", 
+                    bus, slot, pci_dv.vendor_name, pci_dv.vendor_id,
+                    pci_dv.device_name, pci_dv.device_id, func);
       }
     }
   }

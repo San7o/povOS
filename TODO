@@ -16,5 +16,3 @@ Drivers:
 - SMBus
 
 Chores:
-
-- PCI: convert vendor+devices to names (using a table)

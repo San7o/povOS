@@ -43,8 +43,11 @@
 
 #define PCI_DEVICE_VENDOR_NONE 0xFFFF
 typedef struct pci_device_vendor {
-  u16_t device_id;
   u16_t vendor_id;
+  u16_t device_id;
+  
+  char* vendor_name;
+  char* device_name;
 } pci_device_vendor_t;
 
 void  pci_writew(u32_t value);
