@@ -27,13 +27,13 @@ u16_t pci_readw(u8_t bus, u8_t slot, u8_t func, u8_t offset)
   return tmp;
 }
 
-pci_device_vendor_t pci_get_device_vendor(u8_t bus, u8_t slot)
+pci_device_vendor_t pci_get_device_vendor(u8_t bus, u8_t slot, u8_t func)
 {
   pci_device_vendor_t vd = {0};
 
   // Register 0, offset 0 contains device id and vendor id
-  if ((vd.vendor_id = pci_readw(bus, slot, 0, 0)) != PCI_DEVICE_VENDOR_NONE)
-    vd.device_id = pci_readw(bus, slot, 0, 2);
+  if ((vd.vendor_id = pci_readw(bus, slot, func, 0)) != PCI_DEVICE_VENDOR_NONE)
+    vd.device_id = pci_readw(bus, slot, func, 2);
 
   return vd;
 }

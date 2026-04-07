@@ -197,13 +197,16 @@ void debug_enumerate_pci_devices(void)
   {
     for (int slot = 0; slot < 32; slot++)
     {
-      pci_device_vendor_t pci_dv = pci_get_device_vendor(bus, slot);
+      for (int func = 0; func < 8; func++)
+      {
+        pci_device_vendor_t pci_dv = pci_get_device_vendor(bus, slot, func);
 
-      if (pci_dv.vendor_id == PCI_DEVICE_VENDOR_NONE)
-        continue;
+        if (pci_dv.vendor_id == PCI_DEVICE_VENDOR_NONE)
+          continue;
       
-      uart_printf(uart_port1, "[info] Bus %d, Slot %d: Vendor: %x, Device: %x\n", 
-                  bus, slot, pci_dv.vendor_id, pci_dv.device_id);
+        uart_printf(uart_port1, "[info] Bus %d, Slot %d: Vendor: %x, Device: %x, Func: %d\n", 
+                    bus, slot, pci_dv.vendor_id, pci_dv.device_id, func);
+      }
     }
   }
 }
