@@ -50,6 +50,11 @@ char *strncpy(char *dst, const char *src, size_t size)
   return memset(mempcpy(dst, src, dlen), 0, size - dlen);
 }
 
+char *strcpy(char *dst, const char *src)
+{
+  return mempcpy(dst, src, strlen(src));
+}
+
 void *memcpy(void *dest, const void *src, size_t n)
 {
   u8_t* dest_byte = dest;

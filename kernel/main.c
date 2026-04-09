@@ -19,6 +19,7 @@
 #include <kernel/textbuffer.h>
 #include <kernel/console.h>
 #include <kernel/tty.h>
+#include <kernel/sched.h>
 #include <drivers/pic.h>
 #include <drivers/pit.h>
 #include <drivers/uart.h>
@@ -82,6 +83,10 @@ int kernel_main(void)
 
   debug_print_pmmgr_bitfield();
 
+  //
+  // Setup devices
+  //
+  
   void* hpet_base_reg = NULL;
   acpi_rsdp_t* acpi_rsdp = acpi_locate_rsdp();
   if (!acpi_rsdp)
@@ -107,6 +112,12 @@ int kernel_main(void)
 
     hpet_enable(hpet_base_reg, false);
   }
+
+  pcie_acpi_sdt_t* pcie_sdt = acpi_locate_sdt(acpi_rsdp, PCIE_ACPI_SIGNATURE);
+  if (!pcie_sdt)
+    printk("[error] Could now locate PCIe sdt\n");
+  else 
+    printk("[info] Found PCIe sdt\n");
 
   //
   // Setup interrupts
@@ -151,23 +162,36 @@ int kernel_main(void)
   //vga_set_graphics_mode();
   //debug_vga_draw_flag();
   //debug_sleep();
-  
-  u64_t *stack_top = (u64_t*)(kmalloc(4096) + 4096);
-  cpu_regs_t regs;
-  regs_save(&regs);
-  regs.rip = (u64_t)(void*)debug_test_task_fn;
-  regs.rsp = (u64_t)stack_top;
-  //cpu_do_context_switch(&regs);
 
-  pcie_acpi_sdt_t* pcie_sdt = acpi_locate_sdt(acpi_rsdp, PCIE_ACPI_SIGNATURE);
-  if (!pcie_sdt)
-    printk("[error] Could now locate PCIe sdt\n");
-  else 
-    printk("[info] Found PCIe sdt\n");
+  //
+  // Scheduler
+  //
   
+  // Test Task A
+  u64_t *stack_top_a = (u64_t*)(kmalloc(4096) + 4096);
+  cpu_regs_t regs_a;
+  regs_save(&regs_a);
+  regs_a.rip = (u64_t)(void*)debug_test_task_a_fn;
+  regs_a.rsp = (u64_t)stack_top_a;
+
+  // Test Task B
+  u64_t *stack_top_b = (u64_t*)(kmalloc(4096) + 4096);
+  cpu_regs_t regs_b;
+  regs_save(&regs_b);
+  regs_b.rip = (u64_t)(void*)debug_test_task_b_fn;
+  regs_b.rsp = (u64_t)stack_top_b;
+
+  task_t task_a = task_create(regs_a, &vmmgr, "task A");
+  task_t task_b = task_create(regs_b, &vmmgr, "task B");
+  
+  sched_init(&vmmgr);
+  sched_start_task(task_a);
+  sched_start_task(task_b);
+  sched_loop();
+
   // Read and print keyboard input
-  debug_dump_input_loop(&input, (void*)hpet_base_reg);
-
+  //debug_dump_input_loop(&input, (void*)hpet_base_reg);
+  
   while(1) {}
   
   return EXIT_SUCCESS;

@@ -28,11 +28,13 @@
 // Default interrupt handler, when a more specific one is not
 // implemented
 void isr_common_handler(u8_t  isr_number,
-                        u64_t error_code);
+                        u64_t error_code,
+                        u64_t* sp);
 void isr_keyboard_handler(u8_t  isr_number,
-                          u64_t error_code);
+                          u64_t error_code,
+                          u64_t* sp);
 void isr_pit_channel_0_handler(u8_t  isr_number,
-                               u64_t error_code);
-
+                               u64_t error_code,
+                               u64_t* sp);
 
 #endif // POVOS_KERNEL_IDT_H

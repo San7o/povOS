@@ -1,8 +1,23 @@
   [bits 64]
 
+  global regs_get_cr3
+  global regs_get_rflags
   global regs_save
   global cpu_do_context_switch
 
+  ;; -----------------------------------------------------------------
+  ;; Returns the value of cr3 in rax
+regs_get_cr3:
+  mov rax, cr3
+  ret
+  
+  ;; -----------------------------------------------------------------
+  ;; Returns the value of rflags in rax
+regs_get_rflags:
+  pushfq
+  pop rax
+  ret
+  
   ;; -----------------------------------------------------------------
   ;; Save all registers in [rdi], which must be a pointer to a
   ;; cpu_regs_t struct.
@@ -46,27 +61,28 @@ regs_save:
   ;; Perform context switching to cpu_regs_t passed in [rdi] as a
   ;; pointer
 cpu_do_context_switch:
-  ; RDI currently points to our cpu_regs_t struct
-
-  ; Switch Page Tables (Address Space)
-  mov rax, [rdi + 144] ; Offset for cr3
+  ; RDI = pointer to cpu_regs_t
+    
+  ; Switch Address Space
+  mov rax, [rdi + 144] ; cr3
   mov cr3, rax
 
-  ; Prepare the stack
-
-  mov rsp, [rdi + 48]  ; Load the new RSP from the struct
+  ; Construct the IRETQ frame on the NEW stack
+  mov rbx, [rdi + 48]  ; New RSP
+  mov rsp, rbx         ; Switch stack pointer immediately
     
-  ; Push the new RIP onto the NEW stack so 'ret' can find it
-  mov rax, [rdi + 128] ; Offset for rip
-  push rax
+  ; Push the IRETQ frame (SS, RSP, RFLAGS, CS, RIP)
+  push qword 0x10      ; New SS (Usually Data Selector, e.g., 0x10)
+  push rbx             ; New RSP
+  push qword [rdi + 136] ; RFLAGS
+  push qword 0x08      ; New CS (Usually Code Selector, e.g., 0x08)
+  push qword [rdi + 128] ; New RIP
 
-  ; Load General Purpose Registers
-  mov rax, [rdi + 0]
+  ; Restore GPRs (except RAX and RDI)
   mov rbx, [rdi + 8]
   mov rcx, [rdi + 16]
   mov rdx, [rdi + 24]
   mov rsi, [rdi + 32]
-  ; Skip RDI for a moment
   mov rbp, [rdi + 56]
   mov r8,  [rdi + 64]
   mov r9,  [rdi + 72]
@@ -77,14 +93,8 @@ cpu_do_context_switch:
   mov r14, [rdi + 112]
   mov r15, [rdi + 120]
 
-  ; Load RFLAGS
-  ; We can't mov to rflags directly. We push it and use popfq.
-  push qword [rdi + 136] ; Offset for rflags
-  popfq
-
-  ; Finally, load RDI
+  ; Restore RDI and RAX last
+  mov rax, [rdi + 0]
   mov rdi, [rdi + 40]
 
-  ; Our new stack has the new RIP at the top. 
-  ; 'ret' will pop that RIP into the register and jump there.
-  ret
+  iretq ; Resumes the task

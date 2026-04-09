@@ -18,8 +18,7 @@ typedef struct task {
   vmmgr_t    *vmmgr;
 } task_t;
 
-void    task_init(void);
-task_t  task_create(cpu_regs_t regs, vmmgr_t *vmmgr,
-                    const char name[TASK_NAME_LEN]);
+task_t task_create(cpu_regs_t regs, vmmgr_t *vmmgr,
+                   const char name[TASK_NAME_LEN]);
 
 #endif // POVOS_KERNEL_TASK_H

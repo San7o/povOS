@@ -38,6 +38,7 @@
   global isr31
   global isr32
   global isr33
+  global isr_return_and_call
 
   ;; Imported symbols
   extern isr_common_handler
@@ -80,6 +81,7 @@ idt_load:
 
   mov rdi, [rsp+120]            ; ISR number
   mov rsi, [rsp+128]            ; Error code
+  mov rdx, rsp                  ; Stack pointer
 
   call %1
   
@@ -306,4 +308,3 @@ isr33:
   push qword 0
   push qword 33                   ; isr number
   ISR_HANDLER isr_keyboard_handler
-  

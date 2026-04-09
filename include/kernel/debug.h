@@ -33,7 +33,8 @@ void debug_print_pmmgr_bitfield(void);
 void debug_vga_draw_flag(void);
 void debug_enumerate_pci_devices(void);
 void debug_sleep(void);
-// A functions that prints something in a loop
-void debug_test_task_fn(void);
+// Test functions that print a message in a loop
+void debug_test_task_a_fn(void);
+void debug_test_task_b_fn(void);
 
 #endif // POVOS_KERNEL_DEBUG_H

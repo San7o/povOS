@@ -6,12 +6,6 @@
 #include <kernel/task.h>   // implements
 #include <libk/string.h>
 
-// Initialize current_task
-void task_init(void)
-{
-  // TODO
-}
-
 task_t task_create(cpu_regs_t regs, vmmgr_t *vmmgr,
                    const char name[TASK_NAME_LEN])
 {  

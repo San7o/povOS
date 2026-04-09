@@ -1,6 +1,7 @@
 ![](./povos-banner.jpeg)
 
-povOS is an operating system for the x86_64 architecture.
+povOS is an operating system for an IBM-compatible PC using the x86_64
+architecture.
 
 - Author:  Giovanni Santini
 - Mail:    giovanni.santini@proton.me
@@ -38,7 +39,7 @@ povOS is an operating system for the x86_64 architecture.
   - multitasking
     - tasks
     - context switching
-    - scheduler: work in progress
+    - scheduler
 
 The implementation is clean and readable, headers are documentation.
 

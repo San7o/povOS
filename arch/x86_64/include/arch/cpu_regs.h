@@ -90,6 +90,9 @@ typedef struct cpu_regs {
   
 } _packed cpu_regs_t;
 
+u64_t regs_get_cr3(void);
+u64_t regs_get_rflags(void);
+
 // Save all registers in [regs]
 void regs_save(cpu_regs_t *regs);
 

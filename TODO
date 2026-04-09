@@ -3,17 +3,23 @@ TODO
 
 Kernel:
 
-- scheduler implementation
 - testing framework
-- virtual filesystem
-- support EFI boot
+- virtual filesystem, disk operations abstraction
+- shell
 - syscalls
 - higher half kernel
 
 Drivers:
 
-- ATA (PIO mode for now, required to read storage)
-- PCIe (the modern PCI, required for the edu driver)
-- SMBus (required for I2C, which is useful for emulated sensors)
+- ATA:   PIO mode for now, required to read storage
+- PCIe:  the modern PCI, required for the edu driver and many others
+- SMBus: required for I2C, which is useful for emulated sensors
+- VESA:  high resolution graphics, but we need to mess with the bootloader
 
 Chores:
+
+- develop a custom emulated device in qemu (such as a temperature sensor using
+  i2c).
+- hexdump memory (with nice formatting)
+- add example outputs in debug.c functions to get an idea of how it
+  looks like

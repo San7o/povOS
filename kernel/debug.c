@@ -222,11 +222,20 @@ void debug_sleep(void)
   sleep_ms(1000);
 }
 
-void debug_test_task_fn(void)
+void debug_test_task_a_fn(void)
 {
   while(1)
   {
-    uart_printf(uart_port1, "Test task!\n");
-    sleep(1);
+    uart_printf(uart_port1, "Hello from task A!\n");
+    sleep_ms(500);
+  }
+}
+
+void debug_test_task_b_fn(void)
+{
+  while(1)
+  {
+    uart_printf(uart_port1, "Hello from task B!\n");
+    sleep_ms(500);
   }
 }
