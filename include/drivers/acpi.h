@@ -31,8 +31,9 @@
 //
 // Root System Description Pointer
 //
-// This is the "entry point" to all ACPI informationm it contains
-// a pointer to the RSDT.
+// This is the "entry point" to all ACPI information, use
+// `acpi_locate_rsdp()` to get its address.
+// It contains a pointer to the RSDT.
 typedef struct acpi_rsdp {
   #define ACPI_RSDP_SIGNATURE "RSD PTR "
   u8_t  signature[8];
