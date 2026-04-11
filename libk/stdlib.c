@@ -5,6 +5,25 @@
 
 #include <libk/stdlib.h>   // implements
 
+// Magic numbers for LCG pseudo number generator
+#define RAND_MAGIC1 1664525    // a
+#define RAND_MAGIC2 1013904223 // c
+#define RAND_MAGIC3 (1<<31)    // m
+
+static unsigned int rand_seed = 0x505;
+
+unsigned int rand(void)
+{
+  unsigned int next = (RAND_MAGIC1 * rand_seed + RAND_MAGIC2) % RAND_MAGIC3;
+  rand_seed = next;
+  return next;
+}
+
+void srand(unsigned int seed)
+{
+  rand_seed = seed;
+}
+
 char *itoa(int val, char *buf, int base)
 {
   char* p = buf;
