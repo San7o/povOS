@@ -62,7 +62,7 @@
 //  10b -- B0000h-B7FFFh (32K region)
 //  11b -- B8000h-BFFFFh (32K region)
 // 
-#define VGA_GRAPHICS_MISC_REGISTER_MEMORY_MAP_SELECT_MASK   0b1100
+#define VGA_GRAPHICS_MISC_REGISTER_MEMORY_MAP_SELECT_MASK   0xC // 0b1100
 //
 // GRAPHICS_MISC_REGISTER_ALPHA_DISABLED_MASK
 //
@@ -70,7 +70,7 @@
 // this bit selects graphics modes, which also disables the
 // character generator latches.
 // 
-#define VGA_GRAPHICS_MISC_REGISTER_ALPHA_DISABLED_MASK   0b1
+#define VGA_GRAPHICS_MISC_REGISTER_ALPHA_DISABLED_MASK   0x1
 
 //
 // CRTC Registers

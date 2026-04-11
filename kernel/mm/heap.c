@@ -25,7 +25,8 @@ void *kmalloc(size_t size)
 
 void kfree(void *ptr)
 {
-  return free_list_alloc_free(&kheap, ptr);
+  free_list_alloc_free(&kheap, ptr);
+  return;
 }
 
 void *kcalloc(size_t nmemb, size_t size)

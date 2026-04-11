@@ -21,7 +21,7 @@ void idt_set_gate(u8_t  gate_number,
                   u64_t isr_address,
                   bool  is_trap)
 {
-  u8_t attributes = 0b10001110;
+  u8_t attributes = 0x8E;   // 0b10001110
   if (is_trap) attributes |= 0x01;
 
   // Refer to the documentation in the header to understand these

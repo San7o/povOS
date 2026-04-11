@@ -20,6 +20,7 @@ Chores:
 
 - power off, reset
 - (hardware supported) random number generation
+- test read from UART
 - develop a custom emulated device in qemu (such as a temperature sensor using
   i2c).
 - hexdump memory (with nice formatting)

@@ -41,7 +41,7 @@ CFLAGS  = --target=$(ARCH)-elf \
           -nostdlib \
           -nodefaultlibs \
           -fno-builtin \
-          -Wall -Wextra -Werror \
+          -Wall -Wextra -Werror -Wpedantic \
           -I include -I arch/${ARCH}/include
 KERNEL_LDFLAGS  = -T kernel/linker.ld
 ASFLAGS         = -f elf64

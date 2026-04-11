@@ -68,7 +68,7 @@ void *memcpy(void *dest, const void *src, size_t n)
 void *mempcpy(void *dest, const void *src, size_t n)
 {
   memcpy(dest, src, n);
-  return dest + n;
+  return (void*)((u64_t)dest + n);
 }
 
 void *memset(void *buf, u8_t c, size_t n)

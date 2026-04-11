@@ -38,7 +38,7 @@ int kernel_main(void)
   // Sanity checks
   //
 
-  if (vga_get_memory_map() != 0b11)
+  if (vga_get_memory_map() != 0x3)  // 0b11
   {
     vga_clear(VGA_STYLE_RED);
     vga_print(0, "Memory map range not supported", VGA_STYLE_BW);
@@ -162,20 +162,21 @@ int kernel_main(void)
   //vga_set_graphics_mode();
   //debug_vga_draw_flag();
   //debug_sleep();
-
+  //reboot();
+  
   //
   // Scheduler
   //
   
   // Test Task A
-  u64_t *stack_top_a = (u64_t*)(kmalloc(4096) + 4096);
+  u64_t *stack_top_a = (u64_t*)((u64_t)kmalloc(4096) + 4096);
   cpu_regs_t regs_a;
   regs_save(&regs_a);
   regs_a.rip = (u64_t)(void*)debug_test_task_a_fn;
   regs_a.rsp = (u64_t)stack_top_a;
 
   // Test Task B
-  u64_t *stack_top_b = (u64_t*)(kmalloc(4096) + 4096);
+  u64_t *stack_top_b = (u64_t*)((u64_t)kmalloc(4096) + 4096);
   cpu_regs_t regs_b;
   regs_save(&regs_b);
   regs_b.rip = (u64_t)(void*)debug_test_task_b_fn;

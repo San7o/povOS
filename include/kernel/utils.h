@@ -28,4 +28,6 @@ void enable_interrupts(void);
 // putting the processor in a low-power state.
 void halt_cpu(void);
 
+void reboot(void);
+
 #endif // POVOS_KERNEL_UTILS_H

@@ -12,7 +12,7 @@ u16_t pit_read_count(void)
   disable_interrupts();
 
   // Select channel 0
-  port_outb(PIT_MODE_REGISTER, 0b0000000);
+  port_outb(PIT_MODE_REGISTER, 0);
 
   u16_t count = 0;
   count  = port_inb(PIT_CHANNEL_0_DATA_PORT);       // low byte
@@ -25,7 +25,7 @@ u16_t pit_read_count(void)
 
 void pit_set_count(u16_t count)
 {
-  port_outb(PIT_MODE_REGISTER, 0b00110100);
+  port_outb(PIT_MODE_REGISTER, 0x34);   // 0b00110100
   port_outb(PIT_CHANNEL_0_DATA_PORT, count & 0xFF);
   port_outb(PIT_CHANNEL_0_DATA_PORT, (count & 0xFF00) >> 8);
 }

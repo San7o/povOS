@@ -40,11 +40,11 @@ void pic_remap(void)
   io_wait();
 
   // Unmask Keyboard (IRQ 1)
-  port_outb(PIC_MASTER_DATA, 0b11111100);
+  port_outb(PIC_MASTER_DATA, 0xFC);   // 0b11111100
   io_wait();
 
   // Keep all slave interrupts masked for now
-  port_outb(PIC_SLAVE_DATA, 0b11111111);
+  port_outb(PIC_SLAVE_DATA, 0xFF);    // 0b11111111
   io_wait();
   
   return;
