@@ -55,7 +55,7 @@ void hpet_enable(void* hpet_base_reg, bool legacy_replacement);
 void hpet_disable(void* hpet_base_reg);
 
 // Set the period in femtoseconds (10^-15 seconds)
-void hpet_set_period(void* hpet_base_reg, u32_t period_fs);
+void  hpet_set_period(void* hpet_base_reg, u32_t period_fs);
 u64_t hpet_poll(void* hpet_base_reg);
 
 #endif // POVOS_DRIVERS_HPET_H

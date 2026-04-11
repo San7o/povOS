@@ -6,6 +6,7 @@
 #include <libk/unistd.h>   // implements
 #include <kernel/utils.h>
 #include <kernel/time.h>
+#include <kernel/macros.h>
 
 unsigned int sleep_ms(u64_t milliseconds)
 {
@@ -25,4 +26,9 @@ unsigned int sleep_ms(u64_t milliseconds)
 unsigned int sleep(u64_t seconds)
 {
   return sleep_ms(seconds * 1000);
+}
+
+void sleep_ticks(u64_t clicks)
+{
+  if (clicks) while(clicks--) { NOP; };
 }

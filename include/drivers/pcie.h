@@ -30,7 +30,7 @@ typedef struct pcie_acpi_sdt {
   acpi_sdt_header_t   header;
   u64_t               reserved;
   pcie_acpi_entry_t  *entries;
-} pcie_acpi_sdt_t;
+} _packed pcie_acpi_sdt_t;
 
 #define PCIE_PHYS_ADDR(base, bus, device, function) \
   (base + ((bus) << 20 | device << 15 | function << 12))

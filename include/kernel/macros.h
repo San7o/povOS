@@ -8,6 +8,8 @@
 
 #define _packed __attribute__((packed))
 
+#define NOP __asm__ volatile ("nop")
+
 #define UNUSED(value) (void)(value)
 
 #endif // POVOS_KERNEL_MACROS_H
