@@ -67,6 +67,12 @@
 //   operating systems 
 // - PCI Express Enhanced Configuration Access Mechanism (ECAM)
 //
+// Once you find an PCIe entry from ACPI, you need to use its base
+// address to calculate the physical address of the configuration
+// space header of the device you want to work with. Use the
+// PCIE_PHYS_ADDR macro for this. From the header you can interact
+// with the device such as by sending commands.
+//
 
 #include <drivers/acpi.h>
 
@@ -89,15 +95,26 @@ typedef struct pcie_acpi_sdt {
 typedef struct pcie_common_config_space_header {
   u16_t vendor_id;
   u16_t device_id;
+  #define PCIE_CONFIG_SPACE_CMD_IO_ENABLE                    0
+  #define PCIE_CONFIG_SPACE_CMD_MEMORY_ENABLE            (1<<0)
+  #define PCIE_CONFIG_SPACE_CMD_BUS_MASTER_ENABLE        (1<<1)
+  #define PCIE_CONFIG_SPACE_CMD_SPECIAL_CYCLE_ENABLE     (1<<2)
+  #define PCIE_CONFIG_SPACE_CMD_MEM_WRITE                (1<<3)
+  #define PCIE_CONFIG_SPACE_CMD_VGA_PALETTE_SNOOP        (1<<4)
+  #define PCIE_CONFIG_SPACE_CMD_PARITY_ERROR_RESPONSE    (1<<5)
+  #define PCIE_CONFIG_SPACE_CMD_IDSEL_STEPPING           (1<<6)
+  #define PCIE_CONFIG_SPACE_CMD_SERR_ENABLE              (1<<7)
+  #define PCIE_CONFIG_SPACE_CMD_FAST_TRANSACTIONS_ENABLE (1<<8)
+  #define PCIE_CONFIG_SPACE_CMD_INT_DISABLE              (1<<9)
   u16_t command;
   u16_t status;
   u8_t  revision_id;
   u8_t  class_code[3];
   u8_t  cache_line_size;
   u8_t  latency_timer;
-  #define PCIE_CONFIG_SPACE_HEADER_TYPE0 0x0
-  #define PCIE_CONFIG_SPACE_HEADER_TYPE1 0x1
-  #define PCIE_CONFIG_SPACE_HEADER_TYPE_MASK 0x7F
+  #define PCIE_CONFIG_SPACE_HEADER_TYPE0       0x0
+  #define PCIE_CONFIG_SPACE_HEADER_TYPE1       0x1
+  #define PCIE_CONFIG_SPACE_HEADER_TYPE_MASK   0x7F
   u8_t  header_type;
   u8_t  bist;
   u64_t type_specific[9];
