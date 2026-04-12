@@ -104,9 +104,7 @@ int kernel_main(void)
       printk("[info] Found HPET timer, register at address: %x\n", hpet->address);
 
     // Map hpet->address
-    page_entry_flags_t page_flags = {
-      .rw = 1,
-    };
+    page_entry_flags_t page_flags = { .rw = 1 };
     hpet_base_reg = MM_PHYS_TO_VIRT(hpet->address);
     paging_add_entry((void*)hpet->address, hpet_base_reg, page_flags);
 
@@ -115,10 +113,26 @@ int kernel_main(void)
 
   pcie_acpi_sdt_t* pcie_sdt = acpi_locate_sdt(acpi_rsdp, PCIE_ACPI_SIGNATURE);
   if (!pcie_sdt)
+  {
     printk("[error] Could now locate PCIe sdt\n");
-  else 
+  }
+  else
+  {
     printk("[info] Found PCIe sdt\n");
+    // debug_dump_mem_page(pcie_sdt->entries[0].base_addr, 32);
 
+    pcie_common_config_space_header_t* pcie_entry1 =
+      (void*)pcie_sdt->entries[0].base_addr;
+
+    // Identity map config space header
+    page_entry_flags_t page_flags = { .rw = 1 };
+    paging_add_entry(pcie_entry1, pcie_entry1, page_flags);
+
+    printk("[info] PCIe entry 1: vendor id %x, device id %x\n",
+           pcie_entry1->vendor_id, pcie_entry1->device_id);
+
+  }
+  
   //
   // Setup interrupts
   //
@@ -202,7 +216,7 @@ int kernel_main(void)
   // Read and print keyboard input
   //debug_dump_input_loop(&input, (void*)hpet_base_reg);
 
-  //sched_loop();
+  sched_loop();
   
   return EXIT_SUCCESS;
 }

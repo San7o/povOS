@@ -21,6 +21,3 @@ Chores:
 - power off
 - develop a custom emulated device in qemu (such as a temperature sensor using
   i2c).
-- hexdump memory (with nice formatting)
-- add example outputs in debug.h functions to get an idea of how it
-  looks like

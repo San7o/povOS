@@ -13,6 +13,7 @@
 #include <drivers/hpet.h>
 #include <kernel/mm/bios_mmap.h>
 #include <kernel/mm/pmmgr.h>
+#include <kernel/mm/layout.h>
 #include <kernel/utils.h>
 
 void debug_dump_regs_uart3(cpu_regs_t regs)
@@ -45,6 +46,32 @@ void debug_dump_regs_uart2(void)
   cpu_regs_t regs;
   regs_save(&regs);
   debug_dump_regs_uart3(regs);
+}
+
+void debug_dump_mem_page(phys_addr_t phys_mem, size_t count)
+{
+  page_entry_flags_t page_flags = { .rw = 1 };
+
+  // Map a virtual address to rsdt_phys
+  // We can identity map this
+  void* virt_mem = (void*)phys_mem;
+  paging_add_entry((void*)phys_mem, virt_mem, page_flags);
+
+  u64_t* mem = virt_mem;
+  uart_printf(uart_port1, "[debug] Memory at phys addr %x:",
+              phys_mem, virt_mem);
+  for (unsigned int i = 0; i < PAGE_SIZE / sizeof(u64_t) && i < count; ++i)
+  {
+    if (i % 4 == 0)
+    {
+      uart_printf(uart_port1, "\n[debug] [%x] ", &mem[i]);
+    }
+
+    uart_putc(uart_port1, ' ');
+    uart_write_hex(uart_port1, mem[i]);   // CPU triple faults immediately
+  }
+
+  uart_putc(uart_port1, '\n');
 }
 
 void debug_dump_keyboard_event_uart(keyboard_event_t event)
@@ -205,7 +232,7 @@ void debug_enumerate_pci_devices(void)
         if (pci_dv.vendor_id == PCI_DEVICE_VENDOR_NONE)
           continue;
 
-        uart_printf(uart_port1, "[debug] Bus %d, Slot %d: Vendor: %s (%x), Device: %s (%x), Func: %d\n", 
+        uart_printf(uart_port1, "[debug] [pci] Bus %d, Slot %d: Vendor: %s (%x), Device: %s (%x), Func: %d\n", 
                     bus, slot, pci_dv.vendor_name, pci_dv.vendor_id,
                     pci_dv.device_name, pci_dv.device_id, func);
       }

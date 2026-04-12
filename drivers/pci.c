@@ -34,6 +34,7 @@ static pci_device_vendor_t pci_known_names[] = {
   { 0x8086, 0x2918, "Intel Corporation", "82801IB (ICH9) LPC Interface Controller" },
   { 0x8086, 0x2922, "Intel Corporation", "82801IR/IO/IH6 port SATA Controller" },
   { 0x8086, 0x2930, "Intel Corporation", "82801I (ICH9 Family) SMBus Controller" },
+  { 0x8086, 0x29C0, "Intel Corporation", "82G33/G31/P35/P31 Express DRAM Controller" },
   { 0x8086, 0x1237, "Intel Corporation", "440FX - 82441FX PMC" },
   { 0x8086, 0x7000, "Intel Corporation", "82371SB PIIX3 ISA" },
   { 0x8086, 0x7010, "Intel Corporation", "82371SB PIIX3 IDE" },
