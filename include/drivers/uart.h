@@ -15,6 +15,8 @@
 // popular in personal computers and embedded systems. It is usually
 // the simplest way to communicate with a device.
 //
+// The IBM PC used the 8250 UART, which is the reference for this
+// driver.
 // 
 // I/O Ports
 // ----------
@@ -93,5 +95,7 @@ void uart_write_hex(uart_port_t uart_port, u64_t num);
 
 int uart_printf(uart_port_t uart_port, const char* fmt, ...);
 int uart_vprintf(uart_port_t uart_port, const char* fmt, va_list args);
+
+char uart_getc(uart_port_t port);
 
 #endif // POVOS_DRIVERS_UART_H

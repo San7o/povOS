@@ -18,6 +18,8 @@
 #define MAX(x, y) ((x > y) ? (x) : (y))
 #define MIN(x, y) ((x < y) ? (x) : (y))
 
+// Generate a tru random number with hardware support
+// If this is not supported, returns 0
 u32_t true_rand(void);
 
 // Wait a very small amount of time (1 to 4 microseconds, generally)

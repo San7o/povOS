@@ -166,7 +166,7 @@ int kernel_main(void)
   //debug_vga_draw_flag();
   //debug_sleep();
   //reboot();
-  
+
   //
   // Scheduler
   //
@@ -191,12 +191,18 @@ int kernel_main(void)
   sched_init(&vmmgr);
   sched_start_task(task_a);
   sched_start_task(task_b);
-  sched_loop();
 
+  while(1)
+  {
+    char c = uart_getc(uart_port1);
+    if (c == '\r') c = '\n';
+    printk("%c", c);
+  }
+  
   // Read and print keyboard input
   //debug_dump_input_loop(&input, (void*)hpet_base_reg);
-  
-  while(1) {}
+
+  //sched_loop();
   
   return EXIT_SUCCESS;
 }

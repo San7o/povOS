@@ -149,6 +149,11 @@ int uart_vprintf(uart_port_t uart_port, const char* fmt, va_list args)
         uart_write_str(uart_port, buf);
         break;
       }
+      case 'c': {
+        char c = va_arg(args, int);
+        uart_putc(uart_port, c);
+        break;
+      }
       case 'x': {
         char buf[32];
         itoa(va_arg(args, unsigned int), buf, 16);
@@ -204,4 +209,21 @@ int uart_vprintf(uart_port_t uart_port, const char* fmt, va_list args)
     fmt++;
   }
   return 0;
+}
+
+char uart_getc(uart_port_t port)
+{
+  if (!port.initialized)
+    return 0;
+
+  while(1)
+  {
+    // check if there is something to read
+    u8_t b = port_inb(port.port + UART_REGISTER_LINE_STATUS_INDEX);
+    if (b & 0x1)
+    {
+      u8_t b = port_inb(port.port + UART_REGISTER_RECEIVE_BUF_INDEX);
+      return b;
+    }
+  }
 }
