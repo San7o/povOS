@@ -59,7 +59,6 @@ char* pci_get_device_name(u16_t vendor, u16_t device)
         && pci_known_names[i].device_id == device)
       return pci_known_names[i].device_name;
   
-  
   return "Unknown";
 }
 

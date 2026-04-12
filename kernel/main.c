@@ -28,6 +28,7 @@
 #include <drivers/hpet.h>
 #include <drivers/video/vga.h>
 #include <drivers/input/keyboard.h>
+#include <drivers/edu.h>
 
 #include "banner.h"
 
@@ -125,8 +126,21 @@ int kernel_main(void)
     printk("[info] Found PCIe sdt\n");
     // debug_dump_mem_page(pcie_sdt->entries[0].base_addr, 32);
     debug_enumerate_pcie_devices(pcie_sdt);
+
+    edu_device_t edu;
+    if (edu_init(&edu, pcie_sdt))
+    {
+      u32_t edu_id = edu_read_identification(&edu);
+
+      printk("[info] [edu] Initialized EDU device\n");
+      printk("[info] [edu] identification: %x\n", edu_id);
+    }
+    else
+    {
+      printk("[error] error initializing EDU device\n");
+    }
   }
-  
+
   // Setup interrupts
 
   pit_set_count(1193); // one tick per millisecond
@@ -142,10 +156,9 @@ int kernel_main(void)
   debug_print_true_rand();
   debug_print_true_rand();
   debug_print_true_rand();
-  // breakpoint();
-  
   debug_dump_regs_uart();
   debug_dump_regs_uart2();
+  // breakpoint();
   
   //
   // Setup tty

@@ -95,6 +95,9 @@ typedef struct pcie_common_config_space_header {
   u8_t  class_code[3];
   u8_t  cache_line_size;
   u8_t  latency_timer;
+  #define PCIE_CONFIG_SPACE_HEADER_TYPE0 0x0
+  #define PCIE_CONFIG_SPACE_HEADER_TYPE1 0x1
+  #define PCIE_CONFIG_SPACE_HEADER_TYPE_MASK 0x7F
   u8_t  header_type;
   u8_t  bist;
   u64_t type_specific[9];
@@ -116,11 +119,11 @@ typedef struct pcie_type0_config_space_header {
   u8_t  latency_timer;
   u8_t  header_type;
   u8_t  bist;
-  u64_t base_address_regs[6];
-  u64_t cardbus_cis_ptr;
-  u32_t subsystem_vendor_id;
-  u32_t subsystem_id;
-  u64_t expansion_rom_base_addr;
+  u32_t base_address_regs[6];  // aka BARs
+  u32_t cardbus_cis_ptr;
+  u16_t subsystem_vendor_id;
+  u16_t subsystem_id;
+  u32_t expansion_rom_base_addr;
   u8_t  capabilities_ptr;
   u8_t  reserved[7];
   u8_t  interrupt_line;
@@ -140,29 +143,29 @@ typedef struct pcie_type1_config_space_header {
   u8_t  primary_latency_timer;
   u8_t  header_type;
   u8_t  bist;
-  u64_t base_addr_reg0;
-  u64_t base_addr_reg1;
+  u32_t base_addr_reg0;
+  u32_t base_addr_reg1;
   u8_t  primary_bus_number;
   u8_t  secondary_bus_number;
   u8_t  subordinate_bus_number;
   u8_t  secondary_latency_timer;
   u8_t  io_base;
   u8_t  io_limit;
-  u32_t secondary_status;
-  u32_t memory_base;
-  u32_t memory_limit;
-  u32_t prefetchable_memory_base;
-  u32_t prefetchable_memory_limit;
-  u64_t prefetchable_base_upper32;
-  u64_t prefetchable_limit_upper32;
+  u16_t secondary_status;
+  u16_t memory_base;
+  u16_t memory_limit;
+  u16_t prefetchable_memory_base;
+  u16_t prefetchable_memory_limit;
+  u32_t prefetchable_base_upper32;
+  u32_t prefetchable_limit_upper32;
   u16_t io_base_upper16;
   u16_t io_base_limit_upper16;
   u8_t  capabilities_ptr;
   u8_t  reserved[3];
-  u64_t expansion_rom_base_addr;
+  u32_t expansion_rom_base_addr;
   u8_t  interrupt_line;
   u8_t  interrupt_pin;
-  u32_t bridge_control;
+  u16_t bridge_control;
 } _packed pcie_type1_config_space_header_t;
 
 #define PCIE_PHYS_ADDR(base, bus, device, function) \

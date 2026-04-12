@@ -21,6 +21,7 @@ architecture.
   - Keyboard
   - ACPI
   - PCI/PCIe
+  - [edu](https://www.qemu.org/docs/master/specs/edu.html)
 - kernel:
   - IDT (Interrupt Descriptor Tabe) and ISR (Interrupt Service Routines)
   - input (supports multiple keyboard layouts)
