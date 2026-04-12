@@ -20,7 +20,7 @@ architecture.
   - HPET (High Precision Event Timer)
   - Keyboard
   - ACPI
-  - PCI
+  - PCI/PCIe
 - kernel:
   - IDT (Interrupt Descriptor Tabe) and ISR (Interrupt Service Routines)
   - input (supports multiple keyboard layouts)

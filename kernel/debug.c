@@ -240,6 +240,62 @@ void debug_enumerate_pci_devices(void)
   }
 }
 
+void debug_enumerate_pcie_devices(pcie_acpi_sdt_t *pcie_sdt)
+{
+  unsigned int num_allocations =
+    (pcie_sdt->header.length - sizeof(acpi_sdt_header_t) - 8)
+    / sizeof(pcie_acpi_entry_t);
+  uart_printf(uart_port1, "[debug] [pcie] Found %d PCIe Host Bridge Allocations\n",
+              num_allocations);
+
+  for (unsigned int alloc = 0; alloc < num_allocations; ++alloc)
+  {
+    pcie_acpi_entry_t* group = &pcie_sdt->entries[alloc];
+    u64_t base_addr = group->base_addr;
+
+    for (u16_t bus = group->start_bus; bus <= group->end_bus; ++bus)
+    {
+      for (u8_t device = 0; device < 32; ++device)
+      {
+        for (u8_t function = 0; function < 8; ++function)
+        {
+          phys_addr_t phys_addr = PCIE_PHYS_ADDR(base_addr, bus, device, function);
+
+          // Identity map memory
+          page_entry_flags_t page_flags = { .rw = 1, .pcd = 1 }; 
+          void* virt_addr = (void*)phys_addr;
+          paging_add_entry((void*)phys_addr, virt_addr, page_flags);
+
+          pcie_common_config_space_header_t* pcie_hdr = virt_addr;
+
+          if (pcie_hdr->vendor_id == PCI_DEVICE_VENDOR_NONE)
+          {
+            if (function == 0)
+                break;
+            continue; 
+          }
+
+          // Found
+          
+          char *vendor_name = pci_get_vendor_name(pcie_hdr->vendor_id);
+          char *device_name = pci_get_device_name(pcie_hdr->vendor_id, pcie_hdr->device_id);
+          
+          uart_printf(uart_port1,
+                      "[debug] [pcie] BDF %d %d %d: vendor %s (%x), device %s (%x)\n",
+                      bus, device, function,
+                      vendor_name, pcie_hdr->vendor_id,
+                      device_name, pcie_hdr->device_id);
+
+          // Check if it's a multi-function device. 
+          // If not, we don't need to check functions 1-7.
+          if (function == 0 && (pcie_hdr->header_type & 0x80) == 0)
+            break; 
+        }
+      }
+    }
+  }
+}
+
 void debug_sleep(void)
 {
   uart_printf(uart_port1, "[debug] Sleeping 1...\n");

@@ -52,7 +52,8 @@ POVOS_BIN   = povos
 QEMU_FLAGS  = -M pc-q35-9.0 \
               -drive format=raw,file=$(POVOS_BIN),if=ide \
               -display sdl \
-              -serial stdio
+              -serial stdio \
+              -device edu
 
 #
 # Targets

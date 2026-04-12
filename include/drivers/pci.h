@@ -53,6 +53,8 @@ typedef struct pci_device_vendor {
 void  pci_writew(u32_t value);
 u16_t pci_readw(u8_t bus, u8_t slot, u8_t func, u8_t offset);
 
+char* pci_get_vendor_name(u16_t vendor);
+char* pci_get_device_name(u16_t vendor, u16_t device);
 pci_device_vendor_t pci_get_device_vendor(u8_t bus, u8_t slot, u8_t func);
 
 #endif // POVOS_DRIVERS_PCI_H

@@ -40,9 +40,10 @@ static pci_device_vendor_t pci_known_names[] = {
   { 0x8086, 0x7010, "Intel Corporation", "82371SB PIIX3 IDE" },
   { 0x8086, 0x7113, "Intel Corporation", "82371AB/EB/MB PIIX4 ACPI" },
   { 0x1234, 0x1111, "Emulated", "Virtual Video Controller" },
+  { 0x1234, 0x11E8, "Emulated", "EDU device" },
 };
 
-static char* pci_get_vendor_name(u16_t vendor)
+char* pci_get_vendor_name(u16_t vendor)
 {
   for (unsigned int i = 0; i < sizeof pci_known_names / sizeof pci_known_names[0]; ++i)
     if (pci_known_names[i].vendor_id == vendor)
@@ -51,7 +52,7 @@ static char* pci_get_vendor_name(u16_t vendor)
   return "Unknown";
 }
 
-static char* pci_get_device_name(u16_t vendor, u16_t device)
+char* pci_get_device_name(u16_t vendor, u16_t device)
 {
   for (unsigned int i = 0; i < sizeof pci_known_names / sizeof pci_known_names[0]; ++i)
     if (pci_known_names[i].vendor_id == vendor

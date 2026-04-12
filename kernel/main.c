@@ -96,6 +96,8 @@ int kernel_main(void)
   else
   {
     printk("[info] Found ACPI RSDP at: %x\n", acpi_rsdp);
+
+    // Hpet setup
     
     hpet_acpi_sdt_t *hpet = acpi_locate_sdt(acpi_rsdp, HPET_ACPI_SIGNATURE);
     if (!hpet)
@@ -111,6 +113,8 @@ int kernel_main(void)
     hpet_enable(hpet_base_reg, false);
   }
 
+  // PCIe
+  
   pcie_acpi_sdt_t* pcie_sdt = acpi_locate_sdt(acpi_rsdp, PCIE_ACPI_SIGNATURE);
   if (!pcie_sdt)
   {
@@ -120,22 +124,10 @@ int kernel_main(void)
   {
     printk("[info] Found PCIe sdt\n");
     // debug_dump_mem_page(pcie_sdt->entries[0].base_addr, 32);
-
-    pcie_common_config_space_header_t* pcie_entry1 =
-      (void*)pcie_sdt->entries[0].base_addr;
-
-    // Identity map config space header
-    page_entry_flags_t page_flags = { .rw = 1 };
-    paging_add_entry(pcie_entry1, pcie_entry1, page_flags);
-
-    printk("[info] PCIe entry 1: vendor id %x, device id %x\n",
-           pcie_entry1->vendor_id, pcie_entry1->device_id);
-
+    debug_enumerate_pcie_devices(pcie_sdt);
   }
   
-  //
   // Setup interrupts
-  //
 
   pit_set_count(1193); // one tick per millisecond
   
@@ -143,6 +135,7 @@ int kernel_main(void)
   idt_set();    // Setup the IDT
 
   // Tests
+  
   debug_print_vga();
   debug_write_uart();
   debug_enumerate_pci_devices();
