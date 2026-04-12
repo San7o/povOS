@@ -40,6 +40,7 @@ architecture.
     - tasks
     - context switching
     - scheduler
+  - random number generation
 
 The implementation is clean and readable, headers are documentation.
 
