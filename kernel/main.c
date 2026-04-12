@@ -134,6 +134,8 @@ int kernel_main(void)
 
       printk("[info] [edu] Initialized EDU device\n");
       printk("[info] [edu] identification: %x\n", edu_id);
+
+      edu_int_raise(&edu);
     }
     else
     {

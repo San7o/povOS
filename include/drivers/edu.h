@@ -30,12 +30,15 @@
 // Use edu_init to initialize this structure
 typedef struct edu_device {
   pcie_type0_config_space_header_t* header;
-  u32_t* mmio;
+  volatile u32_t* mmio;
 } edu_device_t;
 
 bool edu_init(edu_device_t *edu, pcie_acpi_sdt_t *pcie_sdt);
 bool edu_check_liveness(edu_device_t *edu);
 
 u32_t edu_read_identification(edu_device_t *edu);
+
+void edu_int_raise(edu_device_t *edu);
+void edu_int_ack(edu_device_t *edu);  // should be called in the interrpt
 
 #endif // POVOS_DRIVERS_EDU_H

@@ -15,6 +15,7 @@ Drivers:
 - PCIe:  the modern PCI, required for the edu driver and many others
 - SMBus: required for I2C, which is useful for emulated sensors
 - VESA:  high resolution graphics, but we need to mess with the bootloader
+- IOAPIC: Advanced Programmable Interrupt Controller, better than 8259 PIC.
 
 Chores:
 

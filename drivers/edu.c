@@ -36,8 +36,11 @@ bool edu_init(edu_device_t *edu, pcie_acpi_sdt_t *pcie_sdt)
   phys_addr_t edu_mmio_phys = bar0_raw & 0xFFFFFFF0;
 
   edu->mmio = (void*)edu_mmio_phys;
-  paging_add_entry((void*)edu_mmio_phys, edu->mmio, page_flags);
+  paging_add_entry((void*)edu_mmio_phys, (void*)edu->mmio, page_flags);
 
+  // Enable interrupts
+  edu->header->command &= ~PCIE_CONFIG_SPACE_CMD_INT_DISABLE;
+  
   return edu_check_liveness(edu);
 }
 
@@ -56,4 +59,16 @@ u32_t edu_read_identification(edu_device_t *edu)
 {
   if (!edu) return 0;
   return edu->mmio[0];
+}
+
+void edu_int_raise(edu_device_t *edu)
+{
+  if (!edu) return;
+  edu->mmio[24] = 5;
+}
+
+void edu_int_ack(edu_device_t *edu)
+{
+  if (!edu) return;
+  edu->mmio[25] = 5;
 }
