@@ -51,16 +51,19 @@ void debug_dump_regs_uart2(void)
 void debug_dump_mem_page(phys_addr_t phys_mem, size_t count)
 {
   page_entry_flags_t page_flags = { .rw = 1 };
-
+  void* virt_mem;
+  u64_t* mem;
+  unsigned int i;
+  
   // Map a virtual address to rsdt_phys
   // We can identity map this
-  void* virt_mem = (void*)phys_mem;
+  virt_mem = (void*)phys_mem;
   paging_add_entry((void*)phys_mem, virt_mem, page_flags);
 
-  u64_t* mem = virt_mem;
+  mem = virt_mem;
   uart_printf(uart_port1, "[debug] Memory at phys addr %x:",
               phys_mem, virt_mem);
-  for (unsigned int i = 0; i < PAGE_SIZE / sizeof(u64_t) && i < count; ++i)
+  for (i = 0; i < PAGE_SIZE / sizeof(u64_t) && i < count; ++i)
   {
     if (i % 4 == 0)
     {
@@ -124,6 +127,9 @@ void debug_write_uart(void)
 void debug_dump_input_loop(input_t *input, void* hpet_base_reg)
 {
   u64_t previous_time_s = 0;
+  u64_t hpet_counter;
+  input_event_t event;
+  
   while(1) {
 
     // Tick seconds
@@ -131,16 +137,18 @@ void debug_dump_input_loop(input_t *input, void* hpet_base_reg)
     {
       previous_time_s = time_ms / 1000;
 
-      uart_printf(uart_port1, "[debug] [isr] [pit 0] time: %d s\n", time_ms / 1000);
+      uart_printf(uart_port1, "[debug] [isr] [pit 0] time: %d s\n",
+                  time_ms / 1000);
 
       if (hpet_base_reg)
       {
-        u64_t hpet_counter = hpet_poll(hpet_base_reg);
-        uart_printf(uart_port1, "[debug] [hpet] counter: %d\n", hpet_counter);
+        hpet_counter = hpet_poll(hpet_base_reg);
+        uart_printf(uart_port1, "[debug] [hpet] counter: %d\n",
+                    hpet_counter);
       }
     }
     
-    input_event_t event = input_events_get(input);
+    event = input_events_get(input);
     if (event.type == INPUT_EVENT_TYPE_NONE) continue;
     
     debug_dump_input_event_uart(event);
@@ -150,21 +158,23 @@ void debug_dump_input_loop(input_t *input, void* hpet_base_reg)
 
 void debug_print_memory_map_uart(void)
 {
-  u32_t *mmap_num_entries = BIOS_MMAP_NUM_ENTRIES_ADDR;
+  u32_t *mmap_num_entries = BIOS_MMAP_NUM_ENTRIES_ADDR, i;
   bios_mmap_entry_t *mmap = BIOS_MMAP_ENTRIES_ADDR;
+  u64_t base, length;
+  
   if (!mmap_num_entries || !mmap) return;
   
   uart_write_str(uart_port1, "[debug] [memory map] Memory map entries: ");
   uart_write_hex(uart_port1, (u64_t) *mmap_num_entries);
   uart_putc(uart_port1, '\n');
 
-  for (u32_t i = 0; i < *mmap_num_entries && i < 50; ++i)
+  for (i = 0; i < *mmap_num_entries && i < 50; ++i)
   {
-    u64_t base = (u64_t)mmap[i].base_low | ((u64_t) mmap[i].base_high << 32);
+    base = (u64_t)mmap[i].base_low | ((u64_t) mmap[i].base_high << 32);
     uart_write_str(uart_port1, "[debug] [mmap] base: ");
     uart_write_hex(uart_port1, base);
 
-    u64_t length = (u64_t)mmap[i].length_low | ((u64_t) mmap[i].base_high << 32);
+    length = (u64_t)mmap[i].length_low | ((u64_t) mmap[i].base_high << 32);
     uart_write_str(uart_port1, ", length: ");
     uart_write_hex(uart_port1, length);
 
@@ -182,15 +192,18 @@ void debug_print_memory_map_uart(void)
 
 void debug_print_pmmgr_bitfield(void)
 {
+  u64_t i;
+  int bit, val;
+  
   uart_printf(uart_port1, "[debug] [pmmgr] Bitfield of size %d:\n",
               pmmgr.size);
   uart_write_str(uart_port1, "[debug] [pmmgr] [0x0000000000000000] ");
   
-  for (u64_t i = 0; i < pmmgr.size; ++i)
+  for (i = 0; i < pmmgr.size; ++i)
   {
-    for (int bit = 0; bit < 8; ++bit)
+    for (bit = 0; bit < 8; ++bit)
     {
-      int val = (pmmgr.bitfield[i] >> bit) & 1;
+      val = (pmmgr.bitfield[i] >> bit) & 1;
       uart_write_str(uart_port1, (val == 1) ? "1" : "0");      
     }
 
@@ -208,26 +221,31 @@ void debug_print_pmmgr_bitfield(void)
 
 void debug_vga_draw_flag(void)
 {
-  for (int x = 0; x < 320 / 3; ++x)
-    for (int y = 0; y < 200; ++y)    
+  int x, y;
+  
+  for (x = 0; x < 320 / 3; ++x)
+    for (y = 0; y < 200; ++y)    
       vga_draw_pixel(x, y, VGA_COLOR_GREEN);
-  for (int x = 0; x < 320 / 3; ++x)
-    for (int y = 0; y < 200; ++y)    
+  for (x = 0; x < 320 / 3; ++x)
+    for (y = 0; y < 200; ++y)    
       vga_draw_pixel(320 / 3 + x, y, VGA_COLOR_WHITE);
-  for (int x = 0; x < 320 / 3; ++x)
-    for (int y = 0; y < 200; ++y)    
+  for (x = 0; x < 320 / 3; ++x)
+    for (y = 0; y < 200; ++y)    
       vga_draw_pixel(320 / 3 * 2 + x, y, VGA_COLOR_RED);
 }
 
 void debug_enumerate_pci_devices(void)
 {
-  for (int bus = 0; bus < 256; bus++)
+  int bus, slot, func;
+  pci_device_vendor_t pci_dv;
+  
+  for (bus = 0; bus < 256; bus++)
   {
-    for (int slot = 0; slot < 32; slot++)
+    for (slot = 0; slot < 32; slot++)
     {
-      for (int func = 0; func < 8; func++)
+      for (func = 0; func < 8; func++)
       {
-        pci_device_vendor_t pci_dv = pci_get_device_vendor(bus, slot, func);
+        pci_dv = pci_get_device_vendor(bus, slot, func);
 
         if (pci_dv.vendor_id == PCI_DEVICE_VENDOR_NONE)
           continue;
@@ -242,31 +260,43 @@ void debug_enumerate_pci_devices(void)
 
 void debug_enumerate_pcie_devices(pcie_acpi_sdt_t *pcie_sdt)
 {
-  unsigned int num_allocations =
+  unsigned int num_allocations, alloc;
+  pcie_acpi_entry_t *group;
+  u64_t base_addr;
+  u16_t bus;
+  u8_t device, function;
+  phys_addr_t phys_addr;
+  void* virt_addr;
+  page_entry_flags_t page_flags = { .rw = 1, .pcd = 1 };
+  pcie_common_config_space_header_t* pcie_hdr;
+  char *vendor_name;
+  char *device_name;
+
+  num_allocations =
     (pcie_sdt->header.length - sizeof(acpi_sdt_header_t) - 8)
     / sizeof(pcie_acpi_entry_t);
+  
   uart_printf(uart_port1, "[debug] [pcie] Found %d PCIe Host Bridge Allocations\n",
               num_allocations);
 
-  for (unsigned int alloc = 0; alloc < num_allocations; ++alloc)
+  for (alloc = 0; alloc < num_allocations; ++alloc)
   {
-    pcie_acpi_entry_t* group = &pcie_sdt->entries[alloc];
-    u64_t base_addr = group->base_addr;
+    group = &pcie_sdt->entries[alloc];
+    base_addr = group->base_addr;
 
-    for (u16_t bus = group->start_bus; bus <= group->end_bus; ++bus)
+    for (bus = group->start_bus; bus <= group->end_bus; ++bus)
     {
-      for (u8_t device = 0; device < 32; ++device)
+      for (device = 0; device < 32; ++device)
       {
-        for (u8_t function = 0; function < 8; ++function)
+        for (function = 0; function < 8; ++function)
         {
-          phys_addr_t phys_addr = PCIE_PHYS_ADDR(base_addr, bus, device, function);
+          phys_addr = PCIE_PHYS_ADDR(base_addr, bus, device, function);
 
           // Identity map memory
-          page_entry_flags_t page_flags = { .rw = 1, .pcd = 1 }; 
-          void* virt_addr = (void*)phys_addr;
+          virt_addr = (void*)phys_addr;
           paging_add_entry((void*)phys_addr, virt_addr, page_flags);
 
-          pcie_common_config_space_header_t* pcie_hdr = virt_addr;
+          pcie_hdr = virt_addr;
 
           if (pcie_hdr->vendor_id == PCI_DEVICE_VENDOR_NONE)
           {
@@ -277,8 +307,8 @@ void debug_enumerate_pcie_devices(pcie_acpi_sdt_t *pcie_sdt)
 
           // Found
           
-          char *vendor_name = pci_get_vendor_name(pcie_hdr->vendor_id);
-          char *device_name = pci_get_device_name(pcie_hdr->vendor_id, pcie_hdr->device_id);
+          vendor_name = pci_get_vendor_name(pcie_hdr->vendor_id);
+          device_name = pci_get_device_name(pcie_hdr->vendor_id, pcie_hdr->device_id);
           
           uart_printf(uart_port1,
                       "[debug] [pcie] BDF %d %d %d: vendor %s (%x), device %s (%x)\n",
