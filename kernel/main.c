@@ -132,6 +132,9 @@ int kernel_main(void)
   debug_print_vga();
   debug_write_uart();
   debug_enumerate_pci_devices();
+  debug_print_true_rand();
+  debug_print_true_rand();
+  debug_print_true_rand();
   // breakpoint();
   
   debug_dump_regs_uart();

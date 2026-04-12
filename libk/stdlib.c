@@ -14,9 +14,8 @@ static unsigned int rand_seed = 0x505;
 
 unsigned int rand(void)
 {
-  unsigned int next = (RAND_MAGIC1 * rand_seed + RAND_MAGIC2) % RAND_MAGIC3;
-  rand_seed = next;
-  return next;
+  rand_seed = (RAND_MAGIC1 * rand_seed + RAND_MAGIC2) % RAND_MAGIC3;
+  return rand_seed;
 }
 
 void srand(unsigned int seed)

@@ -19,7 +19,6 @@ Drivers:
 Chores:
 
 - power off
-- (hardware supported) random number generation
 - test read from UART
 - develop a custom emulated device in qemu (such as a temperature sensor using
   i2c).

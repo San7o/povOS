@@ -13,8 +13,12 @@
 // General utility functions that can be useful in several occasions.
 //
 
+#include <libk/stddef.h>
+
 #define MAX(x, y) ((x > y) ? (x) : (y))
 #define MIN(x, y) ((x < y) ? (x) : (y))
+
+u32_t true_rand(void);
 
 // Wait a very small amount of time (1 to 4 microseconds, generally)
 void io_wait(void);

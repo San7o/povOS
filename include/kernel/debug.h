@@ -33,6 +33,7 @@ void debug_print_pmmgr_bitfield(void);
 void debug_vga_draw_flag(void);
 void debug_enumerate_pci_devices(void);
 void debug_sleep(void);
+void debug_print_true_rand(void);
 // Test functions that print a message in a loop
 void debug_test_task_a_fn(void);
 void debug_test_task_b_fn(void);

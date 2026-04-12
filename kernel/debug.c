@@ -13,6 +13,7 @@
 #include <drivers/hpet.h>
 #include <kernel/mm/bios_mmap.h>
 #include <kernel/mm/pmmgr.h>
+#include <kernel/utils.h>
 
 void debug_dump_regs_uart3(cpu_regs_t regs)
 {
@@ -204,7 +205,7 @@ void debug_enumerate_pci_devices(void)
         if (pci_dv.vendor_id == PCI_DEVICE_VENDOR_NONE)
           continue;
 
-        uart_printf(uart_port1, "[info] Bus %d, Slot %d: Vendor: %s (%x), Device: %s (%x), Func: %d\n", 
+        uart_printf(uart_port1, "[debug] Bus %d, Slot %d: Vendor: %s (%x), Device: %s (%x), Func: %d\n", 
                     bus, slot, pci_dv.vendor_name, pci_dv.vendor_id,
                     pci_dv.device_name, pci_dv.device_id, func);
       }
@@ -214,19 +215,25 @@ void debug_enumerate_pci_devices(void)
 
 void debug_sleep(void)
 {
-  uart_printf(uart_port1, "Sleeping 1...\n");
+  uart_printf(uart_port1, "[debug] Sleeping 1...\n");
   sleep(1);
-  uart_printf(uart_port1, "Sleeping 2...\n");
+  uart_printf(uart_port1, "[debug] Sleeping 2...\n");
   sleep(1);
-  uart_printf(uart_port1, "Sleeping 3...\n");
+  uart_printf(uart_port1, "[debug] Sleeping 3...\n");
   sleep_ms(1000);
+}
+
+void debug_print_true_rand(void)
+{
+  u32_t rand = true_rand();
+  uart_printf(uart_port1, "[debug] true random number: %d\n", rand);
 }
 
 void debug_test_task_a_fn(void)
 {
   while(1)
   {
-    uart_printf(uart_port1, "Hello from task A!\n");
+    uart_printf(uart_port1, "[debug] Hello from task A!\n");
     sleep_ms(500);
   }
 }
@@ -235,7 +242,7 @@ void debug_test_task_b_fn(void)
 {
   while(1)
   {
-    uart_printf(uart_port1, "Hello from task B!\n");
+    uart_printf(uart_port1, "[debug] Hello from task B!\n");
     sleep_ms(500);
   }
 }
