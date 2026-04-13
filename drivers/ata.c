@@ -7,22 +7,38 @@
 #include <drivers/isa.h>
 #include <kernel/utils.h>
 
+bool ata_enabled(port_t port)
+{
+  ata_status_reg_t ata_status = {0};
+  ata_status.raw = port_inb(port + ATA_STATUS_REG_OFFSET);
+  return ata_status.raw == 0xFF;
+}
+
 ata_status_reg_t ata_wait_status(port_t port)
 {
-  ata_status_reg_t status;
+  ata_status_reg_t status = {0};
 
-  io_wait();
-  
-  do {
+  while (1)
+  {
     status.raw = isa_readb(port + ATA_STATUS_REG_OFFSET);
-  } while (status.flags.bsy);
+    
+    if (status.raw == 0xFF)
+    {
+      status.flags.err = 1; 
+      return status;
+    }
 
+    if (status.flags.err || status.flags.df) return status;
+    if (!status.flags.bsy && status.flags.drq) return status;
+        
+    io_wait();
+  }
+  
   return status;
 }
 
-static bool _ata_read_sector(u8_t *dest, u32_t lba)
+static bool _ata_read_sector(port_t port, u8_t *dest, u32_t lba)
 {
-  port_t port = ATA_BUS0_BASE_PORT;
   ata_status_reg_t status;
   int max_attempts = 4, attempt = 0, i;
   u16_t w;
@@ -43,10 +59,10 @@ static bool _ata_read_sector(u8_t *dest, u32_t lba)
   isa_writeb(port + ATA_SECTOR_NUM_REG_OFFSET, (u8_t) lba);
   isa_writeb(port + ATA_CYLINDER_LOW_REG_OFFSET, (u8_t) (lba >> 8));
   isa_writeb(port + ATA_CYLINDER_HIGH_REG_OFFSET, (u8_t) (lba >> 16));
-  isa_writeb(port + ATA_CMD_REG_OFFSET, ATA_CMD_PIO_READ_SECTORS_RETRY);
+  isa_writeb(port + ATA_CMD_REG_OFFSET, ATA_CMD_PIO_READ_SECTORS);
 
   status = ata_wait_status(port);
-  if (status.flags.err || status.flags.df || status.flags.drq)
+  if (status.flags.err || status.flags.df)
   {
     attempt++;
     if (attempt >= max_attempts)
@@ -60,22 +76,20 @@ static bool _ata_read_sector(u8_t *dest, u32_t lba)
     ((u16_t*)dest)[i / 2] = w;
   }
 
-  status = ata_wait_status(port);
-  if (status.flags.err || status.flags.df || status.flags.drq)
-    return false;
-  
   return true;
 }
 
-bool ata_read(u8_t *dest, u32_t from, u32_t sectors)
+bool ata_read(port_t port, u8_t *dest, u32_t from, u32_t sectors)
 {
+  if (sectors == 0) return true;
+  
   u32_t i;
   
   disable_interrupts();
 
   for (i = 0; i < sectors; ++i)
   {
-    if (!_ata_read_sector(dest, from + i))
+    if (!_ata_read_sector(port, dest, from + i))
     {
       enable_interrupts();
       return false;
@@ -87,9 +101,8 @@ bool ata_read(u8_t *dest, u32_t from, u32_t sectors)
   return true;
 }
 
-static bool _ata_write_sector(u8_t *src, u32_t lba)
+static bool _ata_write_sector(port_t port, u8_t *src, u32_t lba)
 {
-  port_t port = ATA_BUS0_BASE_PORT;
   ata_head_reg_t head_reg = {
     .flags = {
       .head = (lba >> 24) & 0xF,
@@ -124,7 +137,7 @@ static bool _ata_write_sector(u8_t *src, u32_t lba)
   return true;
 }
 
-bool ata_write(u8_t *src, u32_t to, u32_t sectors)
+bool ata_write(port_t port, u8_t *src, u32_t to, u32_t sectors)
 {
   u32_t i;
   
@@ -132,7 +145,7 @@ bool ata_write(u8_t *src, u32_t to, u32_t sectors)
 
   for (i = 0; i < sectors; ++i)
   {
-    if (!_ata_write_sector(src, to + i))
+    if (!_ata_write_sector(port, src, to + i))
     {
       enable_interrupts();
       return false;

@@ -29,6 +29,7 @@
 #include <drivers/video/vga.h>
 #include <drivers/input/keyboard.h>
 #include <drivers/edu.h>
+#include <drivers/ata.h>
 
 #include "banner.h"
 
@@ -85,6 +86,15 @@ int kernel_main(void)
   debug_print_pmmgr_bitfield();
 
   //
+  // Setup interrupts
+  //
+  
+  pit_set_count(1193); // one tick per millisecond
+  
+  pic_remap();  // Chage overlapping IRQ numbers
+  idt_set();    // Setup the IDT
+
+  //
   // Setup devices
   //
   
@@ -119,7 +129,7 @@ int kernel_main(void)
   pcie_acpi_sdt_t* pcie_sdt = acpi_locate_sdt(acpi_rsdp, PCIE_ACPI_SIGNATURE);
   if (!pcie_sdt)
   {
-    printk("[error] Could now locate PCIe sdt\n");
+    printk("[error] Could not locate PCIe sdt\n");
   }
   else
   {
@@ -143,12 +153,22 @@ int kernel_main(void)
     }
   }
 
-  // Setup interrupts
-
-  pit_set_count(1193); // one tick per millisecond
-  
-  pic_remap();  // Chage overlapping IRQ numbers
-  idt_set();    // Setup the IDT
+  if (ata_enabled(ATA_BUS1_BASE_PORT))
+  {
+    printk("[error] error ATA port\n");
+  }
+  else
+  {
+    u8_t ata_buff[ATA_SECTOR_SIZE] = {0};
+    if (!ata_read(ATA_BUS1_BASE_PORT, ata_buff, 5, 1))
+    {
+      printk("[error] error reading from ATA drive\n");
+    }
+    else
+    {
+      printk("[info] ATA read: %s\n", ata_buff);
+    }
+  }
 
   // Tests
   

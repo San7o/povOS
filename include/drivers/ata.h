@@ -43,7 +43,10 @@
 //
 
 // There are usually two buses supported, primary (BUS0) and secondary
-// (BUS1)
+// (BUS1). Each bus can have two drives, called respectively a
+// "master" and a "slave" (even if they do not have a master-slave
+// relationship). So there can be a total of 4 ATA drivers in the
+// system.
 #define ATA_BUS0_BASE_PORT        0x1F0   // uses IRQ14
 #define ATA_BUS1_BASE_PORT        0x170   // uses IRQ15
 
@@ -113,7 +116,7 @@ typedef union ata_status_reg {
                     // ready to accept PIO data
     bool dsc  : 1;  // Device seek complete
     bool df   : 1;  // Drive Fault Error
-    bool rdy  : 1;  // Bit is clear when drive is spun down, of after an
+    bool rdy  : 1;  // Bit is clear when drive is spun down, or after an
                     // error. Set otherwise.
     bool bsy  : 1;  // Indicated the drive is preparing to send / receive
                     // data (wait for it to clear).
@@ -148,15 +151,15 @@ typedef union ata_status_reg {
 // Functions
 //
 
-// TODO: ata_init(ata_device_t ata);
+bool ata_enabled(port_t port);
 
 // Blocks until status has done sending / receiving data
 // Retrun status
 ata_status_reg_t ata_wait_status(port_t port);
 
 // [dest] must be large enough to contain [secotrs] * ATA_SECTOR_SIZE bytes
-bool ata_read(u8_t *dest, u32_t from, u32_t sectors);
+bool ata_read(port_t port, u8_t *dest, u32_t from, u32_t sectors);
 // Writes [sectors] * ATA_SECTOR_SIZE from [src] to [to]
-bool ata_write(u8_t *src, u32_t to, u32_t sectors);
+bool ata_write(port_t port, u8_t *src, u32_t to, u32_t sectors);
 
 #endif // POVOS_DRIVERS_ATA_H
