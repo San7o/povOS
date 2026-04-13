@@ -54,7 +54,13 @@ void isa_pnp_set_config_mode(void);
 #define isa_writeb(port, value) \
   port_outb(port, value)
 
+#define isa_writew(port, value) \
+  port_outw(port, value)
+
 #define isa_readb(port) \
   port_inb(port)
+
+#define isa_readw(port) \
+  port_inw(port)
 
 #endif // POVOS_DRIVERS_ISA_H

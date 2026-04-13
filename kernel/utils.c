@@ -10,6 +10,8 @@
 void io_wait(void)
 {
   port_outb(0x80, 0);
+  port_outb(0x80, 0);
+  port_outb(0x80, 0);
   return;
 }
 
