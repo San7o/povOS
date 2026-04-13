@@ -15,6 +15,7 @@ architecture.
   - PS/2
   - UART
   - VGA
+  - ISA
   - PIC (Programmable Interrupt Controller)
   - PIT (Programmable Interrupt Timer)
   - HPET (High Precision Event Timer)

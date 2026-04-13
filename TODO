@@ -11,11 +11,11 @@ Kernel:
 
 Drivers:
 
-- ATA:   PIO mode for now, required to read storage
-- PCIe:  the modern PCI, required for the edu driver and many others
+- ATA: PIO mode for now, required to read storage
+- AHCI: modern standard to communicate with SATA devices
 - SMBus: required for I2C, which is useful for emulated sensors
 - VESA:  high resolution graphics, but we need to mess with the bootloader
-- IOAPIC: Advanced Programmable Interrupt Controller, better than 8259 PIC.
+- IOAPIC: Advanced Programmable Interrupt Controller, better than 8259 PIC
 
 Chores:
 
