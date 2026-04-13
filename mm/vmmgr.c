@@ -3,9 +3,9 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <kernel/mm/vmmgr.h>   // implements
-#include <kernel/mm/pmmgr.h>
-#include <kernel/mm/paging.h>
+#include <mm/vmmgr.h>   // implements
+#include <mm/pmmgr.h>
+#include <mm/paging.h>
 #include <libk/string.h>
 
 #define PAGE_ALIGN_UP(x) (((x) + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1))

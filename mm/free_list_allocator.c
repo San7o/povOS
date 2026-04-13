@@ -3,7 +3,7 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <kernel/mm/free_list_allocator.h>   // implements
+#include <mm/free_list_allocator.h>   // implements
 
 //
 // Utility functions

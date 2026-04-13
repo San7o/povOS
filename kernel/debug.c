@@ -5,15 +5,15 @@
 
 #include <libk/unistd.h>
 #include <kernel/debug.h>   // implements
-#include <kernel/mm/paging.h>
+#include <mm/paging.h>
 #include <kernel/time.h>
 #include <drivers/uart.h>
 #include <drivers/video/vga.h>
 #include <drivers/pci.h>
 #include <drivers/hpet.h>
-#include <kernel/mm/bios_mmap.h>
-#include <kernel/mm/pmmgr.h>
-#include <kernel/mm/layout.h>
+#include <mm/bios_mmap.h>
+#include <mm/pmmgr.h>
+#include <mm/layout.h>
 #include <kernel/utils.h>
 
 void debug_dump_regs_uart3(cpu_regs_t regs)

@@ -17,7 +17,7 @@
 #include <drivers/video/vga.h>
 #include <drivers/pcie.h>
 #include <kernel/input/input.h>
-#include <kernel/mm/pmmgr.h>
+#include <mm/pmmgr.h>
 #include <arch/cpu_regs.h>
 
 //

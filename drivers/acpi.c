@@ -5,9 +5,9 @@
 
 #include <drivers/acpi.h>   // implements
 #include <kernel/range.h>
-#include <kernel/mm/pmmgr.h>
-#include <kernel/mm/paging.h>
-#include <kernel/mm/layout.h>
+#include <mm/pmmgr.h>
+#include <mm/paging.h>
+#include <mm/layout.h>
 #include <libk/string.h>
 #include <libk/stdio.h>
 #include <libk/stddef.h>

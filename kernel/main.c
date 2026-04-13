@@ -7,11 +7,11 @@
 #include <libk/stdbool.h>
 #include <libk/string.h>
 #include <libk/stdio.h>
-#include <kernel/mm/pmmgr.h>
-#include <kernel/mm/vmmgr.h>
-#include <kernel/mm/bios_mmap.h>
-#include <kernel/mm/heap.h>
-#include <kernel/mm/layout.h>
+#include <mm/pmmgr.h>
+#include <mm/vmmgr.h>
+#include <mm/bios_mmap.h>
+#include <mm/heap.h>
+#include <mm/layout.h>
 #include <kernel/idt.h>
 #include <kernel/debug.h>
 #include <kernel/utils.h>

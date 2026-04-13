@@ -3,8 +3,8 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#ifndef POVOS_KERNEL_MM_FREE_LIST_ALLOC_H
-#define POVOS_KERNEL_MM_FREE_LIST_ALLOC_H
+#ifndef POVOS_MM_FREE_LIST_ALLOC_H
+#define POVOS_MM_FREE_LIST_ALLOC_H
 
 //
 // Free list allocator
@@ -55,4 +55,4 @@ void *free_list_alloc_realloc(free_list_alloc_t *fla, void *ptr, size_t size);
 void *free_list_alloc_reallocarray(free_list_alloc_t *fla, void *ptr,
                                    size_t nmemb, size_t size);
 
-#endif // POVOS_KERNEL_MM_FREE_LIST_ALLOC_H
+#endif // POVOS_MM_FREE_LIST_ALLOC_H

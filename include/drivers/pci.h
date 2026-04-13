@@ -41,8 +41,8 @@
 #define PCI_CONFIG_ADDRESS    0xCF8
 #define PCI_CONFIG_DATA       0xCFC
 
-#define PCI_DEVICE_VENDOR_NONE 0xFFFF
 typedef struct pci_device_vendor {
+  #define PCI_DEVICE_VENDOR_NONE 0xFFFF
   u16_t vendor_id;
   u16_t device_id;
   

@@ -3,8 +3,8 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#ifndef POVOS_KERNEL_MM_LAYOUT_H
-#define POVOS_KERNEL_MM_LAYOUT_H
+#ifndef POVOS_MM_LAYOUT_H
+#define POVOS_MM_LAYOUT_H
 
 #include <libk/stddef.h>
 
@@ -21,4 +21,4 @@
 #define MM_PHYS_TO_VIRT(phys)  ((void*)((u64_t)(phys) + MM_HHDM_OFFSET))
 #define MM_VIRT_TO_PHYS(virt)  ((u64_t)(virt) - MM_HHDM_OFFSET)
 
-#endif // POVOS_KERNEL_MM_MEMORY_H
+#endif // POVOS_MM_MEMORY_H

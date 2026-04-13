@@ -3,8 +3,8 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#ifndef POVOS_KERNEL_MM_PMMGR_H
-#define POVOS_KERNEL_MM_PMMGR_H
+#ifndef POVOS_MM_PMMGR_H
+#define POVOS_MM_PMMGR_H
 
 //
 // Physical Memory Manager
@@ -15,7 +15,7 @@
 // size blocks (PAGE_SIZE).
 //
 
-#include <kernel/mm/bios_mmap.h>
+#include <mm/bios_mmap.h>
 #include <libk/stddef.h>
 
 typedef u64_t phys_addr_t;
@@ -40,4 +40,4 @@ int pmmgr_init(void);
 phys_addr_t pmmgr_alloc_page(void);
 void pmmgr_free_page(phys_addr_t page);
 
-#endif // POVOS_KERNEL_MM_PMMGR_H
+#endif // POVOS_MM_PMMGR_H

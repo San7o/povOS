@@ -7,7 +7,7 @@
 #define POVOS_KERNEL_TASK_H
 
 #include <libk/stddef.h>
-#include <kernel/mm/vmmgr.h>
+#include <mm/vmmgr.h>
 #include <arch/cpu_regs.h>
 
 #define TASK_NAME_LEN 16

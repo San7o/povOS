@@ -3,9 +3,9 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <kernel/mm/paging.h>   // implements
-#include <kernel/mm/pmmgr.h>
-#include <kernel/mm/vmmgr.h>
+#include <mm/paging.h>   // implements
+#include <mm/pmmgr.h>
+#include <mm/vmmgr.h>
 #include <libk/string.h>
 
 page_table_t *paging_pml4t_init(void)

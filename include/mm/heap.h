@@ -13,7 +13,7 @@
 // The global heap.
 //
 
-#include <kernel/mm/vmmgr.h>
+#include <mm/vmmgr.h>
 
 bool  heap_init(vmmgr_t *vmmgr, size_t initial_size);
 

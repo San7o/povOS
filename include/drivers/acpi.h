@@ -21,12 +21,9 @@
 //      https://uefi.org/htmlspecs/ACPI_Spec_6_4_html/
 //
 
-#include <kernel/mm/bios_mmap.h>
+#include <mm/bios_mmap.h>
 #include <kernel/macros.h>
 #include <libk/stddef.h>
-
-#define ACPI_VERSION_1 0
-#define ACPI_VERSION_2 2
 
 //
 // Root System Description Pointer
@@ -44,7 +41,9 @@ typedef struct acpi_rsdp {
   u8_t  checksum;
   // An OEM-supplied string that identifies the OEM
   u8_t  oemid[6];
-  // The revision of this structure. See the ACPI_VESION_ macros
+  // The revision of this structure.
+  #define ACPI_VERSION_1 0
+  #define ACPI_VERSION_2 2
   u8_t  revision;
   // 32 bit physical address of the RSDT (depricated in version 2.0)
   u32_t rsdt_address;
@@ -112,27 +111,26 @@ typedef struct acpi_xsdt {
   u64_t entries[];
 } _packed acpi_xsdt_t;
 
-#define ACPI_ADDRSPACE_SYSTEM_MEMORY             0x00
-#define ACPI_ADDRSPACE_SYSTEM_IO                 0x01
-#define ACPI_ADDRSPACE_PCI_CONF                  0x02
-#define ACPI_ADDRSPACE_EMBEDDED_CONTROLLER       0x03
-#define ACPI_ADDRSPACE_SMBUS                     0x04
-#define ACPI_ADDRSPACE_SYSTEM_CMOS               0x05
-#define ACPI_ADDRSPACE_CPI_BAR_TARGET            0x06
-#define ACPI_ADDRSPACE_IPMI                      0x07
-#define ACPI_ADDRSPACE_GENERAL_PURPOSE_IO        0x08
-#define ACPI_ADDRSPACE_GENERIC_SERIAL_BUS        0x09
-// Platform communication channel
-#define ACPI_ADDRSPACE_PCC                       0x0A
-// 0x0B to 0x7E are Reserved
-#define ACPI_ADDRSPACE_FUNCTIONAL_FIXED_HARDWARE 0x7F
-// 0xC0 to 0xFF are OEM Defined
-
 // Generic Address Structure
 typedef struct acpi_addr
 {
   // The address space where the data structure or register
-  // exists. See the ACPI_ADDRSPACE_ macros
+  // exists. 
+  #define ACPI_ADDRSPACE_SYSTEM_MEMORY             0x00
+  #define ACPI_ADDRSPACE_SYSTEM_IO                 0x01
+  #define ACPI_ADDRSPACE_PCI_CONF                  0x02
+  #define ACPI_ADDRSPACE_EMBEDDED_CONTROLLER       0x03
+  #define ACPI_ADDRSPACE_SMBUS                     0x04
+  #define ACPI_ADDRSPACE_SYSTEM_CMOS               0x05
+  #define ACPI_ADDRSPACE_CPI_BAR_TARGET            0x06
+  #define ACPI_ADDRSPACE_IPMI                      0x07
+  #define ACPI_ADDRSPACE_GENERAL_PURPOSE_IO        0x08
+  #define ACPI_ADDRSPACE_GENERIC_SERIAL_BUS        0x09
+  // Platform communication channel
+  #define ACPI_ADDRSPACE_PCC                       0x0A
+  // 0x0B to 0x7E are Reserved
+  #define ACPI_ADDRSPACE_FUNCTIONAL_FIXED_HARDWARE 0x7F
+  // 0xC0 to 0xFF are OEM Defined
   u8_t  address_space;
   // The size in bits of the given register. When addressing a data
   // structure, this field must be zero.
@@ -153,18 +151,6 @@ typedef struct acpi_addr
   u64_t address;
 } _packed acpi_addr_t;
 
-// Power management profiles
-#define ACPI_PM_PROFILE_UNSPECIFIED        0
-#define ACPI_PM_PROFILE_DESKTOP            1
-#define ACPI_PM_PROFILE_MOBILE             2
-#define ACPI_PM_PROFILE_WORKSTATION        3
-#define ACPI_PM_PROFILE_ENTERPRISE_SERVER  4
-#define ACPI_PM_PROFILE_SOHO_SERVER        5
-#define ACPI_PM_PROFILE_APPLIANCE_PC       6
-#define ACPI_PM_PROFILE_PERFORMANCE_SERVER 7
-#define ACPI_PM_PROFILE_TABLET             8
-#define ACPI_PM_PROFILE_MAX                9  // profiles >= 9 are reserved
-
 //
 // Fixed ACPI Description Table
 //
@@ -182,10 +168,21 @@ typedef struct acpi_fadt
   u32_t dsdt;
   // field used in ACPI 1.0; no longer in use, for compatibility only
   u8_t  reserved;
+  // Power management profiles
+  #define ACPI_PM_PROFILE_UNSPECIFIED        0
+  #define ACPI_PM_PROFILE_DESKTOP            1
+  #define ACPI_PM_PROFILE_MOBILE             2
+  #define ACPI_PM_PROFILE_WORKSTATION        3
+  #define ACPI_PM_PROFILE_ENTERPRISE_SERVER  4
+  #define ACPI_PM_PROFILE_SOHO_SERVER        5
+  #define ACPI_PM_PROFILE_APPLIANCE_PC       6
+  #define ACPI_PM_PROFILE_PERFORMANCE_SERVER 7
+  #define ACPI_PM_PROFILE_TABLET             8
+  #define ACPI_PM_PROFILE_MAX                9  // profiles >= 9 are reserved
   // This field is set by the OEM to convey the preferred power
   // management profile to OSPM. OSPM can use this field to set
   // default power management policy parameters during OS
-  // installation. Se the ACPI_PM_PROFILE_ defines.
+  // installation.
   u8_t  preferred_pm_profile;
   // System vector the SCI interrupt is wired to in 8259 mode. On
   // systems that do not contain the 8259, this field contains the
@@ -262,6 +259,10 @@ typedef struct acpi_fadt
   acpi_addr_t x_gpe0_block;
   acpi_addr_t x_gpe1_block;
 } _packed acpi_fadt_t;
+
+//
+// Functions
+//
 
 // Find the address of the RSDP
 // Returns NULL (0) if not found

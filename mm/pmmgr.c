@@ -3,8 +3,8 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <kernel/mm/pmmgr.h>   // implements
-#include <kernel/mm/paging.h>
+#include <mm/pmmgr.h>   // implements
+#include <mm/paging.h>
 #include <kernel/utils.h>
 #include <kernel/range.h>
 #include <libk/stdbool.h>

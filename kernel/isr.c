@@ -42,11 +42,15 @@ void isr_keyboard_handler(u8_t  isr_number,
   UNUSED(error_code);
   UNUSED(sp);
 
-  keyboard_t *keyboard = keyboard_get_active();
+  keyboard_t *keyboard;
+  keyboard_event_t event;
+  u8_t scancode;
+  
+  keyboard = keyboard_get_active();
   if (!keyboard) goto exit;
   
-  u8_t scancode = ps2_read_data();
-  keyboard_event_t event =
+  scancode = ps2_read_data();
+  event =
     keyboard_event_from_scancode(keyboard, scancode);
   if (event.key == KEY_NONE) goto exit;
 
@@ -68,7 +72,9 @@ void isr_pit_channel_0_handler(u8_t  isr_number,
   UNUSED(isr_number);
   UNUSED(error_code);
   UNUSED(sp);
-
+  
+  cpu_regs_t* ct_regs;
+  
   time_ms++;
   pic_ack();
 
@@ -81,7 +87,7 @@ void isr_pit_channel_0_handler(u8_t  isr_number,
     // Call the scheduler
     
     // Save registers of the current task
-    cpu_regs_t* ct_regs = &scheduler.tasks[current_task].task.regs;
+    ct_regs = &scheduler.tasks[current_task].task.regs;
     // These need to match the assembly code
     ct_regs->rax    = sp[0];
     ct_regs->rcx    = sp[1];

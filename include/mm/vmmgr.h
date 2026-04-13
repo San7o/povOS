@@ -3,8 +3,8 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#ifndef POVOS_KERNEL_MM_VMMGR_H
-#define POVOS_KERNEL_MM_VMMGR_H
+#ifndef POVOS_MM_VMMGR_H
+#define POVOS_MM_VMMGR_H
 
 //
 // Virtual Memory Manager
@@ -18,8 +18,8 @@
 
 #include <libk/stddef.h>
 #include <libk/stdbool.h>
-#include <kernel/mm/paging.h>
-#include <kernel/mm/free_list_allocator.h>
+#include <mm/paging.h>
+#include <mm/free_list_allocator.h>
 
 #define VMMGR_MAX_OBJECTS 1024
 
@@ -63,4 +63,4 @@ virt_addr_t vmm_alloc(vmmgr_t *vmmgr,
 // Implemented in assembly
 void vmm_invalidate_tlb(virt_addr_t addr);
 
-#endif // POVOS_KERNEL_MM_VMMGR_H
+#endif // POVOS_MM_VMMGR_H

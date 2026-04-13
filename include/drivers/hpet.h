@@ -41,7 +41,7 @@ typedef struct hpet_acpi_sdt {
 #define HPET_MAIN_COUNTER_REGISTER_OFFSET           0xF0   // r/w
 
 #define HPET_TIMER_N_CONFIG_CAP_REGISTER_OFFSET(N) \
-  (0x100 + 0x20 * (N))    // r/w
+  (0x100 + 0x20 * (N))  // r/w
 #define HPET_TIMER_N_COMPARATOR_VALUE_REGISTER_OFFSET(N) \
   (0x108 + 0x20 * (N))  // r/w
 #define HPET_TIMER_N_FSB_INTERRUP_ROUTE_REGISTER_OFFSET(N) \

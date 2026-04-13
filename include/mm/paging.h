@@ -3,8 +3,8 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#ifndef POVOS_KERNEL_MM_PAGING_H
-#define POVOS_KERNEL_MM_PAGING_H
+#ifndef POVOS_MM_PAGING_H
+#define POVOS_MM_PAGING_H
 
 //
 // Paging
@@ -40,7 +40,7 @@ typedef struct page_entry_flags {
 } page_entry_flags_t;
 
 // This is a single page entry (uses 4 bytes)
-typedef struct _packed {
+typedef struct page_entry {
   u64_t present    : 1;  // 1 present, 0 not present
   u64_t rw         : 1;  // R/W, if 0 writes may not be allowed
   u64_t user       : 1;  // U/S, if 0 user-mode accesses are not allowed
@@ -54,7 +54,7 @@ typedef struct _packed {
   u64_t address    : 40; // Physical address (shifted right 12 bits)
   u64_t available  : 11; // More custom bits
   u64_t nx         : 1;  // XD, No Execute
-} page_entry_t;
+} _packed page_entry_t;
 
 #define PAGE_SIZE   4096
 
@@ -105,4 +105,4 @@ void paging_add_entry(void               *phys_addr,
                       void               *virt_addr,
                       page_entry_flags_t  flags);
 
-#endif // POVOS_KERNEL_MM_PAGING_H
+#endif // POVOS_MM_PAGING_H

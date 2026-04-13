@@ -4,8 +4,8 @@
 // Github:  @San7o
 
 #include <drivers/edu.h>   // implements
-#include <kernel/mm/pmmgr.h>
-#include <kernel/mm/paging.h>
+#include <mm/pmmgr.h>
+#include <mm/paging.h>
 #include <libk/unistd.h>
 
 #define EDU_ALLOC      0
