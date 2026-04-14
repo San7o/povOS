@@ -15,6 +15,7 @@
 #include <mm/pmmgr.h>
 #include <mm/layout.h>
 #include <kernel/utils.h>
+#include <kernel/sync.h>
 
 void debug_dump_regs_uart3(cpu_regs_t regs)
 {
@@ -342,12 +343,25 @@ void debug_print_true_rand(void)
   uart_printf(uart_port1, "[debug] true random number: %d\n", rand);
 }
 
+static spinlock_t sp;
+
 void debug_test_task_a_fn(void)
 {
+  spinlock_init(&sp);
+  
   while(1)
   {
-    uart_printf(uart_port1, "[debug] Hello from task A!\n");
-    sleep_ms(500);
+    if (spinlock_try_lock(&sp))
+    {
+      uart_printf(uart_port1, "[debug] Hello from task A!\n");
+      sleep_ms(500);
+      
+      spinlock_unlock(&sp);
+    }
+    else
+    {
+      uart_printf(uart_port1, "[debug] task A: locked out\n");
+    }
   }
 }
 
@@ -355,7 +369,17 @@ void debug_test_task_b_fn(void)
 {
   while(1)
   {
-    uart_printf(uart_port1, "[debug] Hello from task B!\n");
-    sleep_ms(500);
+    if (spinlock_try_lock(&sp))
+    {
+      uart_printf(uart_port1, "[debug] Hello from task B!\n");
+      sleep_ms(500);
+      
+      spinlock_unlock(&sp);
+    }
+    else
+    {
+      uart_printf(uart_port1, "[debug] task B: locked out\n");
+      sleep_ms(300);
+    }
   }
 }

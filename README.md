@@ -43,6 +43,7 @@ architecture.
     - tasks
     - context switching
     - scheduler
+    - spinlocks
   - filesystem
     - virtual filesystem
   - random number generation
