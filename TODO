@@ -18,7 +18,6 @@ Drivers:
 
 Chores:
 
-- mltitasking: locking
 - power off
 - develop a custom emulated device in qemu (such as a temperature sensor using
   i2c).

@@ -43,8 +43,9 @@ architecture.
     - tasks
     - context switching
     - scheduler
-    - spinlocks
+    - semaphores
     - mutexes
+    - spinlocks
   - filesystem
     - virtual filesystem
   - random number generation
