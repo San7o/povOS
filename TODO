@@ -11,14 +11,14 @@ Kernel:
 
 Drivers:
 
-- ATA: PIO mode for now, required to read storage
-- AHCI: modern standard to communicate with SATA devices
 - SMBus: required for I2C, which is useful for emulated sensors
+- AHCI: modern standard to communicate with SATA devices
 - VESA:  high resolution graphics, but we need to mess with the bootloader
 - IOAPIC: Advanced Programmable Interrupt Controller, better than 8259 PIC
 
 Chores:
 
+- mltitasking: locking
 - power off
 - develop a custom emulated device in qemu (such as a temperature sensor using
   i2c).

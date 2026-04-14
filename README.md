@@ -43,6 +43,8 @@ architecture.
     - tasks
     - context switching
     - scheduler
+  - filesystem
+    - virtual filesystem
   - random number generation
 
 The implementation is clean and readable, headers are documentation.

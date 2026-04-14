@@ -20,6 +20,7 @@ SUBPROJECTS_MAKE_CONF = \
     kernel/make.conf        \
     kernel/input/make.conf  \
     mm/make.conf            \
+    fs/make.conf            \
     libk/make.conf          \
     arch/$(ARCH)/make.conf  \
     drivers/make.conf       \
