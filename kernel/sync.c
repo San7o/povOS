@@ -5,6 +5,27 @@
 
 #include <kernel/sync.h>   // implements
 #include <kernel/macros.h>
+#include <kernel/utils.h>
+
+void mutex_init(mutex_t *mu)
+{
+  mu->lock = 0;
+}
+
+void mutex_lock(mutex_t *mu)
+{
+  while (atomic_cmpxchg(&mu->lock, 1, 0) == 1) { halt_cpu(); }
+}
+
+bool mutex_try_lock(mutex_t *mu)
+{
+  return atomic_cmpxchg(&mu->lock, 1, 0) == 0;
+}
+
+void mutex_unlock(mutex_t *mu)
+{
+  mu->lock = 0;
+}
 
 void spinlock_init(spinlock_t *sl)
 {

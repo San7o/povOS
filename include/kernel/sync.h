@@ -18,15 +18,26 @@
 #include <libk/stddef.h>
 #include <libk/stdbool.h>
 
-typedef struct spinlock {
+typedef struct semaphore {
   u64_t lock;
-} spinlock_t;
+} semaphore_t;
+
+// A mutex is a binary semaphore
+typedef semaphore_t mutex_t;
+// A spinlock loops the cpu while waiting for the lock to unlock
+typedef mutex_t spinlock_t;
 
 // Atomic compare and exchange
+//
 // Compares [a] to [camp_val], if they are equal, copies [b] to [a],
 // otherwise returns [a]
 // Note: this is implemented in assembly
 u64_t atomic_cmpxchg(u64_t *a, u64_t b, u64_t cmp_val);
+
+void mutex_init(mutex_t *mu);
+void mutex_lock(mutex_t *mu);       // blocking
+bool mutex_try_lock(mutex_t *mu);   // non-blocking
+void mutex_unlock(mutex_t *mu);
 
 void spinlock_init(spinlock_t *sl);
 void spinlock_lock(spinlock_t *sl);       // blocking

@@ -44,6 +44,7 @@ architecture.
     - context switching
     - scheduler
     - spinlocks
+    - mutexes
   - filesystem
     - virtual filesystem
   - random number generation
