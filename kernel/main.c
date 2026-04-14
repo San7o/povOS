@@ -23,9 +23,10 @@
 #include <drivers/pic.h>
 #include <drivers/pit.h>
 #include <drivers/uart.h>
-#include <drivers/acpi/acpi.h>
 #include <drivers/pci/pcie.h>
+#include <drivers/acpi/acpi.h>
 #include <drivers/acpi/hpet.h>
+#include <drivers/acpi/ioapic.h>
 #include <drivers/video/vga.h>
 #include <drivers/input/keyboard.h>
 #include <drivers/pci/edu.h>
@@ -122,6 +123,13 @@ int kernel_main(void)
     paging_add_entry((void*)hpet->address, hpet_base_reg, page_flags);
 
     hpet_enable(hpet_base_reg, false);
+
+    // ioapic
+
+    ioapic_acpi_sdt_t *ioapic = acpi_locate_sdt(acpi_rsdp, IOAPIC_ACPI_SIGNATURE);
+    // TODO
+    (void) ioapic;
+    
   }
 
   // PCIe

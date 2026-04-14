@@ -15,6 +15,7 @@ Drivers:
 - AHCI: modern standard to communicate with SATA devices
 - SMBus: required for I2C, which is useful for emulated sensors
 - VESA:  high resolution graphics, but we need to mess with the bootloader
+- ACPI: DSDT
 
 Chores:
 
