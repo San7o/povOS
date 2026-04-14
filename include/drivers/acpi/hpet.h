@@ -17,7 +17,7 @@
 // the base address of HPET can be found using ACPI.
 //
 
-#include <drivers/acpi.h>
+#include <drivers/acpi/acpi.h>
 #include <libk/stdbool.h>
 
 #define HPET_ACPI_SIGNATURE "HPET"

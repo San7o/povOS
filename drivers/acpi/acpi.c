@@ -3,7 +3,7 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <drivers/acpi.h>   // implements
+#include <drivers/acpi/acpi.h>   // implements
 #include <kernel/range.h>
 #include <mm/pmmgr.h>
 #include <mm/paging.h>

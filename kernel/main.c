@@ -23,13 +23,13 @@
 #include <drivers/pic.h>
 #include <drivers/pit.h>
 #include <drivers/uart.h>
-#include <drivers/acpi.h>
-#include <drivers/pcie.h>
-#include <drivers/hpet.h>
+#include <drivers/acpi/acpi.h>
+#include <drivers/pci/pcie.h>
+#include <drivers/acpi/hpet.h>
 #include <drivers/video/vga.h>
 #include <drivers/input/keyboard.h>
-#include <drivers/edu.h>
-#include <drivers/ata.h>
+#include <drivers/pci/edu.h>
+#include <drivers/isa/ata.h>
 
 #include "banner.h"
 

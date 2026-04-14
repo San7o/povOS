@@ -18,14 +18,11 @@ OBJ     =
 
 SUBPROJECTS_MAKE_CONF = \
     kernel/make.conf        \
-    kernel/input/make.conf  \
     mm/make.conf            \
     fs/make.conf            \
     libk/make.conf          \
     arch/$(ARCH)/make.conf  \
-    drivers/make.conf       \
-    drivers/video/make.conf \
-    drivers/input/make.conf
+    drivers/make.conf
 
 include $(SUBPROJECTS_MAKE_CONF)
 
@@ -44,6 +41,8 @@ CFLAGS  = --target=$(ARCH)-elf \
           -nodefaultlibs \
           -fno-builtin \
           -Wall -Wextra -Werror -Wpedantic \
+          -Wno-unused-function \
+          -Wno-empty-translation-unit \
           -I include -I arch/${ARCH}/include
 KERNEL_LDFLAGS  = -T kernel/linker.ld
 ASFLAGS         = -f elf64

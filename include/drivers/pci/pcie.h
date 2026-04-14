@@ -74,7 +74,7 @@
 // with the device such as by sending commands.
 //
 
-#include <drivers/acpi.h>
+#include <drivers/acpi/acpi.h>
 
 #define PCIE_ACPI_SIGNATURE "MCFG"
 

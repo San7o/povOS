@@ -3,7 +3,7 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <drivers/isa.h>   // implements
+#include <drivers/isa/isa.h>   // implements
 #include <kernel/utils.h>
 #include <kernel/macros.h>
 

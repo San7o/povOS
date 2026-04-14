@@ -3,7 +3,7 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <drivers/edu.h>   // implements
+#include <drivers/pci/edu.h>   // implements
 #include <mm/pmmgr.h>
 #include <mm/paging.h>
 #include <libk/unistd.h>

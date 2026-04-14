@@ -3,8 +3,8 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <drivers/ata.h>   // implements
-#include <drivers/isa.h>
+#include <drivers/isa/ata.h>   // implements
+#include <drivers/isa/isa.h>
 #include <kernel/utils.h>
 
 bool ata_enabled(port_t port)

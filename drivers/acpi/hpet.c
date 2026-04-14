@@ -3,7 +3,7 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <drivers/hpet.h>   // implements
+#include <drivers/acpi/hpet.h>   // implements
 
 u32_t hpet_get_period_fs(void* hpet_base_reg)
 {

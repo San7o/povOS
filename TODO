@@ -4,17 +4,17 @@ TODO
 Kernel:
 
 - testing framework
-- virtual filesystem, disk operations abstraction
+- filesystem
 - shell
 - syscalls
 - higher half kernel
 
 Drivers:
 
-- SMBus: required for I2C, which is useful for emulated sensors
-- AHCI: modern standard to communicate with SATA devices
-- VESA:  high resolution graphics, but we need to mess with the bootloader
 - IOAPIC: Advanced Programmable Interrupt Controller, better than 8259 PIC
+- AHCI: modern standard to communicate with SATA devices
+- SMBus: required for I2C, which is useful for emulated sensors
+- VESA:  high resolution graphics, but we need to mess with the bootloader
 
 Chores:
 

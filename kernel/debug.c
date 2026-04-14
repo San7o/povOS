@@ -9,8 +9,8 @@
 #include <kernel/time.h>
 #include <drivers/uart.h>
 #include <drivers/video/vga.h>
-#include <drivers/pci.h>
-#include <drivers/hpet.h>
+#include <drivers/pci/pci.h>
+#include <drivers/acpi/hpet.h>
 #include <mm/bios_mmap.h>
 #include <mm/pmmgr.h>
 #include <mm/layout.h>

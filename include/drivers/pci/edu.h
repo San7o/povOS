@@ -23,7 +23,7 @@
 // Only the MMIO is currently implemented.
 //
 
-#include <drivers/pcie.h>
+#include <drivers/pci/pcie.h>
 #include <libk/stdbool.h>
 #include <libk/stddef.h>
 
