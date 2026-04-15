@@ -53,6 +53,8 @@ architecture.
 
 The implementation is clean and readable, headers are documentation.
 
+![board](./docs/pc-motherboard.jpg)
+
 ## Usage
 
 Compile and run with qemu:
