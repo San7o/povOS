@@ -116,14 +116,14 @@
 //
 // The OCWs can be written into the 8259A anytime after initialization.
 //
-// Whenever a command is issued with A0 e 0 and D4 e 1, this is
-// interpreted as Initialization Command Word 1 (ICW1). ICW1 starts
-// the intiitalization sequence during which the following
-// automatically occur.
+// Whenever a command is issued with COMMAND PORT = 0 and DATA PORT
+// bit 4 = 1 (DATA PORT = 0x10), this is interpreted as Initialization
+// Command Word 1 (ICW1). ICW1 starts the intiitalization sequence.
 //
 // Source: David Jurgens' HelpPC Quick Reference Utility
 //
-//  Initialization Command Word 1 at Port 20h and A0h
+// - Initialization Command Word 1 at COMMAND PORT
+//   This starts the initialization
 //
 //  |7|6|5|4|3|2|1|0|  ICW1
 //   | | | | | | | `---- 1=ICW4 is needed, 0=no ICW4 needed
@@ -133,13 +133,15 @@
 //   | | | `-------- must be 1 for ICW1 (port must also be 20h or A0h)
 //   `------------- must be zero for PC systems
 //
-//  Initialization Command Word 2 at Port 21h and A1h
+// - Initialization Command Word 2 at DATA PORT
+//   Used to specify the vector offset
 //
 //  |7|6|5|4|3|2|1|0|  ICW2
 //   | | | | | `-------- 000= on 80x86 systems
 //   `----------------- A7-A3 of 80x86 interrupt vector
 //
-//  Initialization Command Word 3 at Port 21h and A1h
+// - Initialization Command Word 3 at DATA PORT
+//   Used for cascading information
 //
 //  |7|6|5|4|3|2|1|0|  ICW3 for Master Device
 //   | | | | | | | `---- 1=interrupt request 0 has slave, 0=no slave
@@ -155,7 +157,8 @@
 //   | | | | | `-------- master interrupt request slave is attached to
 //   `----------------- must be zero
 //
-//  Initialization Command Word 4 at Port 21h and A1h
+// - Initialization Command Word 4 at DATA PORT
+//   Mode selection
 //
 //  |7|6|5|4|3|2|1|0|  ICW4
 //   | | | | | | | `---- 1 for 80x86 mode, 0 = MCS 80/85 mode
@@ -171,7 +174,8 @@
 //   10 buffered mode slave (PC mode)
 //   11 buffered mode master (PC mode)
 //
-//  Operation Control Word 1 / Interrupt Mask Reg.  (Ports 21h & A1h)
+// - Operation Control Word 1 / Interrupt Mask Reg at DATA PORT
+//   Used for masing IRQs
 //
 //  |7|6|5|4|3|2|1|0|  OCW1 - IMR Interrupt Mask Register
 //   | | | | | | | `---- 0 = service IRQ0, 1 = mask off
@@ -183,7 +187,8 @@
 //   | `---------- 0 = service IRQ6, 1 = mask off
 //   `----------- 0 = service IRQ7, 1 = mask off
 //
-//  Operation Control Word 2 / Interrupt Command Reg. (Ports 20h & A0h)
+// - Operation Control Word 2 / Interrupt Command Reg. at COMMAND PORT
+//   Used for End of interrupt
 //
 //  |7|6|5|4|3|2|1|0|  OCW2 - ICR Interrupt Command Register
 //   | | | | | `-------- interrupt request level to act upon
@@ -201,7 +206,8 @@
 //  110  set priority command  (uses bits 2-0)
 //  111  rotate on specific EOI command
 //
-//  Operation Control Word 3   (Ports 20h & A0h)
+// - Operation Control Word 3 at COMMAND PORT
+//   Used for special status / polling
 //
 //  |7|6|5|4|3|2|1|0|  OCW3
 //   | | | | | | | `--- 1=read IRR on next read, 0=read ISR on next read

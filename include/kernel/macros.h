@@ -13,7 +13,7 @@
 // X86_PAUSE
 //
 // Improves the performance of spin-wait loops, should be used instead
-// od NOP.
+// of NOP.
 //
 // When executing a “spin-wait loop,” processors will suffer a severe
 // performance penalty when exiting the loop because it detects a
