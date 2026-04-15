@@ -17,6 +17,14 @@
 // IRQ 0). The oscillator used by the PIT chip runs at (roughly)
 // 1.193182 MHz.
 //
+// 8253 Datasheet:
+//
+// https://www.alldatasheet.com/datasheet-pdf/pdf/66098/INTEL/8253.html
+//
+// PIIX3 Datasheet:
+//
+// https://www.alldatasheet.com/datasheet-pdf/pdf/66093/INTEL/PIIX3.html
+//
 // The PIT contains a pair of registers per channel: the count and
 // reload count. When the PIT is started the count register is set to
 // value of the reload count, and then every time the main clock ticks

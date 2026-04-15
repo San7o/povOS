@@ -20,9 +20,9 @@
 #include <kernel/console.h>
 #include <kernel/tty.h>
 #include <kernel/sched.h>
-#include <drivers/pic.h>
-#include <drivers/pit.h>
-#include <drivers/uart.h>
+#include <drivers/isa/pic.h>
+#include <drivers/isa/pit.h>
+#include <drivers/isa/uart.h>
 #include <drivers/pci/pcie.h>
 #include <drivers/acpi/acpi.h>
 #include <drivers/acpi/hpet.h>

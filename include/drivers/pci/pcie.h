@@ -71,7 +71,7 @@
 // address to calculate the physical address of the configuration
 // space header of the device you want to work with. Use the
 // PCIE_PHYS_ADDR macro for this. From the header you can interact
-// with the device such as by sending commands.
+// with the device via MMIO for example by sending commands.
 //
 
 #include <drivers/acpi/acpi.h>

@@ -7,7 +7,7 @@
 #include <kernel/debug.h>   // implements
 #include <mm/paging.h>
 #include <kernel/time.h>
-#include <drivers/uart.h>
+#include <drivers/isa/uart.h>
 #include <drivers/video/vga.h>
 #include <drivers/pci/pci.h>
 #include <drivers/acpi/hpet.h>

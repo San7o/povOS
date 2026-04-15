@@ -15,7 +15,8 @@
 //
 // Note that on modern systems, especially multicore processors, APIC
 // has replaced PIC. This header only provides an interface to manage
-// PIC.
+// PIC. As many other things, PIC is still supported by the PIIX3
+// (deprecated, replaced by PCH which still supports the PIC).
 //
 // The IBM PC has two PIC chips (often referred to as master and
 // slave), each one providing 8 IRQs to the system in a cascading way:
@@ -23,9 +24,13 @@
 // total of 15 IRQs (and not 16 because one is used so signal the
 // cascading behaviour).
 //
-// Your best friend is, of course, the datasheet:
+// 8259A Datasheet:
 //
-//   https://pdos.csail.mit.edu/6.828/2005/readings/hardware/8259A.pdf
+// https://pdos.csail.mit.edu/6.828/2005/readings/hardware/8259A.pdf
+//
+// PIIX3 Datasheet:
+//
+// https://www.alldatasheet.com/datasheet-pdf/pdf/66093/INTEL/PIIX3.html
 //
 //
 // Chip overview

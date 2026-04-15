@@ -16,6 +16,8 @@
 // wide comparators. HPET is programmed using memory mapped IO, and
 // the base address of HPET can be found using ACPI.
 //
+// Datasheet: IA-PC HPET (High Precision Event Timers) Specification
+//
 
 #include <drivers/acpi/acpi.h>
 #include <libk/stdbool.h>

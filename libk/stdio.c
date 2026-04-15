@@ -5,7 +5,7 @@
 
 #include <libk/stdio.h>   // implements
 #include <stdarg.h>
-#include <drivers/uart.h>
+#include <drivers/isa/uart.h>
 
 int printk(const char* fmt, ...)
 {

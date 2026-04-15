@@ -3,7 +3,7 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <drivers/uart.h>   // implements
+#include <drivers/isa/uart.h>   // implements
 #include <bits/port.h>
 #include <libk/stdlib.h>
 

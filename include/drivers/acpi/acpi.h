@@ -16,7 +16,9 @@
 // unused hardware to sleep. It provides a series of tables and
 // structure that we can use to interact with the hardware.
 //
-// The best resource is of course the specification itself:
+// The best resource is of course the specification itself, which
+// contains information about all APCI tables (seential if you want to
+// implement a driver):
 //
 //      https://uefi.org/htmlspecs/ACPI_Spec_6_4_html/
 //

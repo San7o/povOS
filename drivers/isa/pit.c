@@ -3,7 +3,7 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <drivers/pit.h>   // implements
+#include <drivers/isa/pit.h>   // implements
 #include <kernel/utils.h>
 #include <bits/port.h>
 

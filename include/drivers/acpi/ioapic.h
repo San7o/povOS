@@ -14,6 +14,74 @@
 // The MADT table provides a list of IOAPIC records of different
 // types.
 //
+// Datasheet: 82093AA I/O Advanced Programmable Interrupt Controller
+//
+// Overview
+// --------
+//
+// While the standard ISA Compatible interrupt controller (located in
+// the PIIX3) is intended for use in a uni-processor system, the I/O
+// Advanced Programmable Interrupt Controller (IOAPIC) can be used in
+// either a uni-processor or multi-processor system. The IOAPIC
+// provides multi-processor interrupt management and incorporates both
+// static and dynamic symmetric interrupt distribution across all
+// processors. In systems with multiple I/O subsystems, each subsystem
+// can have its own set of interrupts.
+//
+// In a uni-processor system, the IOAPIC's dedicated interrupt bus can
+// reduce interrupt latency over the standard interrupt controller
+// (i.e., the latency associated with the propagation of the interrupt
+// acknowledge cycle across multiple busses using the standard
+// interrupt controller approach). Interrupts can be controlled by the
+// standard ISA Compatible interrupt controller in the PIIX3, the
+// IOAPIC unit, or mixed mode where both the standard ISA Compatible
+// Interrupt Controller and IOAPIC are used. The selection of which
+// controller responds to an interrupt is determined by how the
+// interrupt controllers are programmed. Note that it is the
+// programmer's responsibility to make sure that the same interrupt
+// input signal is not handled by both interrupt controllers.
+//
+// At the system level, APIC consists of two parts - one residing in
+// the I/O subsystem (called the IOAPIC) and the other in the CPU
+// (called the Local APIC). The local APIC and the IOAPIC communicate
+// over a dedicated APIC bus. The IOAPIC bus interface consists of two
+// bi-directional data signals (APICD[1:0]) and a clock input
+// (APICCLK)
+//
+// The CPU's Local APIC Unit contains the necessary intelligence to
+// determine whether or not its processor should accept interrupts
+// broadcast on the APIC bus. The Local Unit also provides local
+// pending of interrupts, nesting and masking of interrupts, and
+// handles all interactions with its local processor (e.g., the
+// INTR/INTA/EOI protocol). The Local Unit further provides
+// inter-processor interrupts and a timer, to its local processor. The
+// register level interface of a processor to its local APIC is
+// identical for every processor.
+//
+// The IOAPIC Unit consists of a set of interrupt input signals, a
+// 24-entry by 64-bit Interrupt Redirection Table, programmable
+// registers, and a message unit for sending and receiving APIC
+// messages over the APIC bus. I/O devices inject interrupts into the
+// system by asserting one of the interrupt lines to the IOAPIC. The
+// IOAPIC selects the corresponding entry in the Redirection Table and
+// uses the information in that entry to format an interrupt request
+// message. Each entry in the Redirection Table can be individually
+// programmed to indicate edge/level sensitive interrupt signals, the
+// interrupt vector and priority, the destination processor, and how
+// the processor is selected (statically or dynamically). The
+// information in the table is used to transmit a message to other
+// APIC units (via the APIC bus).
+//
+// The IOAPIC contains a set of programmable registers. Two of the
+// registers (I/O Register Select and I/O Window Registers) are
+// located in the CPU's memory space and are used to indirectly access
+// the other APIC registers as described in the datasheet at section
+// 3.0, Register Description. The Version Register provides the
+// implementation version of the IOAPIC. The IOAPIC ID Register is
+// programmed with an ID value that serves as a physical name of the
+// IOAPIC. This ID is loaded into the ARB ID Register when the IOAPIC
+// ID Register is written and is used during bus arbitration
+//
 
 #include <drivers/acpi/acpi.h>
 
@@ -210,6 +278,8 @@ typedef struct ioapic_record_proc_local_x2apic {
 
 typedef struct ioapic_acpi_sdt {
   acpi_sdt_header_t header;
+  // The 32-bit physical address at which each processor can access
+  // its local interrupt controller.
   u32_t local_addr;
   
   // Flags

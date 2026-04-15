@@ -8,9 +8,9 @@
 #include <kernel/time.h>
 #include <kernel/macros.h>
 #include <kernel/sched.h>
-#include <drivers/uart.h>
-#include <drivers/ps2.h>
-#include <drivers/pic.h>
+#include <drivers/isa/uart.h>
+#include <drivers/isa/ps2.h>
+#include <drivers/isa/pic.h>
 #include <drivers/input/keyboard.h>
 
 #include "isr_string.h"
