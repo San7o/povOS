@@ -49,7 +49,7 @@ architecture.
   - ACPI
   - PCI/PCIe
   - [edu](https://www.qemu.org/docs/master/specs/edu.html)
-  - IOAPIC (work in progress)
+  - IOAPIC
 
 The implementation is clean and readable, headers are documentation.
 

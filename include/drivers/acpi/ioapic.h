@@ -465,7 +465,7 @@ typedef union ioapic_ioredtbl_reg {
     // masked results in the delivery of the interrupt to the
     // destination.
     u8_t  int_mask         : 1;   // r/w
-    u64_t reserved         : 40;
+    u64_t reserved         : 39;
     // If the Destination Mode of this entry is Physical Mode (bit
     // 11=0), bits [59:56] contain an APIC ID. If Logical Mode is
     // selected (bit 11=1), the Destination Field potentially defines

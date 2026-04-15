@@ -150,9 +150,12 @@ int kernel_main(void)
         u8_t type = record_it->entry_type;
         switch (type)
         {
-        case 1:
-          printk("[info] [ioapic] Found an APIC Structure\n");
+        case 1: {
+          ioapic_record_ioapic_t *ioapic_struct = (void*)record_it;
+          printk("[info] [ioapic] Found an APIC Structure with id %d, addr %x\n",
+                 ioapic_struct->ioapic_id, ioapic_struct->ioapic_addr);
           break;
+        }
         default:
           break;
         }
