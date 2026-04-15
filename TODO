@@ -3,12 +3,15 @@ TODO
 
 Kernel:
 
+- interrupt management framework
+- device model (bus, device, driver abstractions)
+- a vfs implementation (custom one)
 - testing framework
-- filesystem
 - shell
 - syscalls
 - higher half kernel
 - userspace
+- use multiple cores?
 
 Drivers:
 
