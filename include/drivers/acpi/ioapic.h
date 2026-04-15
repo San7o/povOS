@@ -369,7 +369,7 @@ typedef union ioapic_ioapicid_reg {
 } _packed ioapic_ioapicid_reg_t;
 
 typedef union ioapic_apicver_reg {
-  struct {
+  struct _packed {
     u8_t apic_version;  // r
     u8_t reserved;
     // This field contains the entry number (0 being the lowest entry)
@@ -377,14 +377,14 @@ typedef union ioapic_apicver_reg {
     // equal to the number of interrupt input pins for the IOAPIC
     // minus one. The range of values is 0 through 239. For this
     // IOAPIC, the value is 17h.
-    u16_t max_redirection;
+    u8_t max_redirection;
     u8_t  reserved2;
   } values;
   u32_t raw;
 } _packed ioapic_ioapic_reg_t;
 
 typedef union ioapic_ioapicarb_reg {
-  struct {
+  struct _packed {
     u16_t reserved;
     u8_t  reserved2;
     // This 4 bit field contains the IOAPIC Arbitration ID.
@@ -395,7 +395,7 @@ typedef union ioapic_ioapicarb_reg {
 } _packed ioapic_ioapicarb_reg_t;
 
 typedef union ioapic_ioredtbl_reg {
-  struct {
+  struct _packed {
     // The vector field is an 8 bit field containing the interrupt
     // vector for this interrupt. Vector values range from 0x10 to
     // 0xFE

@@ -90,6 +90,75 @@ typedef struct cpu_regs {
   
 } _packed cpu_regs_t;
 
+typedef union cpu_rflags_reg {
+  struct _packed {
+    u8_t cf     : 1;  // carry flag
+    u8_t r1     : 1;  // reserved
+    u8_t pf     : 1;  // parity flag
+    u8_t r2     : 1;  // reserved
+    u8_t af     : 1;  // auxilary carry flag
+    u8_t r3     : 1;  // reserved
+    u8_t zf     : 1;  // zero flag
+    u8_t sf     : 1;  // sign flag
+    u8_t tf     : 1;  // trap flag
+    u8_t intf   : 1;  // interrupt enable flag
+    u8_t df     : 1;  // direction flag
+    u8_t of     : 1;  // overflow flag
+    u8_t iopl   : 2;  // I/O privilege level
+    u8_t nt     : 1;  // nested task
+    u8_t r4     : 1;  // reserved
+    u8_t rf     : 1;  // resume flag
+    u8_t vm     : 1;  // virtual-8086 mode
+    u8_t ac     : 1;  // alignment check / access control
+    u8_t vif    : 1;  // virtual interrupt flag
+    u8_t vip    : 1;  // virtual interrupt pending
+    u8_t id     : 1;  // ID flag
+    u64_t r5    : 43;  // reserved
+  } values;
+  u64_t raw;
+} _packed cpu_rflags_reg_t;
+
+typedef union cpu_cr0_reg {
+  struct _packed {
+    u8_t pe    : 1;  // protected mode enable
+    u8_t mp    : 1;  // monitor co-processor
+    u8_t em    : 1;  // emulation
+    u8_t ts    : 1;  // task switched
+    u8_t et    : 1;  // extension type
+    u8_t ne    : 1;  // numeric error
+    u16_t r1   : 10; // reserved
+    u8_t wp    : 1;  // write protect
+    u8_t r2    : 1;  // reserved
+    u8_t am    : 1;  // alignment mask
+    u16_t r3   : 10; // reserved
+    u8_t nw    : 1;  // non-write through
+    u8_t cd    : 1;  // cache disable
+    u8_t pg    : 1;  // paging
+    u32_t r4;        // reserved
+  } values;
+  u64_t raw;
+} _packed cpu_cr9_reg_t;
+
+// Note that CR3 must be page aligned
+typedef union cpu_cr3_reg {
+  struct _packed {
+    u8_t r1   : 2;  // reserved
+    u8_t pwt  : 1;  // Page-Level Write Through
+    u8_t pcd  : 1;  // Page-Level Cache Disable
+    u8_t r2   : 7;  // reserved
+    u64_t pdb : 53; // Physical Base Address of the PML4 
+  } values;         // when cr4.pcide = 0
+  struct _packed {
+    u16_t pcid : 11;
+    u64_t pdb  : 53; // Physical Base Address of the PML4 
+  } values_pcide;    // when cr4.pcide = 1
+  u64_t raw;
+} _packed cpu_cr3_reg_t;
+
+//
+// Functions
+//
+
 u64_t regs_get_cr3(void);
 u64_t regs_get_rflags(void);
 

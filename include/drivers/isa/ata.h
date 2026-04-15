@@ -80,7 +80,7 @@
 #define ATA_CTRL_DRIVE_ADDR_REG_OFFSET   1   // r
 
 typedef union ata_err_reg {
-  struct {
+  struct _packed {
     bool amnf   : 1;  // address mark not found
     bool tknonf : 1;  // track zero not found
     bool abrt   : 1;  // aborted command
@@ -94,7 +94,7 @@ typedef union ata_err_reg {
 } _packed ata_err_reg_t;
 
 typedef union ata_head_reg {
-  struct {
+  struct _packed {
     u8_t head : 4;   // In CHS addressing, bits 0 to 3 of the head. In
                      // LBA addressing, bits 24 to 27 of the block number
     bool drv : 1;    // selects the drive number
@@ -107,7 +107,7 @@ typedef union ata_head_reg {
 } _packed ata_head_reg_t;
 
 typedef union ata_status_reg {
-  struct {
+  struct _packed {
     bool err  : 1;  // Indicated an error occurred. Send a new command to
                     // clear it
     bool idx  : 1;  // index, always set to zero

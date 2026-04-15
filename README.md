@@ -53,7 +53,10 @@ architecture.
 
 The implementation is clean and readable, headers are documentation.
 
+General overview of the programming environment:
+
 ![board](./docs/pc-motherboard.jpg)
+![x86-system](./docs/x86-system.png)
 
 ## Usage
 
