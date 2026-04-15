@@ -10,9 +10,11 @@
 // I/O APIC
 // ========
 //
-// Advanced Programmable Interrupt Controller, replaces the old PIC.
-// The MADT table provides a list of IOAPIC records of different
-// types.
+// Advanced Programmable Interrupt Controller, replaces the old
+// PIC. With the I/O APIC, interrupts can be distributed to physical
+// or logical (clusters of) processors and can be prioritized. Each
+// I/O APIC typically handles 24 external interrupts.  The MADT ACPI
+// table provides a list of IOAPIC records of different types.
 //
 // Datasheet: 82093AA I/O Advanced Programmable Interrupt Controller
 //
@@ -83,6 +85,10 @@
 // ID Register is written and is used during bus arbitration
 //
 
+//
+// ACPI
+//
+
 #include <drivers/acpi/acpi.h>
 
 #define IOAPIC_ACPI_SIGNATURE "APIC"
@@ -126,18 +132,26 @@ typedef struct ioapic_record_local_apic {
 //
 // I/O APIC Structure - type 1
 //
+// In an APIC implementation, there are one or more I/O APICs. Each
+// I/O APIC has a series of interrupt inputs, referred to as INTIn,
+// where the value of n is from 0 to the number of the last interrupt
+// input on the I/O APIC. The I/O APIC structure declares which global
+// system interrupts are uniquely associated with the I/O APIC
+// interrupt inputs. There is one I/O APIC structure for each I/O APIC
+// in the system.
 typedef struct ioapic_record_ioapic {
   ioapic_record_header_t header;
+  // The I/O APIC’s ID
   u8_t ioapic_id;
   u8_t reserved;
   // The 32-bit physical address to access this I/O APIC. Each I/O
-  // APIC resides at a unique address.
+  // APIC resides at a unique address
   u32_t ioapic_addr;
-  // Global system interrup base
+  // Global system interrupt base
   //
   // The global system interrupt number where this I/O APIC’s
   // interrupt inputs start. The number of interrupt inputs is
-  // determined by the I/O APIC’s Max Redir Entry register.
+  // determined by the I/O APIC’s Max Redir Entry register
   u32_t gsystem_int_base;
 } _packed ioapic_record_ioapic_t;
 
@@ -171,7 +185,7 @@ typedef struct ioapic_record_int_src_override {
   // Global system interrupt
   //
   // The Global System Interrupt that this bus-relative interrupt
-  // source will signal.
+  // source will signal
   u32_t gsystem_int;
   // flags
   //
@@ -296,5 +310,177 @@ typedef struct ioapic_acpi_sdt {
   // reading the lenght field in the record header.
   ioapic_record_header_t records[];
 } _packed ioapic_acpi_sdt_t;
+
+//
+// Registers
+// ---------
+//
+// The IOAPIC registers are accessed by an indirect addressing scheme
+// using two registers (IOREGSEL and IOWIN) that are located in the
+// CPU's memory space (memory address specified by the APICBASE
+// Register located in the PIIX3). These two registers are
+// re-locateable (via the APICBASE Register). In the IOAPIC only the
+// IOREGSEL and IOWIN Registers are directly accesable in the memory
+// address space.
+//
+
+// I/O Register Select (index), r/w
+//
+// This register selects the IOAPIC Register to be read/written. The
+// data is then read from or written to the selected register through
+// the IOWIN Register.
+#define IOAPIC_IOREGSEL_ADDR(base)    base
+// I/O Window (data), r/w
+//
+// This register is used to write to and read from the register
+// selected by the IOREGSEL Register. Readability/writability is
+// determined by the IOAPIC register that is currently selected
+#define IOAPIC_IOWIN_ADDR(base)       (base + 0x10)
+
+#define IOAPIC_IOAPICID_REG_INDEX          0x00   // r/w
+#define IOAPIC_IOAPICVER_REG_INDEX         0x01   // r
+#define IOAPIC_IOAPICARB_REG_INDEX         0x02   // r
+//
+// There are 24 I/O Redirection Table entry registers. Each register
+// is a dedicated entry for each interrupt input signal. Unlike IRQ
+// pins of the 8259A, the notion of interrupt priority is completely
+// unrelated to the position of the physical interrupt input signal on
+// the APIC. Instead, software determines the vector (and therefore
+// the priority) for each corresponding interrupt input signal. For
+// each interrupt signal, the operating system can also specify the
+// signal polarity (low active or high active), whether the interrupt
+// is signaled as edges or levels, as well as the destination and
+// delivery mode of the interrupt. The information in the redirection
+// table is used to translate the corresponding interrupt pin
+// information into an inter-APIC message
+//
+// An ioredtbl is a 64 bit registers, we we need to perform two reads
+// or writes
+#define IOAPIC_IOREDTBL_REG_INDEX_LOW(n)   (0x10 + 2 * n)      // r/w
+#define IOAPIC_IOREDTBL_REG_INDEX_HIGH(n)  (0x10 + 2 * n + 1)  // r/w
+
+typedef union ioapic_ioapicid_reg {
+  struct {
+    u32_t reserved  : 24;
+    u8_t  id        : 4;
+    u8_t  reserved2 : 4;
+  } values;
+  u32_t raw;
+} _packed ioapic_ioapicid_reg_t;
+
+typedef union ioapic_apicver_reg {
+  struct {
+    u8_t apic_version;  // r
+    u8_t reserved;
+    // This field contains the entry number (0 being the lowest entry)
+    // of the highest entry in the I/O Redirection Table. The value is
+    // equal to the number of interrupt input pins for the IOAPIC
+    // minus one. The range of values is 0 through 239. For this
+    // IOAPIC, the value is 17h.
+    u16_t max_redirection;
+    u8_t  reserved2;
+  } values;
+  u32_t raw;
+} _packed ioapic_ioapic_reg_t;
+
+typedef union ioapic_ioapicarb_reg {
+  struct {
+    u16_t reserved;
+    u8_t  reserved2;
+    // This 4 bit field contains the IOAPIC Arbitration ID.
+    u8_t  id        : 4;  // r/w
+    u8_t  reserved3 : 4;
+  } values;
+  u32_t raw;
+} _packed ioapic_ioapicarb_reg_t;
+
+typedef union ioapic_ioredtbl_reg {
+  struct {
+    // The vector field is an 8 bit field containing the interrupt
+    // vector for this interrupt. Vector values range from 0x10 to
+    // 0xFE
+    u8_t int_vector;  // r/w
+    // The Delivery Mode is a 3 bit field that specifies how the APICs
+    // listed in the destination field should act upon reception of
+    // this signal. Note that certain Delivery Modes only operate as
+    // intended when used in conjunction with a specific trigger
+    // Mode. These restrictions are indicated in the following table
+    // for each Delivery Mode.
+    //
+    // See the datasheet for additional information
+    #define IOAPIC_IOREDTBL_DELIVERY_MODE_FIXED           000
+    #define IOAPIC_IOREDTBL_DELIVERY_MODE_LOWEST_PRIORITY 001
+    #define IOAPIC_IOREDTBL_DELIVERY_MODE_SMI             001
+    #define IOAPIC_IOREDTBL_DELIVERY_MODE_NMI             100
+    #define IOAPIC_IOREDTBL_DELIVERY_MODE_INIT            101
+    #define IOAPIC_IOREDTBL_DELIVERY_MODE_EXINT           111
+    u8_t delivery_mode    : 3;  // r/w
+    // This field determines the interpretation of the Destination
+    // field. When DESTMOD=0 (physical mode), a destination APIC is
+    // identified by its ID. Bits 56 through 59 of the Destination
+    // field specify the 4 bit APIC ID. When DESTMOD=1 (logical mode),
+    // destinations are identified by matching on the logical
+    // destination under the control of the Destination Format
+    // Register and Logical Destination Register in each Local APIC.
+    #define IOAPIC_IOREDTBL_DESTINATION_MODE_PHYSICAL     0
+    #define IOAPIC_IOREDTBL_DESTINATION_MODE_LOGICAL      1
+    u8_t destination_mode : 1;   // r/w
+    // The Delivery Status bit contains the current status of the
+    // delivery of this interrupt. Delivery Status is read-only and
+    // writes to this bit (as part of a 32 bit word) do not effect
+    // this bit. 0=IDLE (there is currently no activity for this
+    // interrupt). 1=Send Pending (the interrupt has been injected but
+    // its delivery is temporarily held up due to the APIC bus being
+    // busy or the inability of the receiving APIC unit to accept that
+    // interrupt at that time).
+    u8_t delivery_status  : 1;   // r
+    // Interrupt Input Pin Polarity - This bit specifies the polarity
+    // of the interrupt signal. 0=High active, 1=Low active.
+    u8_t intpol           : 1;   // r/w
+    // This bit is used for level triggered interrupts. Its meaning is
+    // undefined for edge triggered interrupts. For level triggered
+    // interrupts, this bit is set to 1 when local APIC(s) accept the
+    // level interrupt sent by the IOAPIC. The Remote IRR bit is set
+    // to 0 when an EOI message with a matching interrupt vector is
+    // received from a local APIC
+    u8_t remote_irr       : 1;   // r
+    // The trigger mode field indicates the type of signal on the
+    // interrupt pin that triggers an interrupt. 1=Level sensitive,
+    // 0=Edge sensitive
+    u8_t trigger_mode     : 1;   // r/w
+    // When this bit is 1, the interrupt signal is
+    // masked. Edge-sensitive interrupts signaled on a masked
+    // interrupt pin are ignored (i.e., not delivered or held
+    // pending). Level-asserts or negates occurring on a masked
+    // level-sensitive pin are also ignored and have no side
+    // effects. Changing the mask bit from unmasked to masked after
+    // the interrupt is accepted by a local APIC has no effect on that
+    // interrupt. This behavior is identical to the case where the
+    // device withdraws the interrupt before that interrupt is posted
+    // to the processor. It is software's responsibility to handle the
+    // case where the mask bit is set after the interrupt message has
+    // been accepted by a local APIC unit but before the interrupt is
+    // dispensed to the processor. When this bit is 0, the interrupt
+    // is not masked. An edge or level on an interrupt pin that is not
+    // masked results in the delivery of the interrupt to the
+    // destination.
+    u8_t  int_mask         : 1;   // r/w
+    u64_t reserved         : 40;
+    // If the Destination Mode of this entry is Physical Mode (bit
+    // 11=0), bits [59:56] contain an APIC ID. If Logical Mode is
+    // selected (bit 11=1), the Destination Field potentially defines
+    // a set of processors. Bits [63:56] of the Destination Field
+    // specify the logical destination address.
+    u8_t destination_field;       // r/w
+  } values;
+  u64_t raw;
+} _packed ioapic_ioredtbl_reg_t;
+
+//
+// Functions
+//
+
+void  ioapic_write_reg(u64_t apic_base, u8_t offset, u32_t val);
+u32_t ioapic_read_reg(u64_t apic_base, u8_t offset);
 
 #endif // POVOS_DRIVERS_IOAPIC_H

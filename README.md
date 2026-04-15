@@ -11,19 +11,6 @@ architecture.
 
 - custom bootloader
 - custom standard library
-- drivers:
-  - PS/2
-  - UART
-  - VGA
-  - ISA
-  - ATA
-  - PIC (Programmable Interrupt Controller)
-  - PIT (Programmable Interrupt Timer)
-  - HPET (High Precision Event Timer)
-  - Keyboard
-  - ACPI
-  - PCI/PCIe
-  - [edu](https://www.qemu.org/docs/master/specs/edu.html)
 - kernel:
   - IDT (Interrupt Descriptor Tabe) and ISR (Interrupt Service Routines)
   - input (supports multiple keyboard layouts)
@@ -49,6 +36,20 @@ architecture.
   - filesystem
     - virtual filesystem
   - random number generation
+- drivers:
+  - PS/2
+  - UART
+  - VGA
+  - ISA
+  - ATA
+  - PIC (Programmable Interrupt Controller)
+  - PIT (Programmable Interrupt Timer)
+  - HPET (High Precision Event Timer)
+  - Keyboard
+  - ACPI
+  - PCI/PCIe
+  - [edu](https://www.qemu.org/docs/master/specs/edu.html)
+  - IOAPIC (work in progress)
 
 The implementation is clean and readable, headers are documentation.
 

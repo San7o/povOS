@@ -18,8 +18,8 @@ Modern documents:
   provides the structure of all types of tables.
 - [Intel I/O Controller Hub 9 (ICH9)
   Family](https://www.intel.com/content/dam/doc/datasheet/io-controller-hub-9-datasheet.pdf):
-  modern southbridge, supporting providing a massive amount of
-  functionality. This is qemu's `q32-9.0` emulated chip.
+  modern southbridge, providing a massive amount of
+  functionality. This is qemu's `q32-9.0` emulated machine.
 - [PCIe Specification (revision 6.0)](https://github.com/Tvirus/ebook/blob/main/ISO/PCI/PCI%20Express%20Base%20Specification%20Revision%206.0.pdf): one of the major buses on the PC
 - [Intel 64 and IA-32 Architectures Software Developer’s
   Manuals](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html):

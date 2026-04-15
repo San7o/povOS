@@ -52,17 +52,20 @@ KERNEL_BIN  = kernel/kernel
 POVOS_BIN   = povos
 DRIVE       = sample_drive
 DRIVE_SIZE  = 10M
-QEMU_MACHINE = pc-q35-9.0
-#QEMU_MACHINE = pc
-QEMU_FLAGS  = -M $(QEMU_MACHINE) \
-              -drive format=raw,file=$(POVOS_BIN),if=ide \
-              -display sdl \
-              -serial stdio \
-              -device edu \
-              -drive file=$(DRIVE).img,if=none,id=$(DRIVE),format=raw \
-              -device ide-hd,drive=$(DRIVE),bus=ide.1,unit=0
 
-_QEMU_FLAGS  = -M pc \
+# + PCIe
+# - ATA
+QEMU_MACHINE = pc-q35-9.0
+# - PCIe
+# + ATA
+#QEMU_MACHINE = pc
+
+QEMU_CPU    = qemu64
+# +random number generation
+#QEMU_CPU = Skylake-Client
+
+QEMU_FLAGS  = -M $(QEMU_MACHINE) \
+              -cpu $(QEMU_CPU) \
               -drive format=raw,file=$(POVOS_BIN),if=ide \
               -display sdl \
               -serial stdio \

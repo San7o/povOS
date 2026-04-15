@@ -99,7 +99,8 @@ int kernel_main(void)
   // Setup devices
   //
   
-  void* hpet_base_reg = NULL;
+  void* hpet_base   = NULL;
+  
   acpi_rsdp_t* acpi_rsdp = acpi_locate_rsdp();
   if (!acpi_rsdp)
   {
@@ -109,27 +110,59 @@ int kernel_main(void)
   {
     printk("[info] Found ACPI RSDP at: %x\n", acpi_rsdp);
 
-    // Hpet setup
-    
-    hpet_acpi_sdt_t *hpet = acpi_locate_sdt(acpi_rsdp, HPET_ACPI_SIGNATURE);
-    if (!hpet)
-      printk("[error] Could not find HPET timer\n");
-    else
-      printk("[info] Found HPET timer, register at address: %x\n", hpet->address);
-
-    // Map hpet->address
     page_entry_flags_t page_flags = { .rw = 1 };
-    hpet_base_reg = MM_PHYS_TO_VIRT(hpet->address);
-    paging_add_entry((void*)hpet->address, hpet_base_reg, page_flags);
 
-    hpet_enable(hpet_base_reg, false);
-
-    // ioapic
-
-    ioapic_acpi_sdt_t *ioapic = acpi_locate_sdt(acpi_rsdp, IOAPIC_ACPI_SIGNATURE);
-    // TODO
-    (void) ioapic;
+    // HPET setup
     
+    hpet_acpi_sdt_t *hpet =
+      acpi_locate_sdt(acpi_rsdp, HPET_ACPI_SIGNATURE);
+    if (!hpet)
+    {
+      printk("[error] Could not find HPET timer\n");
+    }
+    else
+    {
+      printk("[info] Found HPET timer, register at address: %x\n", hpet->address);
+      
+      // Identity map
+      hpet_base = MM_PHYS_TO_VIRT(hpet->address);
+      paging_add_entry((void*)hpet->address, hpet_base, page_flags);
+
+      hpet_enable(hpet_base, false);
+    }
+
+    // IOAPIC
+
+    ioapic_acpi_sdt_t *ioapic_base =
+      acpi_locate_sdt(acpi_rsdp, IOAPIC_ACPI_SIGNATURE);
+    if (!ioapic_base)
+    {
+      printk("[error] Could not find I/O APIC from ACPI\n");
+    }
+    else
+    {
+      printk("[info] Found I/O APIC from ACPI\n");
+
+      ioapic_record_header_t* record_it = &ioapic_base->records[0];
+      
+      while ((u64_t)record_it < (u64_t)ioapic_base + ioapic_base->header.length)
+      {
+        u8_t type = record_it->entry_type;
+        switch (type)
+        {
+        case 1:
+          printk("[info] [ioapic] Found an APIC Structure\n");
+          break;
+        default:
+          break;
+        }
+
+        u8_t *it_bytes = (void*)record_it;
+        it_bytes += record_it->length;
+        record_it = (void*)it_bytes;
+      }
+    }
+
   }
 
   // PCIe
@@ -250,7 +283,7 @@ int kernel_main(void)
   }
   
   // Read and print keyboard input
-  //debug_dump_input_loop(&input, (void*)hpet_base_reg);
+  //debug_dump_input_loop(&input, (void*)hpet_base);
 
   sched_loop();
   
