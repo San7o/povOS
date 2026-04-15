@@ -14,8 +14,9 @@
 // PC from 1981. It was designed to connect peripheral cards to the
 // motherboard and allows for bus mastering. Nowdays ISA is obsolete
 // and not present in moder computers, however motherboards still
-// support its interface, such as the PIIX Southbridge and its
-// successor PCH (which still supports ATA, PIC, PIT...).
+// support its interface, such as the PIIX Southbridge through the LPC
+// bus and its successor PCH through eSPI bus (which still supports
+// ATA, PIC, PIT...).
 //
 // ISA allowed a plug-and-play mechanism, but required manual
 // enumeration and resource allocation of each device which is quite
