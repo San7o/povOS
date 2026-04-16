@@ -43,7 +43,7 @@ real_init_pm:
 
   ;; Since the stack pointers got messed up in the elevation process,
   ;; and we want a fresh stack, we need to reset them now
-  mov ebp, 0x90000
+  mov ebp, $PROTECTED_MODE_STACK_BEGIN
   mov esp, ebp
 
   ;; Go to the second section with 32-bit code

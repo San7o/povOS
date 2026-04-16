@@ -7,12 +7,13 @@
   ;;       problems like getting stuck in `int 0x15`
   ;; inputs: es:di -> destination buffer for 24 byte entries
   ;; outputs: bp = entry count, trashes all registers except esi
-mmap_ent: equ 0x6000       ; the number of entries will be stored at 0x6000
+mmap_ent: equ $MMAP_ADDR
   
 save_memory_map:
-  mov di, mmap_ent          ; Set result buffer to 0x6004. Otherwise
-  add di, 0x4               ; this code will get stuck in `int 0x15`
-                            ; after some entries are fetched
+  mov di, mmap_ent          ; Set result buffer to mmap_ent +
+                            ; 4. Otherwise this code will get stuck in
+  add di, 0x4               ; `int 0x15` after some entries are fetched
+  
 	xor ebx, ebx              ; ebx must be 0 to start
 	xor bp, bp                ; keep an entry count in bp
 	mov edx, 0x0534D4150      ; Place "SMAP" into edx

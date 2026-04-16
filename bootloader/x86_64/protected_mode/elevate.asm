@@ -10,8 +10,13 @@ elevate_protected:
   mov eax, cr4
   or eax, 1 << 5                ; CR4.PAE (Physical Address Extension)
   mov cr4, eax
-  
-  mov ecx, 0xC0000080
+
+  ;; 0xC0000080 is the address for the Extended Feature Enable
+  ;; Register (EFER)
+  mov ecx, 0xC0000080           ; Reads the contents of a 64-bit model
+                                ; specific register (MSR) specified in
+                                ; the ECX register into registers
+                                ; EDX:EAX.
   rdmsr
   or eax, 1 << 8
   wrmsr
@@ -24,6 +29,7 @@ elevate_protected:
   jmp code_seg_64:init_lm
 
   [bits 64]
+  
   ;; -----------------------------------------------------------------
   ;; Initialize long mode
 init_lm:

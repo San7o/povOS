@@ -41,7 +41,9 @@
   ;; | 0x00000400 - 0x000004FF | 256 B   | BDA (BIOS Data Area)             |
   ;; | 0x00000000 - 0x000003FF | 1 KiB   | Real Mode IVT (Interrupt Vector) |
   ;; \ ==================================================================== /
-  ;; 
+  ;;
+  ;; See `defines.asm` for the specific memory layout the bootloader
+  ;; uses.
   ;; 
   ;; Master Boot Record (Stage 1)
   ;; ----------------------------
@@ -57,17 +59,19 @@
   ;; order to continue execution. This is his main responsibility.
   ;; 
 
-  [org 0x7C00]                    ; Set program origin
+  %include "bootloader/x86_64/defines.asm"
+  
+  [org $BOOTLOADER_START]         ; Set program origin
   [bits 16]                       ; We are in 16-bit real mode
 
 start:
-  ;; You have been deceived! The start is a bit further down
+  ;; not yet... the actual start is a bit further down
   jmp short begin_bootloader ; Workaround for some BIOSes that require this stub
   
   ;; Store the number of sectors that needs to be loaded to load the
   ;; entire kernel. This value is patched in the bootloader after
   ;; compiling the kernel, it is positioned up here to make it easy to
-  ;; find. DO NOT CHANGE THE ADDRESS OF THE VALUE OR BAD THINGS WILL
+  ;; find. DO NOT CHANGE THE ADDRESS OF THIS VALUE OR BAD THINGS WILL
   ;; HAPPEN.
 kernel_size:   db 0
   
@@ -106,16 +110,16 @@ begin_bootloader:
   ;; BIOS state is at this point
 
   cli                      ; Disable interrupts during setup
-  cld
+  cld                      ; Clear the direction flag, used in string
+                           ; instructions
+  
   jmp 0x0000:.initialize_cs
   .initialize_cs:
   xor ax, ax
   mov ds, ax
   mov es, ax
   mov ss, ax
-  mov sp, 0x7BFF           ; Setup Stack. The memory from 0x7BFF to
-                           ; 0x500 is not used by the bios so we can
-                           ; use it for the stack
+  mov sp, $REAL_MODE_STACK_BEGIN   ; setup stack
   sti                      ; Re-enable interrupts
 
   ;; Before we do anything else, we want to save the ID of the boot
@@ -150,7 +154,7 @@ begin_bootloader:
   ;; total), so that is where we want to load the rest of the
   ;; bootloader. Note that 0x7E00 is right after this sector, which
   ;; makes it easy to jump to.
-  mov dx, 0x7E00
+  mov dx, $CODE_ADDR
   call bios_load                ; load bootloader sectors
 
   call bios_sector_2            ; go to next sector
@@ -330,8 +334,7 @@ begin_long_mode:
   ;; This is literally hardcoded, there is a script that checks that
   ;; we didn't increase the number of sectors in the bootloader
   ;; to make sure we have the right offset
-kernel_main:   equ 0x8600       ; 0x7C00 + 512 * 5, where 5 is the
-                                ; number of sectors of the bootloader
+kernel_main:   equ $KERNEL_MAIN_ADDR
 long_mode_message:  db `Now running in fully-enabled, 64-bit long mode!`, 0
 
 sectors_end:                    ; used to calculate the amount of

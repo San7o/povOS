@@ -8,8 +8,9 @@
   ;; PML4T -> 0x1000 (Page Map Level 4 Table)
   ;; PDPT  -> 0x2000 (Page Directory Pointer Table)
   ;; PDT   -> 0x3000 (Page Directory Table)
-  ;; PT    -> 0x4000 (Page table) Contains 512 entries, each mapping a
-  ;;                 4KB page
+  ;; PT    -> 0x4000 (Page table 1) Contains 512 entries, each mapping a
+  ;;                 4KB page. Identity maps the first 2 MB
+  ;;       -> 0x5000 (Page table 2) Maps the second 2 MB
   ;;
   ;; We want to clear the memory in those areas and then set up the
   ;; page table structure
@@ -59,7 +60,7 @@ init_pt_protected:
   ;; each repetition (the same size as eax). It also increments edi by
   ;; 4 rather than by 1 to ensure no data overlap.
   
-  mov edi, 0x1000               ; Set the base address for rep stosd.
+  mov edi, $PML4T_ADDR          ; Set the base address for rep stosd.
                                 ; Our page table goes from 0x1000 to
                                 ; 0x4FFF
 
@@ -88,8 +89,9 @@ init_pt_protected:
   mov edi, cr3
 
   ;; Use the recursive mapping trick
-  ;; Set PML4T[511] to point to PML4T itself (0x1000)
-  mov dword [edi + 4088], 0x1003 ; Address 0x1000 + Flags 0x03
+  ;; Set PML4T[511] to point to PML4T itself
+  mov dword [edi + 4088], $PML4T_ADDR
+  add dword [edi + 4088], 0x03   ; flags
   mov dword [edi + 4092], 0      ; Upper 32 bits
 
   ;; Set up the first entry of each table, and the first two of PDT
@@ -109,21 +111,23 @@ init_pt_protected:
   ;;
   ;; Now let's wire up our table. Note that edi is already at PML4T[0]
 
-  mov dword[edi], 0x2003        ; Set PML4T[0] to address 0x2000
-                                ; (PDPT) with flags 0x0003
-  mov dword [edi + 4], 0        ; Upper 32 bits (Must be 0 for these
+  mov dword[edi], $PDPT_ADDR
+  add dword[edi], 0x03
+  mov dword[edi + 4], 0         ; Upper 32 bits (Must be 0 for these
                                 ; addresses)
   add edi, 0x1000               ; Go to PDPT[0]
-  mov dword[edi], 0x3003        ; Set PDPT[0] to address 0x3000 (PDT)
+  mov dword[edi], $PDT_ADDR     ; Set PDPT[0] to PDT address
+  add dword[edi], 0x03          ; flags
                                 ; with flags 0x0003
   add edi, 0x1000               ; Go to PDT[0]
-  mov dword[edi], 0x4003        ; Set PDT[0] to address 0x4000 (PT)
-                                ; with flags 0x0003
-  mov dword[edi + 8], 0x5003    ; PDT[1] -> PT at 0x5000
+  mov dword[edi], $PT1_ADDR      ; Set PDT[0] to PT address
+  add dword[edi], 0x03          ; with flags 0x0003
+  
+  mov dword[edi + 8], $PT2_ADDR ; PDT[1] -> PT2
+  add dword[edi + 8], 0x03      ; flags
   mov dword[edi + 12], 0        ; Upper 32 bits
 
   ;; Fill in the final page table
-  ;; NOTE: edi is at 0x3000
   ;;
   ;; We now want to make an Indentity Mapping in our PT. We still want
   ;; to have the flags set to 0x0003 as shows above, but we want to

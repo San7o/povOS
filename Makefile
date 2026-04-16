@@ -20,6 +20,8 @@ $(KERNEL_BIN): $(OBJ)
 	$(LD) $(KERNEL_LDFLAGS) --oformat binary -o $@ $^
 	$(LD) $(KERNEL_LDFLAGS) -o $@.elf $^
 
+bootloader: $(BOOT_BIN)
+
 $(BOOT_BIN): $(BOOT_ASM)
 	$(ASM) -f bin $(BOOT_ASM) -o $@
 
