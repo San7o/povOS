@@ -35,7 +35,7 @@ qemu: $(DRIVE).img
 	$(QEMU) $(QEMU_FLAGS)
 
 .PHONY: bochs
-bochs:
+bochs: $(DRIVE).img
 	truncate -s 10M $(POVOS_BIN)
 	$(BOCHS) -f $(BOCHSRC) -q
 

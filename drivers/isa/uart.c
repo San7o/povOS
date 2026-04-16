@@ -154,6 +154,12 @@ int uart_vprintf(uart_port_t uart_port, const char* fmt, va_list args)
         uart_putc(uart_port, c);
         break;
       }
+      case 'l': {
+        char buf[32];
+        itoa(va_arg(args, long unsigned int), buf, 10);
+        uart_write_str(uart_port, buf);
+        break;
+      }
       case 'x': {
         char buf[32];
         itoa(va_arg(args, unsigned int), buf, 16);

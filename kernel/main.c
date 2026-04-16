@@ -273,7 +273,7 @@ int kernel_main(void)
 
   task_t task_a = task_create(regs_a, &vmmgr, "task A");
   task_t task_b = task_create(regs_b, &vmmgr, "task B");
-  
+
   sched_init(&vmmgr);
   sched_start_task(task_a);
   sched_start_task(task_b);

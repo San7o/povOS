@@ -19,8 +19,6 @@ void isr_common_handler(u8_t  isr_number,
                         u64_t error_code,
                         u64_t* sp)
 {
-  UNUSED(sp);
-  
   uart_write_str(uart_port1, "[isr] ");
   if (isr_number < ISR_EXCEPTION_COUNT)
     uart_write_str(uart_port1, isr_exception_string[isr_number]);
@@ -30,6 +28,31 @@ void isr_common_handler(u8_t  isr_number,
   uart_write_hex(uart_port1, error_code);
   uart_putc(uart_port1, '\n');
 
+  // Dump registers
+  cpu_regs_t ct_regs;
+  ct_regs = scheduler.tasks[current_task].task.regs;
+  // These need to match the assembly code
+  ct_regs.rax    = sp[0];
+  ct_regs.rcx    = sp[1];
+  ct_regs.rdx    = sp[2];
+  ct_regs.rbx    = sp[3];
+  ct_regs.rbp    = sp[4];
+  ct_regs.rsi    = sp[5];
+  ct_regs.rdi    = sp[6];
+  ct_regs.r8     = sp[7];
+  ct_regs.r9     = sp[8];
+  ct_regs.r10    = sp[9];
+  ct_regs.r11    = sp[10];
+  ct_regs.r12    = sp[11];
+  ct_regs.r13    = sp[12];
+  ct_regs.r14    = sp[13];
+  ct_regs.r15    = sp[14];
+  ct_regs.rip    = sp[17];
+  ct_regs.rflags = sp[19];
+  ct_regs.rsp    = sp[20];
+  ct_regs.cr3    = regs_get_cr3();
+  debug_dump_regs_uart3(ct_regs);
+  
   pic_ack();
   return;
 }

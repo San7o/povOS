@@ -14,6 +14,7 @@ vgaromimage: file="/usr/share/bochs/VGABIOS-lgpl-latest"
 ata0: enabled=1, ioaddr1=0x1f0, ioaddr2=0x3f0, irq=14
 ata0-master: type=disk, path="povos", mode=flat
 boot: disk
+ata1-master: type=disk, path="sample_drive.img", mode=flat
 
 # Uart
 com1: enabled=1, mode=term, dev=/dev/stdout

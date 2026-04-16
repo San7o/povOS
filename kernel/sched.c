@@ -18,11 +18,12 @@ void sched_switch_to(task_id_t task_id)
 
   if (!scheduler.tasks[task_id].present)
   {
-    while(1) {}
+    // wait for next sched
+    while(1) {  NOP; }
   }
 
-  printk("[sched] switching to task %s\n",
-         scheduler.tasks[task_id].task.name);
+  printk("[sched] switching to task %l %s\n",
+         task_id, scheduler.tasks[task_id].task.name);
   
   cpu_do_context_switch(&scheduler.tasks[task_id].task.regs);
 
@@ -31,6 +32,8 @@ void sched_switch_to(task_id_t task_id)
 
 void sched_init(vmmgr_t *vmmgr)
 {
+  memset(&scheduler, 0, sizeof(scheduler_t));
+  
   scheduler.tasks[0] = (task_entry_t){
     .task = (task_t) {
       .vmmgr = vmmgr,
@@ -38,8 +41,8 @@ void sched_init(vmmgr_t *vmmgr)
     .sleeping = false,
     .present  = true,
   };
-  memcpy((char*)&scheduler.tasks[0].task.name,
-         SCHED_INIT_TASK_NAME, TASK_NAME_LEN);
+  strncpy((char*)&scheduler.tasks[0].task.name, SCHED_INIT_TASK_NAME,
+          TASK_NAME_LEN);
 
   // This immediately enables the interrupt to call the scheduler
   scheduler.initialized = true;

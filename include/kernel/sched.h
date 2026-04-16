@@ -11,7 +11,7 @@
 
 #define SCHED_MAX_TASKS 1024
 #define SCHED_FREQ      1    // schedules per seconds
-#define SCHED_INIT_TASK_NAME "kernel"
+#define SCHED_INIT_TASK_NAME "kernel\0"
 
 typedef u64_t task_id_t;
 
