@@ -31,6 +31,20 @@ Todo, in order:
 - start with UEFI boot in x86_64
 - then support BIOS x86 32 bit
 
+## Scheduler
+
+The current scheduler is a simple preentive Round Robin with a fixed
+time "quantum", meaning that each process is divided equally
+time-wise. A good addition would be to introduce priority queues with
+some kind of penalty mechanism to avoid starvation, meaning that tasks
+with higher priority will be executed first, then the ones with lower
+priority, but if a process with high priority is taking too much time,
+then the scheduler will go to the lower ones anyway (avoiding
+starvation).
+
+Another design that takes into account real time constraints would
+also be nice to have.
+
 ## Kernel
 
 - interrupt management framework: you should be able to mask, register
