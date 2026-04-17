@@ -27,4 +27,10 @@
 
 #define UNUSED(value) (void)(value)
 
+// Compiler fence
+//
+// This tells the compiler not to move memory operation from above
+// this line to below, or vice versa.
+#define SW_FENCE __asm__ volatile("" ::: "memory")
+
 #endif // POVOS_KERNEL_MACROS_H
