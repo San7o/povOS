@@ -10,10 +10,48 @@
 // Synchronization Primitives
 // ==========================
 //
+// This headers includes:
+//
 // - semaphores
 // - mutexes (binary semaphores)
 // - spinlocks
 //
+//
+// Synchronization Techniques
+// --------------------------
+//
+// There are many ways you can make a data structure thread safe to
+// consider, here is a quick overview:
+// 
+// - one big mutex: lock all reads and writes with a single
+//   mutex. This will solve all concurrency problems, but will not
+//   take advantage of multithreading
+//
+// - several big mutexes: devide the data structure in multiple
+//   sections where each one is guarded by a mutex. Allows for some
+//   parallelism and it is quite simple to implement.
+//
+// - read-writer locks: this allows for multiple readers and a single
+//   writer. You have a lock that guards the count of active readers.
+//   Readers take this lock when increasing / decreasing the counter.
+//   Then you then have a writer lock, which is locked / unlocked by
+//   the first reader when locking the readers lock. The writer only
+//   writes if there are no readers, that is when the writer lock is
+//   unlocked. A naive implementation could lead to writer-starvation
+//   as it may wait indefinitely for the readers, robust approaches
+//   would use condition varialbes (like std::condition_variable).
+//
+// - lock-free approaches: you use atomic operations on each element
+//   of the data structure, which allows for multiple readers and
+//   writers to the same elements. May not be practical in all cases.
+//
+// - RCU: used for read-mostly data structures. Readers keep a
+//   reader-count on the data. When a writer writes something, it
+//   copies the entire data structure, then modifies it and replaces
+//   the pointer of the old one with the new one incrementing a
+//   generation counter. Then, it waits for all readers to finish
+//   reading the old generation and frees the old memory.
+//   
 
 #include <libk/stddef.h>
 #include <libk/stdbool.h>

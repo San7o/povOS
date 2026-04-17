@@ -69,6 +69,7 @@ also be nice to have.
 
 ## Chores
 
+- read-write lock
 - power off: surprisingly, doing this right is a bit more complicated
   than you think
 - develop a custom emulated device in qemu, such as a temperature
