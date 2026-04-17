@@ -17,7 +17,7 @@ unsigned int sleep_ms(u64_t milliseconds)
   {
     elapsed_time_ms += time_ms - last_time_ms;
     last_time_ms = time_ms;
-    halt_cpu();
+    hcf();
   }
 
   return 0;

@@ -30,9 +30,12 @@ void breakpoint(void);
 void disable_interrupts(void);
 void enable_interrupts(void);
 
+// Halt and catch fire
+//
 // Halt the CPU until the next external interrupt occurs, effectively
-// putting the processor in a low-power state.
-void halt_cpu(void);
+// putting the processor in a low-power state. The name is an old
+// meme for OS developers.
+void hcf(void);
 
 void reboot(void);
 

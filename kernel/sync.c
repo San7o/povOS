@@ -49,7 +49,7 @@ void mutex_init(mutex_t *mu)
 
 void mutex_lock(mutex_t *mu)
 {
-  while (atomic_cmpxchg(&mu->count, 1, 0) == 1) { halt_cpu(); }
+  while (atomic_cmpxchg(&mu->count, 1, 0) == 1) { hcf(); }
 }
 
 bool mutex_try_lock(mutex_t *mu)

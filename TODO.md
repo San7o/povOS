@@ -71,6 +71,6 @@ also be nice to have.
 
 - read-write lock
 - power off: surprisingly, doing this right is a bit more complicated
-  than you think
+  than you think. It may require some power management infrastructure.
 - develop a custom emulated device in qemu, such as a temperature
   sensor using i2c

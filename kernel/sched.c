@@ -97,6 +97,6 @@ void sched_loop(void)
 {
   while(1)
   {
-    halt_cpu();
+    hcf();
   }
 }
