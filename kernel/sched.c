@@ -95,8 +95,5 @@ void sched_stop_task(task_id_t task)
 
 void sched_loop(void)
 {
-  while(1)
-  {
-    hcf();
-  }
+  hcf();
 }

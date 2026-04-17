@@ -43,5 +43,5 @@ void reboot(void)
 
   port_outb(KBRD_INTRFC, KBRD_RESET);   // pulse CPU reset line
 
-  while(1) { hcf(); }
+  hcf();
 }

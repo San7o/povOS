@@ -6,6 +6,7 @@
   global paging_load
   global vmm_invalidate_tlb
   global hcf
+  global cpu_halt
   global true_rand
 
 enable_interrupts:
@@ -35,10 +36,16 @@ vmm_invalidate_tlb:
 
   ;; -----------------------------------------------------------------
   ;; Halt and catch fire
-  ;; 
+hcf:
+  .loop:
+  hlt
+  jmp .loop
+  ret                           ; unreachable
+  
+  ;; -----------------------------------------------------------------
   ;; Halt the CPU until the next external interrupt occurs,
   ;  effectively putting the processor in a low-power state.
-hcf:
+cpu_halt:
   hlt
   ret
 
