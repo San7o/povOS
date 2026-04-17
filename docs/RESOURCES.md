@@ -26,3 +26,11 @@ Modern documents:
   one of the most important books to master, it explains all CPU
   functionalities like paging, segmentation, virtualization and the
   rest.
+- [Multiboot Specification version 0.6.96](https://www.gnu.org/software/grub/manual/multiboot/multiboot.html): standard interface implemented by bootloaders
+
+Useful theory:
+
+- [ CppCon 2017: Fedor Pikus "Read, Copy, Update, then what? RCU for
+  non-kernel
+  programmers"](https://www.youtube.com/watch?v=rxQ5K9lo034): explains
+  RCU, which is very useful for read-mostly data structures
