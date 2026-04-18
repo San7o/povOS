@@ -8,6 +8,8 @@ The design goals of the operating system are the following:
   abstraction. Ideally, you would have about 100 function that you would need
   to implement in order to port the entire operating system to another
   platform / architecture / SoC...
+  This OS aims to be as portable as an interpreted language, but without the
+  interpreted part, by having a clear interface with the platform architecture.
 
 - swappable userspace interface: have custom userspaces. This may include an
   UNIX-compatible userspace, but also custom-designed ones that are not limited
