@@ -3,35 +3,27 @@
   ;; Initialize the page table
   ;; =========================
   ;;
-  ;; The page Table has 4 components which will be mapped as follows:
+  ;; We want to map 4MB of virual address from 0x0 and from
+  ;; $HIGHER_HALF to the first physical 4MB. To do this, we use 4 page
+  ;; entries:
+  ;; 
+  ;; PML4T     -> 0x1000  Page Map Level 4 Table
+  ;; PDPT_LOW  -> 0x2000  Page Directory Pointer Table Low
+  ;; PDPT_HIGH -> 0x3000  Page Directory Table High
+  ;; PD        -> 0x4000  Page Directory
   ;;
-  ;; PML4T -> 0x1000 (Page Map Level 4 Table)
-  ;; PDPT  -> 0x2000 (Page Directory Pointer Table)
-  ;; PDT   -> 0x3000 (Page Directory Table)
-  ;; PT    -> 0x4000 (Page table 1) Contains 512 entries, each mapping a
-  ;;                 4KB page. Identity maps the first 2 MB
-  ;;       -> 0x5000 (Page table 2) Maps the second 2 MB
+  ;; We set the PML4T[0] to point to PDPT_LOW, and PML4T[511] to point
+  ;; to PDPT_HIGH (which corresponds to the range 0xFF8000000000 and
+  ;; above). Then we set PDPT_LOW[0] to point to the PD, and
+  ;; PDPT_HIGH[510] to point to the same PD (which maps to
+  ;; 0xFFFFFFFF80000000). We set the address of PD at 0x0; with huge
+  ;; table set, it could address a total of 1GB of memory but we only
+  ;; map the first 4MB.
   ;;
-  ;; We want to clear the memory in those areas and then set up the
-  ;; page table structure
-  ;; 
-  ;; Each table in the page table has 512 entries, all of which are 8
-  ;; bytes (one quadword or 64 bits) long. In this step, we'll be
-  ;; identity mapping ONLY the lowest 4 MB of memory, since this is
-  ;; all we need for now. Note that this only requires two page
-  ;; tables, so the upper 511 entries in the PML4T and PDPT will all
-  ;; be NULL, and PDT will have 2 entries.
-  ;; 
-  ;; Once we have the zeroth address in all pointing to our page
-  ;; table, we will need to create a identity map, which will point
-  ;; each virtual page to the physical page accessed with that
-  ;; address. Note that in the x86_64 architecture, a page is
-  ;; addressed using 12 bits, which corresponds to 4096 addressible
-  ;; bytes (4KB). Remember this, it'll be important later.
-  ;; 
-  ;; Another thing to note is that we're in protected mode now, which
-  ;; grants us access to fancy CISC instructions like rep, stosd, and
-  ;; loop.
+  ;; We also setup the recursive mapping trick at
+  ;; PML4T[$RECURSIVE_SLOT]. This makes it possible to find the
+  ;; physical address of the level 1 page entry itself given a virtual
+  ;; address. This is useful for the kernel.
   ;; 
 
   [bits 32]
@@ -39,12 +31,6 @@
 init_pt_protected:
 
   pushad
-
-  ;; NOTE: We did not set up 32-bit paging because we wanted to jump
-  ;; directly into long mode. You should know that this is possible,
-  ;; and if you've done it before entering long mode you will need to
-  ;; disable it here. To do so, clear the 31st bit of the cr0
-  ;; register.
 
   ;; Clear the memory area using rep stosd
   ;;
@@ -61,106 +47,58 @@ init_pt_protected:
   ;; 4 rather than by 1 to ensure no data overlap.
   
   mov edi, $PML4T_ADDR          ; Set the base address for rep stosd.
-                                ; Our page table goes from 0x1000 to
-                                ; 0x4FFF
-
-  mov cr3, edi                  ; Save the PML4T start address in cr3.
-                                ; This will save us time later because
-                                ; cr3 is what the CPU uses to locate
-                                ; the page table entries.
-
 
   mov ax, data_seg              ; flat data selector
   mov es, ax
-  
-  xor eax, eax                  ; Set eax to 0. Note that xor is
-                                ; actually faster than "mov eax, 0"
-
+  xor eax, eax                  ; Set eax to 0
   mov ecx, 4096                 ; Repeat 4096 times. Since each page
                                 ; table is 4096 bytes, and we're
                                 ; writing 4 bytes each repetition,
-                                ; this will zero out all 4 page
-                                ; tables.
+                                ; this will zero out all 5 page
+                                ; tables. (4096 / 4 * 4 = 4096)
+  rep stosd
 
-  rep stosd                     ; Now actually zero out the page table
-                                ; entries.
-
-  ;; Set edi back to PML4T[0]
-  mov edi, cr3
-
-  ;; Use the recursive mapping trick
-  ;; Set PML4T[511] to point to PML4T itself
-  mov dword [edi + 4088], $PML4T_ADDR
-  add dword [edi + 4088], 0x03   ; flags
-  mov dword [edi + 4092], 0      ; Upper 32 bits
-
-  ;; Set up the first entry of each table, and the first two of PDT
-  ;;
-  ;; This part can be a little confusing. The key is knowing that the
-  ;; page tables MUST be page aligned. This means the lower 12 bits of
-  ;; the physical address (3 hex digits) MUST be 0. Then, each page
-  ;; table entry can use the lower 12 bits as flags for that entry.
-  ;;
-  ;; You may notice that we're setting our flags to "0x003", because
-  ;; we care most about bits 0 and 1. Bit 0 is the "exists" bit, and
-  ;; is only set if the entry corresponds to another page table (for
-  ;; the PML4T, PDPT and PDT) or a page of physical memory (in the
-  ;; PT).  Obviously we want to set this. Bit 1 is the "read/write"
-  ;; bit, which allows us to view and modifly the given entry. Since
-  ;; we want our OS to have full control, we'll set this as well.
-  ;;
-  ;; Now let's wire up our table. Note that edi is already at PML4T[0]
-
-  mov dword[edi], $PDPT_ADDR
-  add dword[edi], 0x03
-  mov dword[edi + 4], 0         ; Upper 32 bits (Must be 0 for these
-                                ; addresses)
-  add edi, 0x1000               ; Go to PDPT[0]
-  mov dword[edi], $PDT_ADDR     ; Set PDPT[0] to PDT address
-  add dword[edi], 0x03          ; flags
-                                ; with flags 0x0003
-  add edi, 0x1000               ; Go to PDT[0]
-  mov dword[edi], $PT1_ADDR      ; Set PDT[0] to PT address
-  add dword[edi], 0x03          ; with flags 0x0003
-  
-  mov dword[edi + 8], $PT2_ADDR ; PDT[1] -> PT2
-  add dword[edi + 8], 0x03      ; flags
-  mov dword[edi + 12], 0        ; Upper 32 bits
-
-  ;; Fill in the final page table
-  ;;
-  ;; We now want to make an Indentity Mapping in our PT. We still want
-  ;; to have the flags set to 0x0003 as shows above, but we want to
-  ;; set PT[0].addr to 0x00, PT[1].addr to 0x01, etc. We'dd do this
-  ;; using the "loop" commands. In 16 bit mode, we had to program loops
-  ;; ourselves using comparisong operators, but now we can just use a
-  ;; single command.
-  ;;
-  ;; The "loop" commands is essentially equivalent to the following
-  ;; pseudocode:
   ;; 
-  ;;     while (ecx > 0) {
-  ;;      {instructions}
-  ;;      ecx--
-  ;;     }
+  ;; Setup page entries
   ;; 
-  ;; Or, more simply: "Do {instructions} ecs times, and decrement ecx
-  ;; each time. We can use this loop command to fill in all 512 entries
-  ;; of the page table as follows:
-  add edi, 0x1000               ; Go to PT[0]
-  mov ebx, 0x00000003           ; EBX has address 0x0000 with flags
-                                ; 0x0003
-  mov ecx, 1024                 ; Do the operating (512 * 2) times,
-                                ; filling two tables
 
-  .add_page_entry_protected:
-    ;; a = address, x = index of page table, falgs are entry flags
-    mov dword[edi], ebx           ; Write ebx to PT[x] = a.append(flags)
-    add ebx, 0x1000               ; Increment address of ebx (a+1)
-    add edi, 8                    ; Increment page table location (since
-                                  ; entries are 8 bytes)
-                                  ; x++
-    loop .add_page_entry_protected ; Decrement ecx and loop again
+  ;; PML4T[0]
+  mov edi, $PML4T_ADDR
+  mov cr3, edi                     ; Register PML4T
+  mov dword[edi], $PDPT_LOW_ADDR
+  add dword[edi], 0b11             ; Flags: Present + Writable
+  mov dword[edi + 4], 0            ; Zero the upper 32 bits
+  ;; Do the recursive mapping trick
+  ;; Set PML4T[$RECURSIVE_SLOT] to point to PML4T itself
+  mov dword [edi + $RECURSIVE_SLOT * 8], $PML4T_ADDR
+  add dword [edi + $RECURSIVE_SLOT * 8], 0b11   ; Flags: Present + Writable
+  mov dword [edi + $RECURSIVE_SLOT * 8 + 4], 0  ; Upper 32 bits
+
+  ;; PML4T[511]
+  mov dword[edi + 4088], $PDPT_HIGH_ADDR
+  add dword[edi + 4088], 0b11       ; Flags: Present + Writable
+  mov dword[edi + 4092], 0          ; Zero the upper 32 bits
+
+  ;; PDPT-Low[0]
+  mov edi, $PDPT_LOW_ADDR
+  mov dword[edi], $PDT_ADDR         ; Set addr
+  add dword[edi], 0b11              ; Flags: Present + Writable
+  mov dword[edi + 4], 0             ; Zero the upper 32 bits
+
+  ;; PDPT-High[510]
+  mov edi, $PDPT_HIGH_ADDR
+  mov dword[edi + 4080], $PDT_ADDR  ; Set addr
+  add dword[edi + 4080], 0b11       ; Flags: Present + Writable
+  mov dword[edi + 4084], 0          ; Zero the upper 32 bits
+
+  ;; PDT
+  mov edi, $PDT_ADDR
+  mov dword[edi], 0x00000000        ; Address
+  add dword[edi], 0b10000011        ; Flags: Present + Writable + Huge
+  mov dword[edi + 4], 0             ; Zero the upper 32 bits
+  mov dword[edi + 8], 0x00200000    ; Address
+  add dword[edi + 8], 0b10000011    ; Flags: Present + Writable + Huge
+  mov dword[edi + 12], 0            ; Zero the upper 32 bits
 
   ;; Set up PAE (Physical Address Extension) paging, but don't enable
   ;; it quite yet. PAE defines a page table hierarchy of three levels

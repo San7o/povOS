@@ -8,14 +8,13 @@
 #include <mm/paging.h>
 #include <libk/string.h>
 
-#define PAGE_ALIGN_UP(x) (((x) + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1))
-
 void vmmgr_setup(vmmgr_t *vmmgr)
 {
   if (!vmmgr) return;
-  vmmgr->pml4t   = paging_pml4t_init();
+  // Identity maps the first 4MB of memory
+  vmmgr->pml4t = paging_pml4t_init();
   // We start at 0x400000 since the memory before this is already
-  // identity mapped my default in the physical memory manager
+  // identity mapped by default in the physical memory manager
   free_list_alloc_init(&vmmgr->vas_allocator,
                        (void*)0x400000, 0xFFFFFFFFFFFFFFFF);
   return;

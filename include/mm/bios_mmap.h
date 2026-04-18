@@ -18,8 +18,8 @@
 #include <libk/stddef.h>
 
 // Memory map address from the bootloader
-#define BIOS_MMAP_NUM_ENTRIES_ADDR   ((void*)0x6000)
-#define BIOS_MMAP_ENTRIES_ADDR       ((void*)0x6004)
+#define BIOS_MMAP_NUM_ENTRIES_ADDR   ((void*)0x5000)
+#define BIOS_MMAP_ENTRIES_ADDR       ((void*)0x5004)
 
 // Address Range Descriptor Structure
 typedef struct bios_mmap_entry {

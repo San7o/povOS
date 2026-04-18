@@ -13,7 +13,6 @@
   ;; 
   ;; - http://www.osdever.net/FreeVGA/vga/vga.htm
   ;;
-  ;; 
 
   [bits 64]
 

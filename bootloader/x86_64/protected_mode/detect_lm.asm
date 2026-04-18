@@ -8,6 +8,7 @@
   ;; type of system we're running on. We need to figure out if we can
   ;; even use long mode so that we don't cause a ton of errors when
   ;; trying to activate it.
+  ;; 
 
   [bits 32]
 

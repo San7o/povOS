@@ -75,6 +75,7 @@ int kernel_main(void)
   debug_print_pmmgr_bitfield();
 
   vmmgr_t vmmgr;
+  // Identity map the first 4MB of memory
   vmmgr_setup(&vmmgr);
   vmmgr_activate(&vmmgr);
   //debug_print_pmmgr_bitfield();

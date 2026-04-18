@@ -16,7 +16,7 @@
 
 // Eventually we will want to move the kernel to the higher half
 // This is not used yet
-#define KERNEL_BASE_ADDR    0xFFFFFFFF80000000  // Where your code lives
+#define KERNEL_BASE_ADDR    0xFFFFFFFF80000000
 
 #define MM_PHYS_TO_VIRT(phys)  ((void*)((u64_t)(phys) + MM_HHDM_OFFSET))
 #define MM_VIRT_TO_PHYS(virt)  ((u64_t)(virt) - MM_HHDM_OFFSET)

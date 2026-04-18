@@ -39,7 +39,7 @@ typedef struct page_entry_flags {
   u64_t pcd        : 1;
 } page_entry_flags_t;
 
-// This is a single page entry (uses 4 bytes)
+// This is a single page entry (uses 8 bytes)
 typedef struct page_entry {
   u64_t present    : 1;  // 1 present, 0 not present
   u64_t rw         : 1;  // R/W, if 0 writes may not be allowed
@@ -48,7 +48,7 @@ typedef struct page_entry {
   u64_t pcd        : 1;  // Page-level cache disable
   u64_t accessed   : 1;  // A, indicated wheter this entry has been used
   u64_t dirty      : 1;  // D (Ignored in PML4)
-  u64_t ps         : 1;  // Page size (0 for 4KB, must be 0 in PML4)
+  u64_t ps         : 1;  // Page size (0 for 4KB, 1 for 2MB) Must be 0 in PML4
   u64_t global     : 1;  // G (Ignored in PML4)
   u64_t ignored    : 3;  // Custom OS bits
   u64_t address    : 40; // Physical address (shifted right 12 bits)
@@ -57,6 +57,8 @@ typedef struct page_entry {
 } _packed page_entry_t;
 
 #define PAGE_SIZE   4096
+
+#define PAGE_ALIGN_UP(x) (((x) + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1))
 
 // A single level, takes up 4KB size
 typedef struct __attribute__((aligned(PAGE_SIZE))) page_table {
@@ -71,7 +73,7 @@ typedef struct __attribute__((aligned(PAGE_SIZE))) page_table {
 //
 
 // Our index of choice
-#define RECURSIVE_SLOT 511UL
+#define RECURSIVE_SLOT 510UL
 // The base prefix for the recursive window (Sign-extended for 64-bit)
 #define RECURSIVE_BASE (0xFFFF000000000000ULL | (RECURSIVE_SLOT << 39))
 // Get the address of the PML4 itself
