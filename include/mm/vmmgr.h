@@ -15,6 +15,13 @@
 // virtual address space, then allocates physical frames from the
 // Physical Memory Manager and maps it via paging.
 //
+//
+// The virtual memory is setup like so:
+//
+// 0x000000000000000 -  0xFFFF800000000000  Userspace
+// 0xFFFF800000000000 - 0xFFFFFFFF80000000  RAM
+// 0xFFFFFFFF80000000 - 0xFFFFFFFFFFFFFFFF  Kernel (higher half)
+//
 
 #include <libk/stddef.h>
 #include <libk/stdbool.h>

@@ -64,8 +64,9 @@ char* pci_get_device_name(u16_t vendor, u16_t device)
 
 pci_device_vendor_t pci_get_device_vendor(u8_t bus, u8_t slot, u8_t func)
 {
-  pci_device_vendor_t vd = {0};
 
+  pci_device_vendor_t vd = {0};
+  
   // Register 0, offset 0 contains device id and vendor id
   if ((vd.vendor_id = pci_readw(bus, slot, func, 0)) != PCI_DEVICE_VENDOR_NONE)
   {

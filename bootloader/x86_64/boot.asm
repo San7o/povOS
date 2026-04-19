@@ -325,16 +325,15 @@ begin_long_mode:
   mov r10b, vga_style_bw        ; Style
   call vga_print
 
+  ;; Move the stack pointer in the HIGHER_HALF range
+  add rsp, $HIGHER_HALF
+  
   ;; Jump to main
-  call kernel_main
+  call $KERNEL_MAIN_ADDR
 
   .hang:
   jmp $
 
-  ;; This is literally hardcoded, there is a script that checks that
-  ;; we didn't increase the number of sectors in the bootloader
-  ;; to make sure we have the right offset
-kernel_main:   equ $KERNEL_MAIN_ADDR
 long_mode_message:  db `Now running in fully-enabled, 64-bit long mode!`, 0
 
 sectors_end:                    ; used to calculate the amount of

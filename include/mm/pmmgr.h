@@ -21,6 +21,7 @@
 typedef u64_t phys_addr_t;
 
 typedef struct pmmgr {
+  // Pointer to physical memory
   u8_t *bitfield;
   u64_t size;
 } pmmgr_t;

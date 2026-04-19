@@ -5,6 +5,7 @@
 
 #include <mm/pmmgr.h>   // implements
 #include <mm/paging.h>
+#include <mm/layout.h>
 #include <kernel/utils.h>
 #include <kernel/range.h>
 #include <libk/stdbool.h>
@@ -148,8 +149,8 @@ static range_t get_next_avail_range(range_t range_bounds,
 // memory, then initialize it based on available pages.
 int pmmgr_init(void)
 {
-  u32_t *mmap_num_entries = BIOS_MMAP_NUM_ENTRIES_ADDR;
-  bios_mmap_entry_t *mmap = BIOS_MMAP_ENTRIES_ADDR;
+  u32_t *mmap_num_entries = MM_PHYS_TO_VIRT(BIOS_MMAP_NUM_ENTRIES_ADDR);
+  bios_mmap_entry_t *mmap = MM_PHYS_TO_VIRT(BIOS_MMAP_ENTRIES_ADDR);
 
   if (!mmap || !mmap_num_entries) return -1;
   
@@ -261,15 +262,16 @@ int pmmgr_init(void)
 
 phys_addr_t pmmgr_alloc_page(void)
 {
+  u8_t *bitfield = MM_PHYS_TO_VIRT(pmmgr.bitfield);
   for (u64_t i = 0; i < pmmgr.size; ++i)
   {
     for (unsigned int bit = 0; bit < 8; ++bit)
     {
-      if (pmmgr.bitfield[i] & (1 << bit))
+      if (bitfield[i] & (1 << bit))
       {
         // Free page found
         
-        pmmgr.bitfield[i] &= ~(1 << bit);
+        bitfield[i] &= ~(1 << bit);
         void* addr = (void*)(u64_t)((i * 8 + bit) * PAGE_SIZE);
         return (phys_addr_t)addr;
       }

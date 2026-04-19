@@ -5,17 +5,14 @@
 
 #include <kernel/idt.h>   // implements
 #include <kernel/utils.h>
+#include <mm/layout.h>
 
 // The IDT
 idt_gate_t idt[IDT_ENTRIES] __attribute__((aligned(16))) = {0};
 
 // This descriptor will be loaded with the `lidt` instruction to tell
 // the position of the IDT to the CPU
-idt_descriptor_t idt_descriptor __attribute__((aligned(16))) =
-  (idt_descriptor_t) {
-  .size   = sizeof(idt) - 1,
-  .offset = (u64_t) &idt,
-};
+idt_descriptor_t idt_descriptor __attribute__((aligned(16))) = {0};
 
 void idt_set_gate(u8_t  gate_number,
                   u64_t isr_address,
@@ -42,6 +39,11 @@ void idt_set(void)
 {
   disable_interrupts();
 
+  idt_descriptor = (idt_descriptor_t) {
+    .size   = sizeof(idt) - 1,
+    .offset = (u64_t) &idt,
+  };
+  
   // The various isr are implemented in assembly
   idt_set_gate(0,  (u64_t) isr0, true);
   idt_set_gate(1,  (u64_t) isr1, true);
@@ -81,5 +83,6 @@ void idt_set(void)
   idt_load((u64_t) &idt_descriptor);
 
   enable_interrupts();
+  
   return;
 }

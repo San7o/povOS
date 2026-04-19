@@ -16,7 +16,7 @@
 // the space at the end) and can be confirmed via a checksum.
 static size_t acpi_locate_rsdp_range(range_t range)
 {
-  const char *id = ACPI_RSDP_SIGNATURE;
+  const char *id      = ACPI_RSDP_SIGNATURE;
   unsigned int id_len = strlen(id);
   char* addr = (void*)range.start;
 
@@ -55,14 +55,14 @@ static size_t acpi_locate_rsdp_range(range_t range)
 // memory locations for the identifier.
 acpi_rsdp_t* acpi_locate_rsdp(void)
 {
-  u32_t *mmap_num_entries = BIOS_MMAP_NUM_ENTRIES_ADDR;
-  bios_mmap_entry_t *mmap = BIOS_MMAP_ENTRIES_ADDR;
+  u32_t *mmap_num_entries = MM_PHYS_TO_VIRT(BIOS_MMAP_NUM_ENTRIES_ADDR);
+  bios_mmap_entry_t *mmap = MM_PHYS_TO_VIRT(BIOS_MMAP_ENTRIES_ADDR);
   if (!mmap_num_entries || !mmap) return NULL;
   
   range_t range;
   
   // First, check EBDA (Extended BIOS Data Area), 0x00080000 - 0x0009FFFF
-  u16_t* ebda_seg = (void*)0x40E;
+  u16_t* ebda_seg = MM_PHYS_TO_VIRT(0x40E);
   size_t ebda_physical_addr = ((size_t)(*ebda_seg)) << 4;
   printk("[acpi] EBDA located at: %x\n", ebda_physical_addr);
 
@@ -77,8 +77,8 @@ acpi_rsdp_t* acpi_locate_rsdp(void)
   // Second, check BIOS read-only memory space between 0x000E0000 and
   // 0x000FFFFF
   range = (range_t){
-    .start = 0x000E0000,
-    .end   = 0x000FFFFF,
+    .start = (size_t) MM_PHYS_TO_VIRT(0x000E0000),
+    .end   = (size_t) MM_PHYS_TO_VIRT(0x000FFFFF),
   };
   addr = acpi_locate_rsdp_range(range);
   if (addr != 0)
@@ -86,8 +86,6 @@ acpi_rsdp_t* acpi_locate_rsdp(void)
 
   
   // For last, check the memory map
-  // Note that this code assumes you can read the memory, meaning that
-  // it is identity mapped, otherwise it will cause a CPU triple fault.
   for (u32_t i = 0; i < *mmap_num_entries; ++i)
   {
     if (mmap[i].type != BIOS_MMAP_TYPE_ACPI_RECLAIMABLE)
@@ -100,7 +98,7 @@ acpi_rsdp_t* acpi_locate_rsdp(void)
     u64_t end = base + length;
 
     range = (range_t){
-      .start = base,
+      .start = (size_t) MM_PHYS_TO_VIRT(base),
       .end   = end,
     };
 

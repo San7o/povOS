@@ -26,6 +26,7 @@ architecture.
     - virtual memory manager
     - free-list based memory allocator
     - heap
+    - higher half kernel, RAM mapped in high memory
   - multitasking
     - tasks
     - context switching

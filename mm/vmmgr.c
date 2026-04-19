@@ -6,17 +6,20 @@
 #include <mm/vmmgr.h>   // implements
 #include <mm/pmmgr.h>
 #include <mm/paging.h>
+#include <mm/layout.h>
+#include <kernel/gdt.h>
 #include <libk/string.h>
 
 void vmmgr_setup(vmmgr_t *vmmgr)
 {
   if (!vmmgr) return;
-  // Identity maps the first 4MB of memory
+  
   vmmgr->pml4t = paging_pml4t_init();
-  // We start at 0x400000 since the memory before this is already
-  // identity mapped by default in the physical memory manager
+  
   free_list_alloc_init(&vmmgr->vas_allocator,
-                       (void*)0x400000, 0xFFFFFFFFFFFFFFFF);
+                       0,  // start
+                       KERNEL_BASE_ADDR // end
+                       );
   return;
 }
 
@@ -24,6 +27,10 @@ void vmmgr_activate(vmmgr_t *vmmgr)
 {
   if (!vmmgr) return;
   paging_load(vmmgr->pml4t);
+
+  kernel_hhdm_offset = MM_HHDM_OFFSET;
+
+  gdt_reload();
   return;
 }
 
@@ -36,8 +43,8 @@ virt_addr_t vmm_alloc(vmmgr_t *vmmgr,
   // Align the length to the nearest page
   length = PAGE_ALIGN_UP(length);
   unsigned int pages = length / PAGE_SIZE;
-  virt_addr_t  addr = (virt_addr_t)free_list_alloc_malloc(&vmmgr->vas_allocator,
-                                                          length);
+  virt_addr_t  addr =
+    (virt_addr_t)free_list_alloc_malloc(&vmmgr->vas_allocator, length);
   page_entry_flags_t pflags = {0};
   if (flags & VMMGR_FLAG_WRITE)
     pflags.rw = 1;

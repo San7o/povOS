@@ -12,7 +12,7 @@ bool heap_init(vmmgr_t *vmmgr, size_t initial_size)
 {
   void* ptr = (void*)vmm_alloc(vmmgr, initial_size, VMMGR_FLAG_WRITE);
   if (!ptr) return false;
-      
+
   free_list_alloc_init(&kheap, ptr, initial_size);
   
   return true;

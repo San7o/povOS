@@ -56,7 +56,8 @@ typedef struct page_entry {
   u64_t nx         : 1;  // XD, No Execute
 } _packed page_entry_t;
 
-#define PAGE_SIZE   4096
+#define PAGE_SIZE        4096
+#define HUGE_PAGE_SIZE   (4096 * 512)
 
 #define PAGE_ALIGN_UP(x) (((x) + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1))
 
@@ -91,10 +92,7 @@ typedef struct __attribute__((aligned(PAGE_SIZE))) page_table {
 #define GET_PT_VADDR(vaddr) \
   ((u64_t*)(RECURSIVE_BASE | (((u64_t)(vaddr) >> 9) & 0x0000007FFFFFF000ULL)))
 
-// Allocate a new page map level 4 table
-//
-// Initialized it by identity mapping the first 4MB or memory. Does
-// not activate the page table, use `paging_load` for that.
+// Allocate a new page map level 4 table with default values
 //
 // Retruns a pointer to the PML4 table, or NULL if unsuccessful 
 page_table_t *paging_pml4t_init(void);

@@ -200,6 +200,7 @@
 
 #include <kernel/console.h>
 #include <kernel/macros.h>
+#include <mm/layout.h>
 #include <libk/stddef.h>
 #include <libk/stdbool.h>
 
@@ -253,7 +254,7 @@ typedef struct vga_text_entry {
   u8_t style;   // use VGA_STYLE_BYTES(style)
 } _packed vga_text_entry_t;
 
-#define VGA_TEXT_BUFFER_START      0x000B8000
+#define VGA_TEXT_BUFFER_START      MM_PHYS_TO_VIRT(0x000B8000)
 #define VGA_TEXT_BUFFER_WIDTH      80
 #define VGA_TEXT_BUFFER_HEIGHT     25
 #define VGA_TEXT_BUFFER_SIZE       (VGA_TEXT_BUFFER_WIDTH * VGA_TEXT_BUFFER_HEIGHT)
@@ -266,7 +267,7 @@ extern vga_text_entry_t *vga_textbuffer;
 // ---------------
 //
 
-#define VGA_FRAME_BUFFER_START     0x000A0000
+#define VGA_FRAME_BUFFER_START     MM_PHYS_TO_VIRT(0x000A0000)
 #define VGA_FRAME_BUFFER_WIDTH     320
 #define VGA_FRAME_BUFFER_HEIGHT    200
 #define VGA_FRAME_BUFFER_SIZE      (VGA_FRAME_BUFFER_WIDTH * VGA_FRAME_BUFFER_END)
@@ -277,6 +278,8 @@ extern vga_color_t      *vga_framebuffer;
 //
 // Functions
 //
+
+void vga_init(void);
 
 // Returns the range of host memory addresses decoded by the VGA,
 // which can be one of the following values:

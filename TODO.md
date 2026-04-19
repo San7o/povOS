@@ -56,7 +56,6 @@ also be nice to have.
 - shell: implement a small programming language like BASIC or Bash in
   the shell
 - syscalls
-- higher half kernel: its time to do this
 - userspace
 - use multiple cores?
 

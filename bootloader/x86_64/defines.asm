@@ -28,20 +28,22 @@
 
   %define $BOOTLOADER_SECTORS   5
   %define $SECTOR_SIZE          512
+  %define $KERNEL_LOAD_ADDR     0x8600
 
   %define $REAL_MODE_STACK_BEGIN        0x7BFF
   %define $PROTECTED_MODE_STACK_BEGIN   0x90000
+
+  %define $MMAP_ADDR          0x5000
+
+  %define $RECURSIVE_SLOT     510
+  %define $HIGHER_HALF        0xFFFFFFFF80000000
   
   %define $BOOTLOADER_START   0x7C00
   %define $CODE_ADDR          $BOOTLOADER_START + $SECTOR_SIZE
-  %define $KERNEL_MAIN_ADDR   $BOOTLOADER_START + $SECTOR_SIZE * $BOOTLOADER_SECTORS
+  %define $KERNEL_MAIN_ADDR   $HIGHER_HALF + $KERNEL_LOAD_ADDR
 
   %define $PML4T_ADDR         0x1000
   %define $PDPT_LOW_ADDR      $PML4T_ADDR + 0x1000
   %define $PDPT_HIGH_ADDR     $PDPT_LOW_ADDR + 0x1000
   %define $PDT_ADDR           $PDPT_HIGH_ADDR + 0x1000
   
-  %define $MMAP_ADDR          0x5000
-
-  %define $RECURSIVE_SLOT     510
-  %define $HIGHER_HALF        0xFFFFFFFF80000000

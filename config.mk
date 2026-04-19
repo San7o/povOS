@@ -38,7 +38,9 @@ CFLAGS  = --target=$(ARCH)-elf \
           -fno-pic \
           -fno-pie \
           -mno-red-zone \
+          -mno-sse -mno-sse2 \
           -m64 \
+          -mcmodel=kernel \
           -nostdlib \
           -nodefaultlibs \
           -fno-builtin \
@@ -57,14 +59,14 @@ DRIVE_SIZE  = 10M
 
 # + PCIe
 # - ATA
-QEMU_MACHINE = pc-q35-9.0
+QEMU_MACHINE ?= pc-q35-9.0
 # - PCIe
 # + ATA
-#QEMU_MACHINE = pc
+#QEMU_MACHINE ?= pc
 
-QEMU_CPU    = qemu64
+QEMU_CPU  ?= qemu64
 # +random number generation
-#QEMU_CPU = Skylake-Client
+#QEMU_CPU ?= Skylake-Client
 
 QEMU_FLAGS  = -M $(QEMU_MACHINE) \
               -cpu $(QEMU_CPU) \

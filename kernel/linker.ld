@@ -1,27 +1,31 @@
 ENTRY(kernel_entry)
 
-SECTIONS {
-         . = 0x8600;
+KERNEL_PHYS = 0x8600;
+KERNEL_VIRT = 0xFFFFFFFF80000000;
 
-        .startup : {
+SECTIONS {
+         . = KERNEL_VIRT + KERNEL_PHYS;
+
+        .startup : AT(KERNEL_PHYS) {
                _start = .;
                *(.startup)
          }
          
-         .text : {
+         .text : AT(ADDR(.text) - KERNEL_VIRT) {
                *(.text*)
          }
 
-         .rodata : {
+         .rodata : AT(ADDR(.rodata) - KERNEL_VIRT) {
                  *(.rodata*)
          }
 
-         .data : {
+         .data : AT(ADDR(.data) - KERNEL_VIRT) {
                *(.data*)
          }
 
-         .bss : {
+         .bss : AT(ADDR(.bss) - KERNEL_VIRT) {
               *(COMMON)
               *(.bss*)
          }
+         _kernel_end = .;
 }

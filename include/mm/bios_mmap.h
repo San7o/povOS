@@ -17,7 +17,7 @@
 #include <kernel/macros.h>
 #include <libk/stddef.h>
 
-// Memory map address from the bootloader
+// Memory map physical address from the bootloader
 #define BIOS_MMAP_NUM_ENTRIES_ADDR   ((void*)0x5000)
 #define BIOS_MMAP_ENTRIES_ADDR       ((void*)0x5004)
 

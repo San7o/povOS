@@ -6,9 +6,14 @@
 #include <drivers/video/vga.h>   // implements
 #include <bits/port.h>
 
-vga_text_entry_t *vga_textbuffer = (vga_text_entry_t*) VGA_TEXT_BUFFER_START;
-vga_color_t *vga_framebuffer     = (vga_color_t*) VGA_FRAME_BUFFER_START;
+vga_text_entry_t *vga_textbuffer  = 0;
+vga_color_t      *vga_framebuffer = 0;
 
+void vga_init(void)
+{
+  vga_textbuffer  = (vga_text_entry_t*) VGA_TEXT_BUFFER_START;
+  vga_framebuffer = (vga_color_t*) VGA_FRAME_BUFFER_START;
+}
 
 int vga_get_memory_map(void)
 {

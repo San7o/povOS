@@ -195,6 +195,7 @@ void debug_print_pmmgr_bitfield(void)
 {
   u64_t i;
   int bit, val;
+  u8_t *bitfield = MM_PHYS_TO_VIRT(pmmgr.bitfield);
   
   uart_printf(uart_port1, "[debug] [pmmgr] Bitfield of size %d:\n",
               pmmgr.size);
@@ -204,7 +205,7 @@ void debug_print_pmmgr_bitfield(void)
   {
     for (bit = 0; bit < 8; ++bit)
     {
-      val = (pmmgr.bitfield[i] >> bit) & 1;
+      val = (bitfield[i] >> bit) & 1;
       uart_write_str(uart_port1, (val == 1) ? "1" : "0");      
     }
 
@@ -250,7 +251,7 @@ void debug_enumerate_pci_devices(void)
 
         if (pci_dv.vendor_id == PCI_DEVICE_VENDOR_NONE)
           continue;
-
+        
         uart_printf(uart_port1, "[debug] [pci] Bus %d, Slot %d: Vendor: %s (%x), Device: %s (%x), Func: %d\n", 
                     bus, slot, pci_dv.vendor_name, pci_dv.vendor_id,
                     pci_dv.device_name, pci_dv.device_id, func);

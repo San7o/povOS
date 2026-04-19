@@ -41,6 +41,7 @@ int kernel_main(void)
   // Sanity checks
   //
 
+  vga_init();
   if (vga_get_memory_map() != 0x3)  // 0b11
   {
     vga_clear(VGA_STYLE_RED);
@@ -61,32 +62,30 @@ int kernel_main(void)
     vga_print(0, "Error initializing uart", VGA_STYLE_BW);
     return EXIT_FAILURE;
   }
-
   
   // Checks successfull
 
   //
   // Setup memory management
   //
-
+  
   debug_print_memory_map_uart();
-
+  
   pmmgr_init();
-  debug_print_pmmgr_bitfield();
+  // debug_print_pmmgr_bitfield();
 
   vmmgr_t vmmgr;
   // Identity map the first 4MB of memory
   vmmgr_setup(&vmmgr);
   vmmgr_activate(&vmmgr);
-  //debug_print_pmmgr_bitfield();
+  // debug_print_pmmgr_bitfield();
 
   size_t heap_size = 4 * 1024 * 1024;
   heap_init(&vmmgr, heap_size);
   void* some_mem = kmalloc(1024);
   (void) some_mem;
-
-  debug_print_pmmgr_bitfield();
-
+  // debug_print_pmmgr_bitfield();
+  
   //
   // Setup interrupts
   //
@@ -94,6 +93,7 @@ int kernel_main(void)
   pit_set_count(1193); // one tick per millisecond
   
   pic_remap();  // Chage overlapping IRQ numbers
+
   idt_set();    // Setup the IDT
 
   //
@@ -117,6 +117,7 @@ int kernel_main(void)
     
     hpet_acpi_sdt_t *hpet =
       acpi_locate_sdt(acpi_rsdp, HPET_ACPI_SIGNATURE);
+
     if (!hpet)
     {
       printk("[error] Could not find HPET timer\n");
@@ -170,7 +171,7 @@ int kernel_main(void)
   }
 
   // PCIe
-  
+
   pcie_acpi_sdt_t* pcie_sdt = acpi_locate_sdt(acpi_rsdp, PCIE_ACPI_SIGNATURE);
   if (!pcie_sdt)
   {
@@ -215,8 +216,7 @@ int kernel_main(void)
     }
   }
 
-  // Tests
-  
+  // Tests  
   debug_print_vga();
   debug_write_uart();
   debug_enumerate_pci_devices();
@@ -230,6 +230,8 @@ int kernel_main(void)
   //
   // Setup tty
   //
+  
+  vga_init();
   
   textbuffer_entry_t buff[VGA_TEXT_BUFFER_SIZE] = {0};
   textbuffer_t textbuffer;

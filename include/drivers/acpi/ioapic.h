@@ -90,6 +90,7 @@
 //
 
 #include <drivers/acpi/acpi.h>
+#include <mm/layout.h>
 
 #define IOAPIC_ACPI_SIGNATURE "APIC"
 
@@ -329,7 +330,7 @@ typedef struct ioapic_acpi_sdt {
 // This register selects the IOAPIC Register to be read/written. The
 // data is then read from or written to the selected register through
 // the IOWIN Register.
-#define IOAPIC_IOREGSEL_ADDR(base)    base
+#define IOAPIC_IOREGSEL_ADDR(base)    MM_PHYS_TO_VIRT(base)
 // I/O Window (data), r/w
 //
 // This register is used to write to and read from the register
