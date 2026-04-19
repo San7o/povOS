@@ -6,16 +6,40 @@
 #ifndef POVOS_MM_LAYOUT_H
 #define POVOS_MM_LAYOUT_H
 
+//
+// Memory layout
+// =============
+//
+// This file contains values that define the virtual memory layout of
+// the kernel.
+//
+// The virtual memory is setup like so:
+//
+//   Start                End                 Size     Usage
+//   ---------------------------------------------------------------
+//   0x0000000000000000 - 0xFFFF7FFFFFFFFFFF  128 TB   Userspace 
+//   0xFFFF800000000000 - 0xFFFFFDFFFFFFFFFF  127 TB   RAM
+//   0xFFFFFE0000000000 - 0xFFFFFE7FFFFFFFFF  512 GB   Page Tables
+//   0xFFFFFE8000000000 - 0xFFFFFFFF7FFFFFFF  510 GB   Free
+//   0xFFFFFFFF80000000 - 0xFFFFFFFFFFFFFFFF  2 GB     Kernel
+// 
+
 #include <libk/stddef.h>
 
 // Higher-Half Direct Map
-// You can safely map RAM after this offset, eg:
+// RAM is mapped here. You can access RAM after this offset, eg:
 // virt_addr = MM_HHDM_OFFSET + phys_addr
-// You have to create the paging mapping manually for now.
-#define MM_HHDM_OFFSET      0xFFFF800000000000  // Where RAM is mirrored
+#define MM_HHDM_OFFSET      0xFFFF800000000000
 
-// Higher half
+// Higher half kernel
 #define KERNEL_BASE_ADDR    0xFFFFFFFF80000000
+
+// Recursive trick
+//
+// Our index of choice
+#define RECURSIVE_SLOT 510UL
+// The base prefix for the recursive window (Sign-extended for 64-bit)
+#define RECURSIVE_BASE (0xFFFF000000000000ULL | (RECURSIVE_SLOT << 39))
 
 // Actual offset of higher-half kernel
 // We need this dynamic global value since it is different during eary

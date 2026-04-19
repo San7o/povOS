@@ -70,13 +70,7 @@ typedef struct __attribute__((aligned(PAGE_SIZE))) page_table {
 // Recursive Trick
 // ---------------
 //
-// TODO: we have some long long explaination to do here...
-//
 
-// Our index of choice
-#define RECURSIVE_SLOT 510UL
-// The base prefix for the recursive window (Sign-extended for 64-bit)
-#define RECURSIVE_BASE (0xFFFF000000000000ULL | (RECURSIVE_SLOT << 39))
 // Get the address of the PML4 itself
 // By using the slot 4 times, the CPU lands on the PML4 as a data page
 #define GET_PML4T_VADDR() \
