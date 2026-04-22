@@ -57,6 +57,7 @@ also be nice to have.
   the shell
 - syscalls
 - userspace
+- have a `menuconfig`-like kernel configuration system
 - use multiple cores?
 
 ## Drivers
