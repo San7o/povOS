@@ -58,7 +58,8 @@ also be nice to have.
 - syscalls
 - userspace
 - have a `menuconfig`-like kernel configuration system
-- use multiple cores?
+- configuration system, like Kconfig
+- use multiple cores eventually
 
 ## Drivers
 
@@ -69,6 +70,8 @@ also be nice to have.
 
 ## Chores
 
+- big style change followinf Linux's style
+- add macro BIT(x) for (1 << x), and BIT_ULL(x) ((u64_t 1) << x)
 - read-write lock
 - power off: surprisingly, doing this right is a bit more complicated
   than you think. It may require some power management infrastructure.
