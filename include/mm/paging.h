@@ -21,9 +21,9 @@
 //
 // The virtual address bit breakdown is:
 //
-//  63       48 47    39 38    30 29    21 20    12 11      0
-//  [  unused  ] [pml4] [ pdpt ] [  pd  ] [  pt  ] [ offset ]
-//                 9bit   9bit     9bit     9bit      12bit
+//  63       48 47      39 38    30 29    21 20    12 11      0
+//  [  unused  ] [ pml4 ] [ pdpt ] [  pd  ] [  pt  ] [ offset ]
+//                  9bit    9bit     9bit     9bit      12bit
 //
 
 #include <kernel/macros.h>
