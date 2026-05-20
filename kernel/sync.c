@@ -7,33 +7,29 @@
 #include <kernel/macros.h>
 #include <kernel/utils.h>
 
-void semaphore_init(semaphore_t *s, u64_t n)
+void semaphore_init(struct semaphore *s, u64_t n)
 {
   s->count = n;
 }
 
-void semaphore_wait(semaphore_t *s)
+void semaphore_wait(struct semaphore *s)
 {
   u64_t current_count;
   
-  while (1)
-  {
+  while (1) {
     current_count = s->count;
         
-    if (current_count > 0)
-    {
+    if (current_count > 0) {
       if (atomic_cmpxchg(&s->count, current_count - 1, current_count)
           == current_count)
         break; 
-    }
-    else
-    {
+    } else {
       X86_PAUSE;
     }
   }
 }
 
-void semaphore_signal(semaphore_t *s)
+void semaphore_signal(struct semaphore *s)
 {
   u64_t current_count;
   do {
@@ -42,42 +38,46 @@ void semaphore_signal(semaphore_t *s)
            != current_count);
 }
 
-void mutex_init(mutex_t *mu)
+void mutex_init(struct mutex *mu)
 {
   mu->count = 0;
 }
 
-void mutex_lock(mutex_t *mu)
+void mutex_lock(struct mutex *mu)
 {
-  while (atomic_cmpxchg(&mu->count, 1, 0) == 1) { cpu_halt(); }
+  while (atomic_cmpxchg(&mu->count, 1, 0) == 1) {
+    cpu_halt();
+  }
 }
 
-bool mutex_try_lock(mutex_t *mu)
+bool mutex_try_lock(struct mutex *mu)
 {
   return atomic_cmpxchg(&mu->count, 1, 0) == 0;
 }
 
-void mutex_unlock(mutex_t *mu)
+void mutex_unlock(struct mutex *mu)
 {
   mu->count = 0;
 }
 
-void spinlock_init(spinlock_t *sl)
+void spinlock_init(struct spinlock *sl)
 {
   sl->count = 0;
 }
 
-void spinlock_lock(spinlock_t *sl)
+void spinlock_lock(struct spinlock *sl)
 {
-  while (atomic_cmpxchg(&sl->count, 1, 0) == 1) { X86_PAUSE; }
+  while (atomic_cmpxchg(&sl->count, 1, 0) == 1){
+    X86_PAUSE;
+  }
 }
 
-bool spinlock_try_lock(spinlock_t *sl)
+bool spinlock_try_lock(struct spinlock *sl)
 {
   return atomic_cmpxchg(&sl->count, 1, 0) == 0;
 }
 
-void spinlock_unlock(spinlock_t *sl)
+void spinlock_unlock(struct spinlock *sl)
 {
   sl->count = 0;
 }

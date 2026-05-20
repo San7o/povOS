@@ -9,17 +9,18 @@
 #include <libk/string.h>
 #include <libk/stdio.h>
 
-scheduler_t  scheduler     = {0};
+struct scheduler  scheduler     = {0};
 task_id_t    current_task  = 0;
 
 void sched_switch_to(task_id_t task_id)
 {  
   current_task = task_id;
 
-  if (!scheduler.tasks[task_id].present)
-  {
+  if (!scheduler.tasks[task_id].present) {
     // wait for next sched
-    while(1) {  NOP; }
+    while(1) {
+      NOP;
+    }
   }
 
   printk("[sched] switching to task %l %s\n",
@@ -30,12 +31,12 @@ void sched_switch_to(task_id_t task_id)
   // Unreachable
 }
 
-void sched_init(vmmgr_t *vmmgr)
+void sched_init(struct vmmgr *vmmgr)
 {
-  memset(&scheduler, 0, sizeof(scheduler_t));
+  memset(&scheduler, 0, sizeof(struct scheduler));
   
-  scheduler.tasks[0] = (task_entry_t){
-    .task = (task_t) {
+  scheduler.tasks[0] = (struct task_entry){
+    .task = (struct task) {
       .vmmgr = vmmgr,
     },
     .sleeping = false,
@@ -61,8 +62,7 @@ task_id_t sched_get_next_task(void)
   // Round Robin
   
   // Get the next present task
-  for (u64_t i = current_task + 1; i < SCHED_MAX_TASKS; ++i)
-  {
+  for (u64_t i = current_task + 1; i < SCHED_MAX_TASKS; ++i) {
     if (scheduler.tasks[i].present)
       return i;
   }
@@ -70,11 +70,10 @@ task_id_t sched_get_next_task(void)
   return 0;
 }
 
-task_id_t sched_start_task(task_t task)
+task_id_t sched_start_task(struct task task)
 {
   // Find an available task slot
-  for (u64_t i = 1; i < SCHED_MAX_TASKS; ++i)
-  {
+  for (u64_t i = 1; i < SCHED_MAX_TASKS; ++i) {
     if (scheduler.tasks[i].present)
       continue;
 
@@ -89,7 +88,8 @@ task_id_t sched_start_task(task_t task)
 
 void sched_stop_task(task_id_t task)
 {
-  if (task >= SCHED_MAX_TASKS) return;
+  if (task >= SCHED_MAX_TASKS)
+    return;
   scheduler.tasks[task].present = false;
 }
 

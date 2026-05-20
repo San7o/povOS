@@ -15,16 +15,16 @@
 
 #include <libk/stddef.h>
 
-typedef struct framebuffer {
+struct framebuffer {
   u8_t* buff;
   u64_t width;
   u64_t height;
-} framebuffer_t;
+};
 
-void framebuffer_init(framebuffer_t *fb, u8_t *buff, u64_t width, u64_t height);
-void framebuffer_clear(framebuffer_t *fb, u8_t color);
-void framebuffer_draw_pixel(framebuffer_t *fb, u64_t x, u64_t y, u8_t color);
-void framebuffer_draw_rect(framebuffer_t *fb, u64_t x, u64_t y,
+void framebuffer_init(struct framebuffer *fb, u8_t *buff, u64_t width, u64_t height);
+void framebuffer_clear(struct framebuffer *fb, u8_t color);
+void framebuffer_draw_pixel(struct framebuffer *fb, u64_t x, u64_t y, u8_t color);
+void framebuffer_draw_rect(struct framebuffer *fb, u64_t x, u64_t y,
                            int h, int w, u8_t color);
 
 #endif // POVOS_KERNEL_FRAMEBUFFER_H

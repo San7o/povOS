@@ -79,7 +79,7 @@
 #define ATA_CTRL_DEVICE_REG_OFFSET       0   // w
 #define ATA_CTRL_DRIVE_ADDR_REG_OFFSET   1   // r
 
-typedef union ata_err_reg {
+union _packed ata_err_reg {
   struct _packed {
     bool amnf   : 1;  // address mark not found
     bool tknonf : 1;  // track zero not found
@@ -91,9 +91,9 @@ typedef union ata_err_reg {
     bool bbk    : 1;  // bad block detected
   } flags;
   u8_t raw;
-} _packed ata_err_reg_t;
+};
 
-typedef union ata_head_reg {
+union _packed ata_head_reg {
   struct _packed {
     u8_t head : 4;   // In CHS addressing, bits 0 to 3 of the head. In
                      // LBA addressing, bits 24 to 27 of the block number
@@ -104,9 +104,9 @@ typedef union ata_head_reg {
     bool set2: 1;    // always set
   } flags;
   u8_t raw;
-} _packed ata_head_reg_t;
+};
 
-typedef union ata_status_reg {
+union _packed ata_status_reg {
   struct _packed {
     bool err  : 1;  // Indicated an error occurred. Send a new command to
                     // clear it
@@ -122,7 +122,7 @@ typedef union ata_status_reg {
                     // data (wait for it to clear).
   } flags;
   u8_t raw;
-} _packed ata_status_reg_t;
+};
 
 //
 // Commands
@@ -155,7 +155,7 @@ bool ata_enabled(port_t port);
 
 // Blocks until status has done sending / receiving data
 // Retrun status
-ata_status_reg_t ata_wait_status(port_t port);
+union ata_status_reg ata_wait_status(port_t port);
 
 // [dest] must be large enough to contain [secotrs] * ATA_SECTOR_SIZE bytes
 bool ata_read(port_t port, u8_t *dest, u32_t from, u32_t sectors);

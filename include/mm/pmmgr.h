@@ -20,15 +20,15 @@
 
 typedef u64_t phys_addr_t;
 
-typedef struct pmmgr {
+struct pmmgr {
   // Pointer to physical memory
   u8_t *bitfield;
   u64_t size;
-} pmmgr_t;
+};
 
 // The global physical memory manager
 // Needs to be initialized before using it
-extern pmmgr_t pmmgr;
+extern struct pmmgr pmmgr;
 
 // Returns a negative number in case of failure
 int pmmgr_init(void);

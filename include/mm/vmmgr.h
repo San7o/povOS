@@ -31,30 +31,30 @@ typedef u64_t virt_addr_t;
 #define VMMGR_FLAG_USER    (1 << 2)
 typedef u64_t vmmgr_flags_t;
 
-typedef struct vmmgr_obj {
+struct vmmgr_obj {
   virt_addr_t    base;
   size_t         length;
   bool           mapped;
   vmmgr_flags_t  flags;
-} vmmgr_obj_t;
+};
 
-typedef struct vmmgr {
+struct vmmgr {
   // Virtual address space allocator
-  free_list_alloc_t vas_allocator;
-  page_table_t     *pml4t;
-  vmmgr_obj_t       objects[VMMGR_MAX_OBJECTS];
-} vmmgr_t;
+  struct free_list_alloc  vas_allocator;
+  struct page_table  *pml4t;
+  struct vmmgr_obj  objects[VMMGR_MAX_OBJECTS];
+};
 
 //
 // Functions
 //
 
-void vmmgr_setup(vmmgr_t *vmmgr);
-void vmmgr_activate(vmmgr_t *vmmgr);
+void vmmgr_setup(struct vmmgr *vmmgr);
+void vmmgr_activate(struct vmmgr *vmmgr);
 
 // Allocates multiples of PAGE_SIZE of virtual and physical memory,
 // sets up the translation between them
-virt_addr_t vmm_alloc(vmmgr_t *vmmgr,
+virt_addr_t vmm_alloc(struct vmmgr *vmmgr,
                       size_t length_bytes,
                       vmmgr_flags_t flags);
 

@@ -1,15 +1,19 @@
+// SPDX-License-Identifier: MIT
+// Author:  Giovanni Santini
+// Mail:    giovanni.santini@proton.me
+// Github:  @San7o
+
 #include <drivers/video/vga.h>   // implements
 
-static void vga_console_draw(const textbuffer_t *textbuffer)
+static void vga_console_draw(const struct textbuffer *textbuffer)
 {
-  if (!textbuffer) return;
+  if (!textbuffer)
+    return;
 
-  for (unsigned int i = 0; i < textbuffer->width * textbuffer->height; ++i)
-  {
-    vga_putc(i, textbuffer->buff[i].c, (vga_style_t) {
-        .foreground = textbuffer->buff[i].style.foreground,
-        .background = textbuffer->buff[i].style.background,
-      });
+  for (unsigned int i = 0; i < textbuffer->width * textbuffer->height; ++i) {
+    vga_putc(i, textbuffer->buff[i].c,
+             VGA_STYLE_MAKE(textbuffer->buff[i].style.foreground,
+                            textbuffer->buff[i].style.background));
   }
   
   return;
@@ -27,8 +31,8 @@ static void vga_console_clear(void)
   return;
 }
 
-console_t vga_console = {
-  .draw       = vga_console_draw,
-  .set_cursor = vga_console_set_cursor,
-  .clear      = vga_console_clear,
+struct console vga_console = {
+  .draw         = vga_console_draw,
+  .set_cursor   = vga_console_set_cursor,
+  .clear        = vga_console_clear,
 };

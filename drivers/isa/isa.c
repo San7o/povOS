@@ -42,8 +42,7 @@ void isa_pnp_set_config_mode(void)
   port_outb(ISA_PNP_ADDRESS_PORT, 0);
   port_outb(ISA_PNP_ADDRESS_PORT, 0);
   volatile u8_t key = ISA_INIT_KEY;
-  for (int i = 0; i < 32; ++i)
-  {
+  for (int i = 0; i < 32; ++i) {
     port_outb(ISA_PNP_ADDRESS_PORT, key);    
     key = isa_key_lfsr(key);
   }

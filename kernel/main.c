@@ -42,22 +42,19 @@ int kernel_main(void)
   //
 
   vga_init();
-  if (vga_get_memory_map() != 0x3)  // 0b11
-  {
+  if (vga_get_memory_map() != 0x3) {
     vga_clear(VGA_STYLE_RED);
     vga_print(0, "Memory map range not supported", VGA_STYLE_BW);
     return EXIT_FAILURE;
   }
 
-  if (!vga_is_text_mode())
-  {
+  if (!vga_is_text_mode()) {
     vga_clear(VGA_STYLE_RED);
     vga_print(0, "VGA alphanumeric mode is disabled", VGA_STYLE_BW);
     return EXIT_FAILURE;
   }
 
-  if (!uart_init_port(&uart_port1))
-  {
+  if (!uart_init_port(&uart_port1)) {
     vga_clear(VGA_STYLE_RED);
     vga_print(0, "Error initializing uart", VGA_STYLE_BW);
     return EXIT_FAILURE;
@@ -74,7 +71,7 @@ int kernel_main(void)
   pmmgr_init();
   // debug_print_pmmgr_bitfield();
 
-  vmmgr_t vmmgr;
+  struct vmmgr vmmgr;
   // Identity map the first 4MB of memory
   vmmgr_setup(&vmmgr);
   vmmgr_activate(&vmmgr);
@@ -102,28 +99,22 @@ int kernel_main(void)
   
   void* hpet_base   = NULL;
   
-  acpi_rsdp_t* acpi_rsdp = acpi_locate_rsdp();
-  if (!acpi_rsdp)
-  {
+  struct acpi_rsdp* acpi_rsdp = acpi_locate_rsdp();
+  if (!acpi_rsdp) {
     printk("[error] Could not find ACPI RSDP table\n");
-  }
-  else
-  {
+  } else {
     printk("[info] Found ACPI RSDP at: %x\n", acpi_rsdp);
 
-    page_entry_flags_t page_flags = { .rw = 1 };
+    struct page_entry_flags page_flags = { .rw = 1 };
 
     // HPET setup
     
-    hpet_acpi_sdt_t *hpet =
+    struct hpet_acpi_sdt *hpet =
       acpi_locate_sdt(acpi_rsdp, HPET_ACPI_SIGNATURE);
 
-    if (!hpet)
-    {
+    if (!hpet) {
       printk("[error] Could not find HPET timer\n");
-    }
-    else
-    {
+    } else {
       printk("[info] Found HPET timer, register at address: %x\n", hpet->address);
       
       // Identity map
@@ -135,25 +126,21 @@ int kernel_main(void)
 
     // IOAPIC
 
-    ioapic_acpi_sdt_t *ioapic_base =
+    struct ioapic_acpi_sdt *ioapic_base =
       acpi_locate_sdt(acpi_rsdp, IOAPIC_ACPI_SIGNATURE);
-    if (!ioapic_base)
-    {
+    if (!ioapic_base) {
       printk("[error] Could not find I/O APIC from ACPI\n");
-    }
-    else
-    {
+    } else {
       printk("[info] Found I/O APIC from ACPI\n");
 
-      ioapic_record_header_t* record_it = &ioapic_base->records[0];
+      struct ioapic_record_header* record_it = &ioapic_base->records[0];
       
-      while ((u64_t)record_it < (u64_t)ioapic_base + ioapic_base->header.length)
-      {
+      while ((u64_t)record_it < (u64_t)ioapic_base + ioapic_base->header.length) {
         u8_t type = record_it->entry_type;
         switch (type)
         {
         case 1: {
-          ioapic_record_ioapic_t *ioapic_struct = (void*)record_it;
+          struct ioapic_record_ioapic *ioapic_struct = (void*)record_it;
           printk("[info] [ioapic] Found an APIC Structure with id %d, addr %x\n",
                  ioapic_struct->ioapic_id, ioapic_struct->ioapic_addr);
           break;
@@ -167,51 +154,38 @@ int kernel_main(void)
         record_it = (void*)it_bytes;
       }
     }
-
   }
 
   // PCIe
 
-  pcie_acpi_sdt_t* pcie_sdt = acpi_locate_sdt(acpi_rsdp, PCIE_ACPI_SIGNATURE);
-  if (!pcie_sdt)
-  {
+  struct pcie_acpi_sdt* pcie_sdt = acpi_locate_sdt(acpi_rsdp, PCIE_ACPI_SIGNATURE);
+  if (!pcie_sdt) {
     printk("[error] Could not locate PCIe sdt\n");
-  }
-  else
-  {
+  } else {
     printk("[info] Found PCIe sdt\n");
     // debug_dump_mem_page(pcie_sdt->entries[0].base_addr, 32);
     debug_enumerate_pcie_devices(pcie_sdt);
 
-    edu_device_t edu;
-    if (edu_init(&edu, pcie_sdt))
-    {
+    struct edu_device edu;
+    if (edu_init(&edu, pcie_sdt)) {
       u32_t edu_id = edu_read_identification(&edu);
 
       printk("[info] [edu] Initialized EDU device\n");
       printk("[info] [edu] identification: %x\n", edu_id);
 
       edu_int_raise(&edu);
-    }
-    else
-    {
+    } else {
       printk("[error] error initializing EDU device\n");
     }
   }
 
-  if (ata_enabled(ATA_BUS1_BASE_PORT))
-  {
+  if (ata_enabled(ATA_BUS1_BASE_PORT)) {
     printk("[error] error ATA port\n");
-  }
-  else
-  {
+  } else {
     u8_t ata_buff[ATA_SECTOR_SIZE] = {0};
-    if (!ata_read(ATA_BUS1_BASE_PORT, ata_buff, 5, 1))
-    {
+    if (!ata_read(ATA_BUS1_BASE_PORT, ata_buff, 5, 1)) {
       printk("[error] error reading from ATA drive\n");
-    }
-    else
-    {
+    } else {
       printk("[info] ATA read: %s\n", ata_buff);
     }
   }
@@ -233,18 +207,18 @@ int kernel_main(void)
   
   vga_init();
   
-  textbuffer_entry_t buff[VGA_TEXT_BUFFER_SIZE] = {0};
-  textbuffer_t textbuffer;
+  struct textbuffer_entry buff[VGA_TEXT_BUFFER_SIZE] = {0};
+  struct textbuffer textbuffer;
   textbuffer_init(&textbuffer, buff,
                   VGA_TEXT_BUFFER_WIDTH, VGA_TEXT_BUFFER_HEIGHT, 0, 0);
 
-  tty_t tty;
+  struct tty tty;
   tty_init(&tty, &textbuffer, TEXTBUFFER_STYLE_BW, &vga_console);
   
-  input_t input;
+  struct input input;
   input_init(&input, &input_keymap_us, &tty);
   
-  keyboard_t keyboard;
+  struct keyboard keyboard;
   keyboard_init(&keyboard, KEYBOARD_TYPE_PS2_SET1, &input);
   keyboard_set_active(&keyboard);
 
@@ -262,27 +236,26 @@ int kernel_main(void)
   
   // Test Task A
   u64_t *stack_top_a = (u64_t*)((u64_t)kmalloc(4096) + 4096);
-  cpu_regs_t regs_a;
+  struct cpu_regs regs_a;
   regs_save(&regs_a);
   regs_a.rip = (u64_t)(void*)debug_test_task_a_fn;
   regs_a.rsp = (u64_t)stack_top_a;
 
   // Test Task B
   u64_t *stack_top_b = (u64_t*)((u64_t)kmalloc(4096) + 4096);
-  cpu_regs_t regs_b;
+  struct cpu_regs regs_b;
   regs_save(&regs_b);
   regs_b.rip = (u64_t)(void*)debug_test_task_b_fn;
   regs_b.rsp = (u64_t)stack_top_b;
 
-  task_t task_a = task_create(regs_a, &vmmgr, "task A");
-  task_t task_b = task_create(regs_b, &vmmgr, "task B");
+  struct task task_a = task_create(regs_a, &vmmgr, "task A");
+  struct task task_b = task_create(regs_b, &vmmgr, "task B");
 
   sched_init(&vmmgr);
   sched_start_task(task_a);
   sched_start_task(task_b);
 
-  while(1)
-  {
+  while(1) {
     char c = uart_getc(uart_port1);
     if (c == '\r') c = '\n';
     printk("%c", c);

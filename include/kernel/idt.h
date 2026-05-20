@@ -55,22 +55,22 @@
 //
 // An entry in the IDT (which is called a "gate") has the following
 // structure:
-typedef struct _packed idt_gate {
-    u16_t base_low;       // Low 16 bits of the address to jump to
-    u16_t cs_selector;    // Code segment selector
-    u8_t  ist;            // bits 0..2 holds Interrupt Stack Table
-                          // offset, rest of bits zero
-    u8_t  attributes;     // Flag bytes
-                          //  - Bit 7:     present bit, always 1
-                          //  - Bits 6-5:  Privelege level of caller
-                          //               (0=kernel..3=user)
-                          //  - Bit 4:     Set to 0 for interrupt gates
-                          //  - Bits 3-0:  0b1111 for trap, 0b1110 for
-                          //               interrupts
-    u16_t base_middle;    // Middle 16 bits of the address to jump to
-    u32_t base_high;      // High 16 bits of the address to jump to
-    u32_t reserved;       // Must always be 0
-} idt_gate_t;
+struct _packed idt_gate {
+  u16_t base_low;       // Low 16 bits of the address to jump to
+  u16_t cs_selector;    // Code segment selector
+  u8_t  ist;            // bits 0..2 holds Interrupt Stack Table
+                        // offset, rest of bits zero
+  u8_t  attributes;     // Flag bytes
+                        //  - Bit 7:     present bit, always 1
+                        //  - Bits 6-5:  Privelege level of caller
+                        //               (0=kernel..3=user)
+                        //  - Bit 4:     Set to 0 for interrupt gates
+                        //  - Bits 3-0:  0b1111 for trap, 0b1110 for
+                        //               interrupts
+  u16_t base_middle;    // Middle 16 bits of the address to jump to
+  u32_t base_high;      // High 16 bits of the address to jump to
+  u32_t reserved;       // Must always be 0
+};
 
 //
 // The `Gate Type` is a 4-bit value which defines the type of gate
@@ -112,7 +112,7 @@ typedef struct _packed idt_gate {
 // The corresponsing entry for a given interrupt vector is pointed to
 // in memory by scaling the vector by 16 and adding it to the value in
 // the offset field in the IDTR.
-extern idt_gate_t idt[IDT_ENTRIES];
+extern struct idt_gate idt[IDT_ENTRIES];
 
 // 
 // Location
@@ -132,12 +132,12 @@ extern idt_gate_t idt[IDT_ENTRIES];
 // offset is the linear address of the IDT (not the physical address,
 // paging applies).
 //
-typedef struct _packed idt_descriptor {
-  u16_t          size;     // 1 - sizeof(idt_interrupt_gate_64)
-  u64_t          offset;   // address of idt
-} idt_descriptor_t;
+struct _packed idt_descriptor {
+  u16_t size;     // 1 - sizeof(idt_interrupt_gate_64)
+  u64_t offset;   // address of idt
+};
 
-extern idt_descriptor_t idt_descriptor;
+extern struct idt_descriptor idt_descriptor;
 
 //
 // Interrupt Service Routines

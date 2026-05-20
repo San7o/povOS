@@ -33,7 +33,7 @@
 // This is the "entry point" to all ACPI information, use
 // `acpi_locate_rsdp()` to get its address.
 // It contains a pointer to the RSDT.
-typedef struct acpi_rsdp {
+struct _packed acpi_rsdp {
   #define ACPI_RSDP_SIGNATURE "RSD PTR "
   u8_t  signature[8];
   // This is the checksum of the fields defined in the ACPI 1.0
@@ -61,13 +61,13 @@ typedef struct acpi_rsdp {
   // fields. The sum of all bytes & 0xF must be 0.
   u8_t  extended_checksum;
   u8_t  reserved[3];
-} _packed acpi_rsdp_t;
+};
 
 //
 // System Description Table Header
 //
 // Common header for several tables
-typedef struct acpi_sdt_header {
+struct _packed acpi_sdt_header {
   #define ACPI_SDT_SIGNATURE_SIZE 4
   u8_t  signature[ACPI_SDT_SIGNATURE_SIZE];
   // Length, in bytes, of the entire table. The length implies the
@@ -87,35 +87,34 @@ typedef struct acpi_sdt_header {
   // Compiler.
   u32_t creator_id;
   u32_t creator_revision;
-} _packed acpi_sdt_header_t;
+};
 
 
 //
 // System Description Table (used in ACPI 1.0)
 //
-typedef struct acpi_rsdt {
+struct _packed acpi_rsdt {
   #define ACPI_RSDT_SIGNATURE "RSDT"
-  acpi_sdt_header_t header;
+  struct acpi_sdt_header header;
   // An array of 32-bit physical addresses that point to other system
   // description table headers. Its size can be calculated from the
   // length field at the stop of this structure.
   u32_t entries[];
-} _packed acpi_rsdt_t;
+};
 
 //
 // Extended System Description Table (used in ACPI 2.0)
 //
 // Same as RSDT header, but entries addresses are 64 bit wide.
-typedef struct acpi_xsdt {
+struct _packed acpi_xsdt {
   #define ACPI_XSDT_SIGNATURE "XSDT"
-  acpi_sdt_header_t header;
+  struct acpi_sdt_header header;
   // Addresses are 64 bit here.
   u64_t entries[];
-} _packed acpi_xsdt_t;
+};
 
 // Generic Address Structure
-typedef struct acpi_addr
-{
+struct _packed acpi_addr {
   // The address space where the data structure or register
   // exists. 
   #define ACPI_ADDRSPACE_SYSTEM_MEMORY             0x00
@@ -151,7 +150,7 @@ typedef struct acpi_addr
   // The 64-bit address of the data structure or register in the given
   // address space (relative to the processor)
   u64_t address;
-} _packed acpi_addr_t;
+};
 
 //
 // Fixed ACPI Description Table
@@ -159,10 +158,9 @@ typedef struct acpi_addr
 // Defines various fixed hardware ACPI information vital to an
 // ACPI-compatible OS, such as the base address of several hardware
 // registers blocks.
-typedef struct acpi_fadt
-{
+struct _packed acpi_fadt {
   // hader.signature is "FACP"
-  acpi_sdt_header_t header;
+  struct acpi_sdt_header header;
   // Physical memory address of the FACS, where OSPM and Firmware
   //exchange control information
   u32_t firmware_ctrl;
@@ -243,7 +241,7 @@ typedef struct acpi_fadt
   u32_t flags;
 
   // 12 byte structure; see below for details
-  acpi_addr_t reset_reg;
+  struct acpi_addr reset_reg;
 
   u8_t  reset_value;
   u8_t  reserved3[3];
@@ -252,15 +250,15 @@ typedef struct acpi_fadt
   u64_t                x_firmware_control;
   u64_t                x_dsdt;
 
-  acpi_addr_t x_pm1a_event_block;
-  acpi_addr_t x_pm1b_event_block;
-  acpi_addr_t x_pm1a_control_block;
-  acpi_addr_t x_pm1b_control_block;
-  acpi_addr_t x_pm2_control_block;
-  acpi_addr_t x_pm_timer_block;
-  acpi_addr_t x_gpe0_block;
-  acpi_addr_t x_gpe1_block;
-} _packed acpi_fadt_t;
+  struct acpi_addr x_pm1a_event_block;
+  struct acpi_addr x_pm1b_event_block;
+  struct acpi_addr x_pm1a_control_block;
+  struct acpi_addr x_pm1b_control_block;
+  struct acpi_addr x_pm2_control_block;
+  struct acpi_addr x_pm_timer_block;
+  struct acpi_addr x_gpe0_block;
+  struct acpi_addr x_gpe1_block;
+};
 
 //
 // Functions
@@ -268,7 +266,7 @@ typedef struct acpi_fadt
 
 // Find the address of the RSDP
 // Returns NULL (0) if not found
-acpi_rsdp_t* acpi_locate_rsdp(void);
-void*        acpi_locate_sdt(acpi_rsdp_t* rsdp, const char signature[4]);
+struct acpi_rsdp *acpi_locate_rsdp(void);
+void *acpi_locate_sdt(struct acpi_rsdp *rsdp, const char signature[4]);
 
 #endif // POVOS_DRIVERS_ACPI_H

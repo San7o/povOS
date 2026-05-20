@@ -8,9 +8,12 @@
 
 #include <libk/stddef.h>
 
-typedef struct range {
+struct range {
   size_t start;
   size_t end;
-} range_t;
+};
+
+#define RANGE_MAKE(_start, _end) \
+  (struct range) { .start = _start, .end = _end }
 
 #endif // POVOS_KERNEL_RANGE_H

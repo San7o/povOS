@@ -17,7 +17,7 @@
 #include <kernel/utils.h>
 #include <kernel/sync.h>
 
-void debug_dump_regs_uart3(cpu_regs_t regs)
+void debug_dump_regs_uart3(struct cpu_regs regs)
 {
 #ifdef __x86_64__
   uart_printf(uart_port1, "[debug] [regs2] rax: %x\n", regs.rax);
@@ -44,14 +44,14 @@ void debug_dump_regs_uart3(cpu_regs_t regs)
 
 void debug_dump_regs_uart2(void)
 {
-  cpu_regs_t regs;
+  struct cpu_regs regs;
   regs_save(&regs);
   debug_dump_regs_uart3(regs);
 }
 
 void debug_dump_mem_page(phys_addr_t phys_mem, size_t count)
 {
-  page_entry_flags_t page_flags = { .rw = 1 };
+  struct page_entry_flags page_flags = { .rw = 1 };
   void* virt_mem;
   u64_t* mem;
   unsigned int i;
@@ -64,10 +64,8 @@ void debug_dump_mem_page(phys_addr_t phys_mem, size_t count)
   mem = virt_mem;
   uart_printf(uart_port1, "[debug] Memory at phys addr %x:",
               phys_mem, virt_mem);
-  for (i = 0; i < PAGE_SIZE / sizeof(u64_t) && i < count; ++i)
-  {
-    if (i % 4 == 0)
-    {
+  for (i = 0; i < PAGE_SIZE / sizeof(u64_t) && i < count; ++i) {
+    if (i % 4 == 0) {
       uart_printf(uart_port1, "\n[debug] [%x] ", &mem[i]);
     }
 
@@ -78,7 +76,7 @@ void debug_dump_mem_page(phys_addr_t phys_mem, size_t count)
   uart_putc(uart_port1, '\n');
 }
 
-void debug_dump_keyboard_event_uart(keyboard_event_t event)
+void debug_dump_keyboard_event_uart(struct keyboard_event event)
 {
   const char* key_str = keycode_to_string(event.key);
 
@@ -88,17 +86,18 @@ void debug_dump_keyboard_event_uart(keyboard_event_t event)
   return;
 }
 
-void debug_dump_input_event_uart(input_event_t event)
+void debug_dump_input_event_uart(struct input_event event)
 {
   uart_write_str(uart_port1, "[debug] [input_event] ");
 
   switch (event.type)
   {
-  case INPUT_EVENT_TYPE_KEYBOARD: ;
+  case INPUT_EVENT_TYPE_KEYBOARD: {
     const char* key_str = keycode_to_string(event.e.key.key);
     uart_write_str(uart_port1, (event.e.key.pressed) ? "pressed " : "released ");
     uart_write_str(uart_port1, key_str);
     break;
+  }
   case INPUT_EVENT_TYPE_CHAR:
     uart_putc(uart_port1, event.e.c);
     break;
@@ -125,24 +124,21 @@ void debug_write_uart(void)
   return;
 }
 
-void debug_dump_input_loop(input_t *input, void* hpet_base_reg)
+void debug_dump_input_loop(struct input *input, void* hpet_base_reg)
 {
   u64_t previous_time_s = 0;
   u64_t hpet_counter;
-  input_event_t event;
+  struct input_event event;
   
   while(1) {
-
     // Tick seconds
-    if (time_ms / 1000 > previous_time_s)
-    {
+    if (time_ms / 1000 > previous_time_s) {
       previous_time_s = time_ms / 1000;
 
       uart_printf(uart_port1, "[debug] [isr] [pit 0] time: %d s\n",
                   time_ms / 1000);
 
-      if (hpet_base_reg)
-      {
+      if (hpet_base_reg) {
         hpet_counter = hpet_poll(hpet_base_reg);
         uart_printf(uart_port1, "[debug] [hpet] counter: %d\n",
                     hpet_counter);
@@ -150,27 +146,28 @@ void debug_dump_input_loop(input_t *input, void* hpet_base_reg)
     }
     
     event = input_events_get(input);
-    if (event.type == INPUT_EVENT_TYPE_NONE) continue;
+    if (event.type == INPUT_EVENT_TYPE_NONE)
+      continue;
     
     debug_dump_input_event_uart(event);
-
   }
 }
 
 void debug_print_memory_map_uart(void)
 {
-  u32_t *mmap_num_entries = BIOS_MMAP_NUM_ENTRIES_ADDR, i;
-  bios_mmap_entry_t *mmap = BIOS_MMAP_ENTRIES_ADDR;
+  u32_t *mmap_num_entries = BIOS_MMAP_NUM_ENTRIES_ADDR;
+  struct bios_mmap_entry *mmap = BIOS_MMAP_ENTRIES_ADDR;
   u64_t base, length;
+  u32_t i;
   
-  if (!mmap_num_entries || !mmap) return;
+  if (!mmap_num_entries || !mmap)
+    return;
   
   uart_write_str(uart_port1, "[debug] [memory map] Memory map entries: ");
   uart_write_hex(uart_port1, (u64_t) *mmap_num_entries);
   uart_putc(uart_port1, '\n');
 
-  for (i = 0; i < *mmap_num_entries && i < 50; ++i)
-  {
+  for (i = 0; i < *mmap_num_entries && i < 50; ++i) {
     base = (u64_t)mmap[i].base_low | ((u64_t) mmap[i].base_high << 32);
     uart_write_str(uart_port1, "[debug] [mmap] base: ");
     uart_write_hex(uart_port1, base);
@@ -193,24 +190,21 @@ void debug_print_memory_map_uart(void)
 
 void debug_print_pmmgr_bitfield(void)
 {
+  u8_t *bitfield = MM_PHYS_TO_VIRT(pmmgr.bitfield);
   u64_t i;
   int bit, val;
-  u8_t *bitfield = MM_PHYS_TO_VIRT(pmmgr.bitfield);
   
   uart_printf(uart_port1, "[debug] [pmmgr] Bitfield of size %d:\n",
               pmmgr.size);
   uart_write_str(uart_port1, "[debug] [pmmgr] [0x0000000000000000] ");
   
-  for (i = 0; i < pmmgr.size; ++i)
-  {
-    for (bit = 0; bit < 8; ++bit)
-    {
+  for (i = 0; i < pmmgr.size; ++i) {
+    for (bit = 0; bit < 8; ++bit) {
       val = (bitfield[i] >> bit) & 1;
       uart_write_str(uart_port1, (val == 1) ? "1" : "0");      
     }
 
-    if ((i + 1) % 8 == 0)
-    {
+    if ((i + 1) % 8 == 0) {
       uart_write_str(uart_port1, "\n");
       uart_write_str(uart_port1, "[debug] [pmmgr] [");
       uart_write_hex(uart_port1, (i + 1) * 8 * PAGE_SIZE);
@@ -226,72 +220,66 @@ void debug_vga_draw_flag(void)
   int x, y;
   
   for (x = 0; x < 320 / 3; ++x)
-    for (y = 0; y < 200; ++y)    
-      vga_draw_pixel(x, y, VGA_COLOR_GREEN);
+  for (y = 0; y < 200; ++y)    
+    vga_draw_pixel(x, y, VGA_COLOR_GREEN);
+  
   for (x = 0; x < 320 / 3; ++x)
-    for (y = 0; y < 200; ++y)    
-      vga_draw_pixel(320 / 3 + x, y, VGA_COLOR_WHITE);
+  for (y = 0; y < 200; ++y)    
+    vga_draw_pixel(320 / 3 + x, y, VGA_COLOR_WHITE);
+  
   for (x = 0; x < 320 / 3; ++x)
-    for (y = 0; y < 200; ++y)    
-      vga_draw_pixel(320 / 3 * 2 + x, y, VGA_COLOR_RED);
+  for (y = 0; y < 200; ++y)    
+    vga_draw_pixel(320 / 3 * 2 + x, y, VGA_COLOR_RED);
 }
 
 void debug_enumerate_pci_devices(void)
 {
   int bus, slot, func;
-  pci_device_vendor_t pci_dv;
+  struct pci_device_vendor pci_dv;
   
   for (bus = 0; bus < 256; bus++)
-  {
-    for (slot = 0; slot < 32; slot++)
-    {
-      for (func = 0; func < 8; func++)
-      {
-        pci_dv = pci_get_device_vendor(bus, slot, func);
+  for (slot = 0; slot < 32; slot++)
+  for (func = 0; func < 8; func++) {
+    
+    pci_dv = pci_get_device_vendor(bus, slot, func);
 
-        if (pci_dv.vendor_id == PCI_DEVICE_VENDOR_NONE)
-          continue;
+    if (pci_dv.vendor_id == PCI_DEVICE_VENDOR_NONE)
+      continue;
         
-        uart_printf(uart_port1, "[debug] [pci] Bus %d, Slot %d: Vendor: %s (%x), Device: %s (%x), Func: %d\n", 
-                    bus, slot, pci_dv.vendor_name, pci_dv.vendor_id,
-                    pci_dv.device_name, pci_dv.device_id, func);
-      }
-    }
+    uart_printf(uart_port1, "[debug] [pci] Bus %d, Slot %d: Vendor: %s (%x), Device: %s (%x), Func: %d\n", 
+                bus, slot, pci_dv.vendor_name, pci_dv.vendor_id,
+                pci_dv.device_name, pci_dv.device_id, func);
   }
 }
 
-void debug_enumerate_pcie_devices(pcie_acpi_sdt_t *pcie_sdt)
+void debug_enumerate_pcie_devices(struct pcie_acpi_sdt *pcie_sdt)
 {
   unsigned int num_allocations, alloc;
-  pcie_acpi_entry_t *group;
+  struct pcie_acpi_entry *group;
   u64_t base_addr;
   u16_t bus;
   u8_t device, function;
   phys_addr_t phys_addr;
   void* virt_addr;
-  page_entry_flags_t page_flags = { .rw = 1, .pcd = 1 };
-  pcie_common_config_space_header_t* pcie_hdr;
+  struct page_entry_flags page_flags = { .rw = 1, .pcd = 1 };
+  struct pcie_common_config_space_header* pcie_hdr;
   char *vendor_name;
   char *device_name;
 
   num_allocations =
-    (pcie_sdt->header.length - sizeof(acpi_sdt_header_t) - 8)
-    / sizeof(pcie_acpi_entry_t);
+    (pcie_sdt->header.length - sizeof(struct acpi_sdt_header) - 8)
+    / sizeof(struct pcie_acpi_entry);
   
   uart_printf(uart_port1, "[debug] [pcie] Found %d PCIe Host Bridge Allocations\n",
               num_allocations);
 
-  for (alloc = 0; alloc < num_allocations; ++alloc)
-  {
+  for (alloc = 0; alloc < num_allocations; ++alloc) {
     group = &pcie_sdt->entries[alloc];
     base_addr = group->base_addr;
 
-    for (bus = group->start_bus; bus <= group->end_bus; ++bus)
-    {
-      for (device = 0; device < 32; ++device)
-      {
-        for (function = 0; function < 8; ++function)
-        {
+    for (bus = group->start_bus; bus <= group->end_bus; ++bus) {
+      for (device = 0; device < 32; ++device) {
+        for (function = 0; function < 8; ++function) {
           phys_addr = PCIE_PHYS_ADDR(base_addr, bus, device, function);
 
           // Identity map memory
@@ -300,8 +288,7 @@ void debug_enumerate_pcie_devices(pcie_acpi_sdt_t *pcie_sdt)
 
           pcie_hdr = virt_addr;
 
-          if (pcie_hdr->vendor_id == PCI_DEVICE_VENDOR_NONE)
-          {
+          if (pcie_hdr->vendor_id == PCI_DEVICE_VENDOR_NONE) {
             if (function == 0)
                 break;
             continue; 
@@ -344,23 +331,19 @@ void debug_print_true_rand(void)
   uart_printf(uart_port1, "[debug] true random number: %d\n", rand);
 }
 
-static spinlock_t sp;
+static struct spinlock sp;
 
 void debug_test_task_a_fn(void)
 {
   spinlock_init(&sp);
   
-  while(1)
-  {
-    if (spinlock_try_lock(&sp))
-    {
+  while(1) {
+    if (spinlock_try_lock(&sp)) {
       uart_printf(uart_port1, "[debug] Hello from task A!\n");
       sleep_ms(500);
       
       spinlock_unlock(&sp);
-    }
-    else
-    {
+    } else {
       uart_printf(uart_port1, "[debug] task A: locked out\n");
     }
   }
@@ -368,17 +351,13 @@ void debug_test_task_a_fn(void)
 
 void debug_test_task_b_fn(void)
 {
-  while(1)
-  {
-    if (spinlock_try_lock(&sp))
-    {
+  while(1) {
+    if (spinlock_try_lock(&sp)) {
       uart_printf(uart_port1, "[debug] Hello from task B!\n");
       sleep_ms(500);
       
       spinlock_unlock(&sp);
-    }
-    else
-    {
+    } else {
       uart_printf(uart_port1, "[debug] task B: locked out\n");
       sleep_ms(300);
     }

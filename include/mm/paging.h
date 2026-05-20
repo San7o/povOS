@@ -29,18 +29,16 @@
 #include <kernel/macros.h>
 #include <libk/stddef.h>
 
-typedef u64_t virt_ptr_t;
-
-typedef struct page_entry_flags {
+struct page_entry_flags {
   u64_t rw         : 1;
   u64_t user       : 1;
   u64_t pwt        : 1;
   u64_t nx         : 1;
   u64_t pcd        : 1;
-} page_entry_flags_t;
+};
 
 // This is a single page entry (uses 8 bytes)
-typedef struct page_entry {
+struct _packed page_entry {
   u64_t present    : 1;  // 1 present, 0 not present
   u64_t rw         : 1;  // R/W, if 0 writes may not be allowed
   u64_t user       : 1;  // U/S, if 0 user-mode accesses are not allowed
@@ -54,7 +52,7 @@ typedef struct page_entry {
   u64_t address    : 40; // Physical address (shifted right 12 bits)
   u64_t available  : 11; // More custom bits
   u64_t nx         : 1;  // XD, No Execute
-} _packed page_entry_t;
+};
 
 #define PAGE_SIZE        4096
 #define HUGE_PAGE_SIZE   (4096 * 512)
@@ -62,9 +60,9 @@ typedef struct page_entry {
 #define PAGE_ALIGN_UP(x) (((x) + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1))
 
 // A single level, takes up 4KB size
-typedef struct __attribute__((aligned(PAGE_SIZE))) page_table {
-  page_entry_t   entries[1 << 9];
-} page_table_t;
+struct _aligned(PAGE_SIZE) page_table {
+  struct page_entry  entries[1 << 9];
+};
 
 //
 // Recursive Trick
@@ -89,14 +87,14 @@ typedef struct __attribute__((aligned(PAGE_SIZE))) page_table {
 // Allocate a new page map level 4 table with default values
 //
 // Retruns a pointer to the PML4 table, or NULL if unsuccessful 
-page_table_t *paging_pml4t_init(void);
+struct page_table *paging_pml4t_init(void);
 
 // Load the PML4 table into cr3
 // Implemented in assembly
-void paging_load(page_table_t *pml4t);
+void paging_load(struct page_table *pml4t);
 
-void paging_add_entry(void               *phys_addr,
-                      void               *virt_addr,
-                      page_entry_flags_t  flags);
+void paging_add_entry(void *phys_addr,
+                      void *virt_addr,
+                      struct page_entry_flags flags);
 
 #endif // POVOS_MM_PAGING_H

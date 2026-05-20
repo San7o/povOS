@@ -16,9 +16,9 @@
 #include <libk/stddef.h>
 
 // forward declarations
-typedef struct vgfmount vfsmount_t;
-typedef struct inode inode_t;
-typedef struct vfs vfs_t;
+struct vgfmount;
+struct inode;
+struct vfs;
 
 typedef u64_t inode_no_t;
 
@@ -29,28 +29,28 @@ typedef u64_t inode_no_t;
 // The file object represents an open resource that is being used. It
 // is owned by a mounted filesystem.
 //
-typedef struct file {
-  inode_t *inode;
-  u8_t     mode;
-  u64_t    offset;
+struct file {
+  struct inode *inode;
+  u8_t  mode;
+  u64_t offset;
 
-  vfsmount_t *owner;
-} file_t;
+  struct vfsmount *owner;
+};
 
-typedef struct file_ops {
+struct file_ops {
   #define FILE_OPS_FLAG_CREATE   1
   #define FILE_OPS_FLAG_APPEND   2
   #define FILE_OPS_MODE_READ     0
   #define FILE_OPS_MODE_WRITE    1
-  file_t* (*open)   (inode_t *inode, u8_t flags, u8_t mode);
-  int     (*close)  (file_t *file);
-  size_t  (*read)   (file_t *file, u8_t *dest, size_t count);
-  size_t  (*write)  (file_t *file, u8_t *src, size_t count);
+  struct file* (*open) (struct inode *inode, u8_t flags, u8_t mode);
+  int     (*close)  (struct file *file);
+  size_t  (*read)   (struct file *file, u8_t *dest, size_t count);
+  size_t  (*write)  (struct file *file, u8_t *src, size_t count);
   #define FILE_OPS_SEEK_SET   0
   #define FILE_OPS_SEEK_CUR   1
   #define FILE_OPS_SEEK_END   2
-  u64_t   (*lseek)  (file_t *file, size_t offset, u8_t whence);
-} file_ops_t;
+  u64_t   (*lseek)  (struct file *file, size_t offset, u8_t whence);
+};
 
 //
 // Inode
@@ -66,12 +66,12 @@ typedef struct file_ops {
 //
 struct inode {
   // Unique identifier
-  inode_no_t  inode_no;
-  inode_t    *next;
+  inode_no_t inode_no;
+  struct inode *next;
 
   // Operations to interact with the inode, they are here so that
   // different types of inodes may support different ops
-  file_ops_t  file_ops;
+  struct file_ops file_ops;
 };
 
 //
@@ -80,17 +80,15 @@ struct inode {
 //
 // The leaf of a directory.
 //
-typedef struct dentry dentry_t;
-
 struct dentry {
-  char         *name;
-  inode_t      *inode;
+  char *name;
+  struct inode *inode;
   // Mount for another filesystem, may be null
-  vfsmount_t   *mount;
+  struct vfsmount *mount;
 
-  dentry_t  *parent;
+  struct dentry *parent;
   // Other entries in the same directory
-  dentry_t  *next;
+  struct dentry  *next;
 };
 
 //
@@ -100,20 +98,18 @@ struct dentry {
 // Directories form tree where leafs are dentries. A directory is
 // owned by a mounted filesystem.
 //
-typedef struct dir dir_t;
-
 struct dir {
   // Dentry representing this directory
-  dentry_t *self;
-  dentry_t *entries;
+  struct dentry *self;
+  struct dentry *entries;
 
-  vfsmount_t *owner;
+  struct vfsmount *owner;
 };
 
-typedef struct dir_ops {
-  dir_t* (*mkdir) (dir_t *father);
-  int    (*rmdir) (dir_t *dir);
-} dir_ops_t;
+struct dir_ops {
+  struct dir* (*mkdir) (struct dir *father);
+  int         (*rmdir) (struct dir *dir);
+};
 
 //
 // The Filesystem object
@@ -123,12 +119,12 @@ typedef struct dir_ops {
 // several operations for the filesystem itself and its files.
 //
 
-typedef struct vfs_ops {
-  vfsmount_t *(*mount)  (dir_t *dir, u64_t flags);
-  int        *(*umount) (vfsmount_t *mount);
+struct vfs_ops {
+  struct vfsmount *(*mount) (struct dir *dir, u64_t flags);
+  int        *(*umount) (struct vfsmount *mount);
   // Returns an inode by walking the directory
-  inode_t    *(*lookup) (dir_t *start, const char *path);
-} vfs_ops_t;
+  struct inode    *(*lookup) (struct dir *start, const char *path);
+};
 
 struct vfs {
   // Name used for printing
@@ -137,8 +133,8 @@ struct vfs {
   u64_t  type;
 
   // API
-  dir_ops_t   dir_ops;
-  vfs_ops_t   vfs_ops;
+  struct dir_ops   dir_ops;
+  struct vfs_ops   vfs_ops;
 };
 
 //
@@ -147,13 +143,13 @@ struct vfs {
 //
 // A superblock is an instance of a filesystem.
 //
-typedef struct vfs_superblock {
-  vfs_t *fs;
+struct vfs_superblock {
+  struct  vfs *fs;
   // An unique identifier of this instance
   u64_t id;
   // Root directory of the filesystem
-  dir_t   *root;
-} vfs_superblock_t;
+  struct dir  *root;
+};
 
 //
 // Mountpoint
@@ -163,14 +159,14 @@ typedef struct vfs_superblock {
 //
 struct vfsmount {
   // The mounted filesystem
-  vfs_t  *fs;
-  u64_t   flags;
+  struct vfs_t  *fs;
+  u64_t  flags;
 
   // Filesystem insance
-  vfs_superblock_t  *sb;
+  struct vfs_superblock  *sb;
 
   // Next mount in the list
-  vfsmount_t *next;
+  struct vfsmount  *next;
 };
 
 #endif // POVOS_FS_VFS_H

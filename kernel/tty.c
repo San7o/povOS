@@ -6,10 +6,11 @@
 #include <kernel/tty.h>
 #include <drivers/video/vga.h>
 
-void tty_init(tty_t *tty, textbuffer_t *textbuffer,
-              textbuffer_style_t style, console_t *console)
+void tty_init(struct tty *tty, struct textbuffer *textbuffer,
+              struct textbuffer_style style, struct console *console)
 {
-  if (!tty) return;
+  if (!tty)
+    return;
 
   tty->textbuffer = textbuffer;
   tty->console    = console;
@@ -18,28 +19,42 @@ void tty_init(tty_t *tty, textbuffer_t *textbuffer,
   return;
 }
 
-void tty_write_input(tty_t *tty, input_event_t event)
+static inline void tty_handle_char(struct tty *tty, char c)
 {
+  textbuffer_write(tty->textbuffer, TEXTBUFFER_ENTRY_MAKE(c, tty->style));
+}
 
-  if (!tty) return;
+static inline void tty_handle_backspace(struct tty *tty)
+{
+  textbuffer_cursor_regress(tty->textbuffer);
+  textbuffer_write(tty->textbuffer, TEXTBUFFER_ENTRY_MAKE(' ', tty->style));
+  textbuffer_cursor_regress(tty->textbuffer);
+}
 
-  if (event.type == INPUT_EVENT_TYPE_CHAR)
-  {
-    textbuffer_write(tty->textbuffer, TEXTBUFFER_ENTRY_MAKE(event.e.c, tty->style));
+static inline void tty_handle_enter(struct tty *tty)
+{
+  textbuffer_cursor_newline(tty->textbuffer);
+  textbuffer_write(tty->textbuffer, TEXTBUFFER_ENTRY_MAKE('>', tty->style));
+  textbuffer_write(tty->textbuffer, TEXTBUFFER_ENTRY_MAKE(' ', tty->style));
+}
+
+void tty_write_input(struct tty *tty, struct input_event event)
+{
+  if (!tty)
+    return;
+
+  if (event.type == INPUT_EVENT_TYPE_CHAR) {
+    tty_handle_char(tty, event.e.c);
     return;
   }
 
   switch (event.e.key.key)
   {
   case KEY_BACKSPACE:
-    textbuffer_cursor_regress(tty->textbuffer);
-    textbuffer_write(tty->textbuffer, TEXTBUFFER_ENTRY_MAKE(' ', tty->style));
-    textbuffer_cursor_regress(tty->textbuffer);
+    tty_handle_backspace(tty);
     break;
   case KEY_ENTER:
-    textbuffer_cursor_newline(tty->textbuffer);
-    textbuffer_write(tty->textbuffer, TEXTBUFFER_ENTRY_MAKE('>', tty->style));
-    textbuffer_write(tty->textbuffer, TEXTBUFFER_ENTRY_MAKE(' ', tty->style));
+    tty_handle_enter(tty);
     break;
   default:
     break;
@@ -48,9 +63,20 @@ void tty_write_input(tty_t *tty, input_event_t event)
   return;
 }
 
-void tty_write(tty_t *tty, const char *buf, size_t len)
+static inline void tty_write_space(struct tty *tty)
 {
-  if (!tty || !buf) return;
+  textbuffer_write(tty->textbuffer, TEXTBUFFER_ENTRY_MAKE(' ', tty->style));
+}
+
+static inline void tty_write_char(struct tty *tty, char c)
+{
+  textbuffer_write(tty->textbuffer, TEXTBUFFER_ENTRY_MAKE(c, tty->style));
+}
+
+void tty_write(struct tty *tty, const char *buf, size_t len)
+{
+  if (!tty || !buf)
+    return;
   
   for (size_t i = 0; i < len; ++i)
   {
@@ -61,22 +87,20 @@ void tty_write(tty_t *tty, const char *buf, size_t len)
       textbuffer_cursor_newline(tty->textbuffer);
       break;        
     case '\t':
-      textbuffer_write(tty->textbuffer, TEXTBUFFER_ENTRY_MAKE(' ', tty->style));
-      textbuffer_write(tty->textbuffer, TEXTBUFFER_ENTRY_MAKE(' ', tty->style));
-      textbuffer_write(tty->textbuffer, TEXTBUFFER_ENTRY_MAKE(' ', tty->style));
-      textbuffer_write(tty->textbuffer, TEXTBUFFER_ENTRY_MAKE(' ', tty->style));
+      tty_write_space(tty);
       break;
     default:
-      textbuffer_write(tty->textbuffer, TEXTBUFFER_ENTRY_MAKE(c, tty->style));
+      tty_write_char(tty, c);
       break;
     }
   }
   return;
 }
 
-void tty_flush(tty_t *tty)
+void tty_flush(struct tty *tty)
 {
-  if (!tty || !tty->console || !tty->textbuffer) return;
+  if (!tty || !tty->console || !tty->textbuffer)
+    return;
   
   tty->console->draw(tty->textbuffer);
   tty->console->set_cursor(tty->textbuffer->cursor_x,

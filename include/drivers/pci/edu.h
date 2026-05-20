@@ -28,17 +28,17 @@
 #include <libk/stddef.h>
 
 // Use edu_init to initialize this structure
-typedef struct edu_device {
-  pcie_type0_config_space_header_t* header;
+struct edu_device {
+  struct pcie_type0_config_space_header* header;
   volatile u32_t* mmio;
-} edu_device_t;
+};
 
-bool edu_init(edu_device_t *edu, pcie_acpi_sdt_t *pcie_sdt);
-bool edu_check_liveness(edu_device_t *edu);
+bool edu_init(struct edu_device *edu, struct pcie_acpi_sdt *pcie_sdt);
+bool edu_check_liveness(struct edu_device *edu);
 
-u32_t edu_read_identification(edu_device_t *edu);
+u32_t edu_read_identification(struct edu_device *edu);
 
-void edu_int_raise(edu_device_t *edu);
-void edu_int_ack(edu_device_t *edu);  // should be called in the interrpt
+void edu_int_raise(struct edu_device *edu);
+void edu_int_ack(struct edu_device *edu);  // should be called in the interrpt
 
 #endif // POVOS_DRIVERS_EDU_H

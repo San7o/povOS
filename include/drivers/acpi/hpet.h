@@ -24,15 +24,15 @@
 
 #define HPET_ACPI_SIGNATURE "HPET"
 
-typedef struct hpet_acpi_sdt {
-  acpi_sdt_header_t header;
+struct _packed hpet_acpi_sdt {
+  struct acpi_sdt_header header;
   u32_t event_timer_block_id;
   u32_t reserved;
   u64_t address;   // base the address of the registers
   u8_t  id;
   u16_t min_ticks;
   u8_t  page_protection;
-} _packed hpet_acpi_sdt_t;
+};
 
 // Offset from hpet_acpi_sdt_t->addresss
 #define HPET_GENERAL_CAPABILITIES_REGISTER_OFFSET   0x0    // r

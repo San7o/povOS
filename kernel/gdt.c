@@ -8,7 +8,7 @@
 
 void gdt_reload(void)
 {
-  gdtr_t gdtr;
+  struct gdtr gdtr;
   __asm__ volatile("sgdt %0" : "=m"(gdtr));
 
   gdtr.base = (u64_t)MM_PHYS_TO_VIRT(gdtr.base);

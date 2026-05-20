@@ -41,20 +41,28 @@
 #define PCI_CONFIG_ADDRESS    0xCF8
 #define PCI_CONFIG_DATA       0xCFC
 
-typedef struct pci_device_vendor {
+struct pci_device_vendor {
   #define PCI_DEVICE_VENDOR_NONE 0xFFFF
   u16_t vendor_id;
   u16_t device_id;
   
   char* vendor_name;
   char* device_name;
-} pci_device_vendor_t;
+};
+
+#define PCI_DEV_VENDOR_MAKE(_vendor_id, _device_id, _vendor_name, _dev_name) \
+  (struct pci_device_vendor) {                                        \
+    .vendor_id = _vendor_id,                                          \
+    .device_id = _device_id,                                          \
+    .vendor_name = _vendor_name,                                      \
+    .device_name = _dev_name,                                         \
+  }
 
 void  pci_writew(u32_t value);
 u16_t pci_readw(u8_t bus, u8_t slot, u8_t func, u8_t offset);
 
 char* pci_get_vendor_name(u16_t vendor);
 char* pci_get_device_name(u16_t vendor, u16_t device);
-pci_device_vendor_t pci_get_device_vendor(u8_t bus, u8_t slot, u8_t func);
+struct pci_device_vendor pci_get_device_vendor(u8_t bus, u8_t slot, u8_t func);
 
 #endif // POVOS_DRIVERS_PCI_H

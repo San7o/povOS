@@ -7,17 +7,19 @@
 #include <bits/port.h>
 #include <libk/stdlib.h>
 
-#define UART_PORT_MAKE(_port) (uart_port_t) { .port = _port, .initialized = false}
-uart_port_t uart_port1 = UART_PORT_MAKE(UART_COM1);
-uart_port_t uart_port2 = UART_PORT_MAKE(UART_COM2);
-uart_port_t uart_port3 = UART_PORT_MAKE(UART_COM3);
-uart_port_t uart_port4 = UART_PORT_MAKE(UART_COM4);
-uart_port_t uart_port5 = UART_PORT_MAKE(UART_COM5);
-uart_port_t uart_port6 = UART_PORT_MAKE(UART_COM6);
-uart_port_t uart_port7 = UART_PORT_MAKE(UART_COM7);
-uart_port_t uart_port8 = UART_PORT_MAKE(UART_COM8);
+#define UART_PORT_MAKE(_port) (struct uart_port) \
+  { .port = _port, .initialized = false}
 
-bool uart_init_port(uart_port_t* uart_port)
+struct uart_port uart_port1 = UART_PORT_MAKE(UART_COM1);
+struct uart_port uart_port2 = UART_PORT_MAKE(UART_COM2);
+struct uart_port uart_port3 = UART_PORT_MAKE(UART_COM3);
+struct uart_port uart_port4 = UART_PORT_MAKE(UART_COM4);
+struct uart_port uart_port5 = UART_PORT_MAKE(UART_COM5);
+struct uart_port uart_port6 = UART_PORT_MAKE(UART_COM6);
+struct uart_port uart_port7 = UART_PORT_MAKE(UART_COM7);
+struct uart_port uart_port8 = UART_PORT_MAKE(UART_COM8);
+
+bool uart_init_port(struct uart_port* uart_port)
 {
   // Disable all interrupts
   port_outb(uart_port->port + UART_REGISTER_INTERRUPT_ENABLE_INDEX, 0);
@@ -53,7 +55,7 @@ bool uart_init_port(uart_port_t* uart_port)
   return true;
 }
 
-bool uart_is_transmit_ready(uart_port_t uart_port)
+bool uart_is_transmit_ready(struct uart_port uart_port)
 {
   if (!uart_port.initialized)
     return false;
@@ -67,33 +69,33 @@ bool uart_is_transmit_ready(uart_port_t uart_port)
   return true;
 }
 
-void uart_putc(uart_port_t uart_port, u8_t c)
+void uart_putc(struct uart_port uart_port, u8_t c)
 {
   if (!uart_port.initialized)
     return;
   
   // Wait for transmission to be available
-  while(!uart_is_transmit_ready(uart_port)) {}
+  while(!uart_is_transmit_ready(uart_port))
+    {}
 
   port_outb(uart_port.port + UART_REGISTER_TRANSMIT_BUF_INDEX, c);
   
   return;
 }
 
-void uart_write_str(uart_port_t uart_port, const char *str)
+void uart_write_str(struct uart_port uart_port, const char *str)
 {
   if (!uart_port.initialized)
     return;
   
-  while (*str != '\0')
-  {
+  while (*str != '\0') {
     uart_putc(uart_port, *str);
     ++str;
   }
   return;
 }
 
-void uart_write_hex(uart_port_t uart_port, u64_t num)
+void uart_write_hex(struct uart_port uart_port, u64_t num)
 {
   if (!uart_port.initialized)
     return;
@@ -101,15 +103,11 @@ void uart_write_hex(uart_port_t uart_port, u64_t num)
   uart_putc(uart_port, '0');
   uart_putc(uart_port, 'x');
   
-  for (unsigned long i = 0; i < sizeof(num) * 2; ++i)
-  {
+  for (unsigned long i = 0; i < sizeof(num) * 2; ++i) {
     u8_t hex = (num >> (sizeof(num) * 8 - 4 * i - 4)) & 0xF;
-    if (hex > 9)
-    {
+    if (hex > 9) {
       uart_putc(uart_port, 'A' + hex - 10);
-    }
-    else
-    {
+    } else {
       uart_putc(uart_port, '0' + hex);
     }
   }
@@ -117,7 +115,7 @@ void uart_write_hex(uart_port_t uart_port, u64_t num)
   return;
 }
 
-int uart_printf(uart_port_t uart_port, const char* fmt, ...)
+int uart_printf(struct uart_port uart_port, const char* fmt, ...)
 {
   if (!uart_port.initialized)
     return 0;
@@ -130,15 +128,13 @@ int uart_printf(uart_port_t uart_port, const char* fmt, ...)
   return ret;
 }
 
-int uart_vprintf(uart_port_t uart_port, const char* fmt, va_list args)
+int uart_vprintf(struct uart_port uart_port, const char* fmt, va_list args)
 {
   if (!uart_port.initialized)
     return 0;
   
-  while (*fmt)
-  {
-    if (*fmt == '%')
-    {
+  while (*fmt) {
+    if (*fmt == '%') {
       fmt++;
       switch (*fmt)
       {
@@ -207,9 +203,7 @@ int uart_vprintf(uart_port_t uart_port, const char* fmt, va_list args)
         break;
       }
       }
-    }
-    else
-    {
+    } else {
       uart_putc(uart_port, *fmt);
     }
     fmt++;
@@ -217,19 +211,19 @@ int uart_vprintf(uart_port_t uart_port, const char* fmt, va_list args)
   return 0;
 }
 
-char uart_getc(uart_port_t port)
+char uart_getc(struct uart_port port)
 {
   if (!port.initialized)
     return 0;
 
-  while(1)
-  {
+  while(1) {
     // check if there is something to read
     u8_t b = port_inb(port.port + UART_REGISTER_LINE_STATUS_INDEX);
-    if (b & 0x1)
-    {
+    if (b & 0x1) {
       u8_t b = port_inb(port.port + UART_REGISTER_RECEIVE_BUF_INDEX);
       return b;
     }
   }
+
+  return 0;
 }

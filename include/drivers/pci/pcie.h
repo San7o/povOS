@@ -78,21 +78,21 @@
 
 #define PCIE_ACPI_SIGNATURE "MCFG"
 
-typedef struct pcie_acpi_entry {
+struct _packed pcie_acpi_entry {
   u64_t   base_addr;
   u16_t   pci_segment_group;
   u8_t    start_bus;
   u8_t    end_bus;
   u32_t   reserved;
-} _packed pcie_acpi_entry_t;
+};
 
-typedef struct pcie_acpi_sdt {
-  acpi_sdt_header_t   header;
-  u64_t               reserved;
-  pcie_acpi_entry_t   entries[];
-} _packed pcie_acpi_sdt_t;
+struct _packed pcie_acpi_sdt {
+  struct acpi_sdt_header   header;
+  u64_t                    reserved;
+  struct pcie_acpi_entry   entries[];
+};
 
-typedef struct pcie_common_config_space_header {
+struct _packed pcie_common_config_space_header {
   u16_t vendor_id;
   u16_t device_id;
   #define PCIE_CONFIG_SPACE_CMD_IO_ENABLE                    0
@@ -123,9 +123,9 @@ typedef struct pcie_common_config_space_header {
   u8_t  interrupt_line;
   u8_t  interrupt_pin;
   u8_t  type_specific3[2];
-} _packed pcie_common_config_space_header_t;
+};
 
-typedef struct pcie_type0_config_space_header {
+struct _packed pcie_type0_config_space_header {
   u16_t vendor_id;
   u16_t device_id;
   u16_t command;
@@ -147,9 +147,9 @@ typedef struct pcie_type0_config_space_header {
   u8_t  interrupt_pin;
   u8_t  min_gnt;
   u8_t  max_lat;
-} _packed pcie_type0_config_space_header_t;
+};
 
-typedef struct pcie_type1_config_space_header {
+struct _packed pcie_type1_config_space_header {
   u16_t vendor_id;
   u16_t device_id;
   u16_t command;
@@ -183,7 +183,7 @@ typedef struct pcie_type1_config_space_header {
   u8_t  interrupt_line;
   u8_t  interrupt_pin;
   u16_t bridge_control;
-} _packed pcie_type1_config_space_header_t;
+};
 
 #define PCIE_PHYS_ADDR(base, bus, device, function) \
   (base + ((bus) << 20 | device << 15 | function << 12))

@@ -6,9 +6,9 @@
 #include <mm/heap.h>   // implements
 #include <mm/free_list_allocator.h>
 
-static free_list_alloc_t kheap;
+static struct free_list_alloc kheap;
 
-bool heap_init(vmmgr_t *vmmgr, size_t initial_size)
+bool heap_init(struct vmmgr *vmmgr, size_t initial_size)
 {
   void* ptr = (void*)vmm_alloc(vmmgr, initial_size, VMMGR_FLAG_WRITE);
   if (!ptr) return false;

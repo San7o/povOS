@@ -15,21 +15,21 @@
 
 typedef u64_t task_id_t;
 
-typedef struct task_entry {
-  task_t task;
+struct task_entry {
+  struct task task;
   bool   sleeping;
   bool   present;
-} task_entry_t;
+};
 
-typedef struct sheduler {
-  task_entry_t tasks[SCHED_MAX_TASKS];
-  bool         initialized;
-} scheduler_t;
+struct scheduler {
+  struct task_entry  tasks[SCHED_MAX_TASKS];
+  bool  initialized;
+};
 
-extern scheduler_t  scheduler;
-extern task_id_t    current_task;
+extern struct scheduler  scheduler;
+extern task_id_t  current_task;
 
-void  sched_init(vmmgr_t *vmmgr);
+void  sched_init(struct vmmgr *vmmgr);
 void  sched_loop(void);
 
 // Get the next task to be executed
@@ -39,7 +39,7 @@ void      sched_switch_to(task_id_t task_id);
 // Performs the context switch to the next task
 void      sched_switch_next(void);
 
-task_id_t sched_start_task(task_t task);
+task_id_t sched_start_task(struct task task);
 void      sched_stop_task(task_id_t task);
 
 #endif // POVOS_KERNEL_SCHED_H

@@ -10,9 +10,10 @@
 #include <kernel/gdt.h>
 #include <libk/string.h>
 
-void vmmgr_setup(vmmgr_t *vmmgr)
+void vmmgr_setup(struct vmmgr *vmmgr)
 {
-  if (!vmmgr) return;
+  if (!vmmgr)
+    return;
   
   vmmgr->pml4t = paging_pml4t_init();
   
@@ -23,9 +24,10 @@ void vmmgr_setup(vmmgr_t *vmmgr)
   return;
 }
 
-void vmmgr_activate(vmmgr_t *vmmgr)
+void vmmgr_activate(struct vmmgr *vmmgr)
 {
-  if (!vmmgr) return;
+  if (!vmmgr)
+    return;
   paging_load(vmmgr->pml4t);
 
   kernel_hhdm_offset = MM_HHDM_OFFSET;
@@ -34,7 +36,7 @@ void vmmgr_activate(vmmgr_t *vmmgr)
   return;
 }
 
-virt_addr_t vmm_alloc(vmmgr_t *vmmgr,
+virt_addr_t vmm_alloc(struct vmmgr *vmmgr,
                       size_t length,
                       vmmgr_flags_t flags)
 {
@@ -45,7 +47,7 @@ virt_addr_t vmm_alloc(vmmgr_t *vmmgr,
   unsigned int pages = length / PAGE_SIZE;
   virt_addr_t  addr =
     (virt_addr_t)free_list_alloc_malloc(&vmmgr->vas_allocator, length);
-  page_entry_flags_t pflags = {0};
+  struct page_entry_flags pflags = {0};
   if (flags & VMMGR_FLAG_WRITE)
     pflags.rw = 1;
   if (flags & VMMGR_FLAG_EXEC)
@@ -53,8 +55,7 @@ virt_addr_t vmm_alloc(vmmgr_t *vmmgr,
   if (flags & VMMGR_FLAG_USER)
     pflags.user = 1;
   
-  for (unsigned int i = 0; i < pages; ++i)
-  {
+  for (unsigned int i = 0; i < pages; ++i) {
     phys_addr_t paddr = pmmgr_alloc_page();
     virt_addr_t vaddr = addr + i * PAGE_SIZE;
     paging_add_entry((void*) paddr,
@@ -62,11 +63,9 @@ virt_addr_t vmm_alloc(vmmgr_t *vmmgr,
                      pflags);
   }
 
-  for (int i = 0; i < VMMGR_MAX_OBJECTS; ++i)
-  {
-    if (!vmmgr->objects[i].mapped)
-    {
-      vmmgr->objects[i] = (vmmgr_obj_t) {
+  for (int i = 0; i < VMMGR_MAX_OBJECTS; ++i) {
+    if (!vmmgr->objects[i].mapped) {
+      vmmgr->objects[i] = (struct vmmgr_obj) {
         .base   = addr,
         .length = length,
         .mapped = true,
@@ -74,7 +73,7 @@ virt_addr_t vmm_alloc(vmmgr_t *vmmgr,
       };
       break;
     }
- }
+  }
   
   return addr;
 }

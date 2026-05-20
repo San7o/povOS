@@ -92,13 +92,14 @@ struct pci_dev {
 ```c
 struct driver {
     const char *name;
+    int priv_size;
     enum devclass_type type;
 };
 
 struct pci_driver {
     struct driver driver;
     struct pci_device_id id;
-    struct devclass_ops ops;
+    struct devclass_ops *ops;
 };
 ```
 
@@ -150,6 +151,7 @@ to have.
 
 ## Chores
 
+- logging system
 - standardized error numbers
 - big style change following Linux's style. Refactor lots of code, no more than
   3 intentaions for example.

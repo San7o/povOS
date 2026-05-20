@@ -6,14 +6,15 @@
 #include <kernel/textbuffer.h>   // implements
 #include <drivers/video/vga.h>
 
-void textbuffer_init(textbuffer_t *tb,
-                     textbuffer_entry_t *buff,
+void textbuffer_init(struct textbuffer *tb,
+                     struct textbuffer_entry *buff,
                      unsigned int width,
                      unsigned int height,
                      unsigned int cursor_x,
                      unsigned int cursor_y)
 {
-  if (!tb) return;
+  if (!tb)
+    return;
 
   tb->buff     = buff;
   tb->width    = width;
@@ -21,11 +22,10 @@ void textbuffer_init(textbuffer_t *tb,
   tb->cursor_x = cursor_x;
   tb->cursor_y = cursor_y;
 
-  for (unsigned int i = 0; i < width * height; ++i)
-  {
-    tb->buff[i] = (textbuffer_entry_t) {
+  for (unsigned int i = 0; i < width * height; ++i) {
+    tb->buff[i] = (struct textbuffer_entry) {
       .c = ' ',
-      .style = (textbuffer_style_t) {
+      .style = (struct textbuffer_style) {
         .foreground = VGA_COLOR_WHITE,
         .background = VGA_COLOR_BLACK,
       },
@@ -35,10 +35,11 @@ void textbuffer_init(textbuffer_t *tb,
   return;
 }
 
-void textbuffer_write(textbuffer_t *tb,
-                      textbuffer_entry_t entry)
+void textbuffer_write(struct textbuffer *tb,
+                      struct textbuffer_entry entry)
 {
-  if (!tb) return;
+  if (!tb)
+    return;
 
   textbuffer_write_pos(tb, entry,
                        tb->cursor_x,
@@ -47,8 +48,8 @@ void textbuffer_write(textbuffer_t *tb,
   return;
 }
 
-void textbuffer_write_pos(textbuffer_t *tb,
-                          textbuffer_entry_t entry,
+void textbuffer_write_pos(struct textbuffer *tb,
+                          struct textbuffer_entry entry,
                           unsigned int x,
                           unsigned int y)
 {
@@ -60,32 +61,31 @@ void textbuffer_write_pos(textbuffer_t *tb,
   return;
 }
 
-textbuffer_entry_t textbuffer_read(textbuffer_t *tb,
-                                   unsigned int x, unsigned int y)
+struct textbuffer_entry textbuffer_read(struct textbuffer *tb,
+                                        unsigned int x, unsigned int y)
 {
   if (!tb || x >= tb->width || y >= tb->height
       || x < 0 || y < 0)
-    goto exit;
-
-  return tb->buff[y * tb->width + x];
+    return (struct textbuffer_entry) {0};
   
- exit:
-  return (textbuffer_entry_t) {0};
+  return tb->buff[y * tb->width + x];
 }
 
-unsigned int textuffer_cursor_get_x(textbuffer_t *tb)
+unsigned int textuffer_cursor_get_x(struct textbuffer *tb)
 {
-  if (!tb) return 0;
+  if (!tb)
+    return 0;
   return tb->cursor_x;
 }
 
-unsigned int textuffer_cursor_get_y(textbuffer_t *tb)
+unsigned int textuffer_cursor_get_y(struct textbuffer *tb)
 {
-  if (!tb) return 0;
+  if (!tb)
+    return 0;
   return tb->cursor_y;
 }
 
-void textbuffer_cursor_move(textbuffer_t *tb,
+void textbuffer_cursor_move(struct textbuffer *tb,
                             unsigned int x, unsigned int y)
 {
   if (!tb || x >= tb->width || y >= tb->height
@@ -97,58 +97,51 @@ void textbuffer_cursor_move(textbuffer_t *tb,
   
   return;
 }
-void textbuffer_cursor_advance(textbuffer_t *tb)
+void textbuffer_cursor_advance(struct textbuffer *tb)
 {
   if (!tb)
     return;
 
-  if (tb->cursor_x == tb->width)
-  {
+  if (tb->cursor_x == tb->width) {
     tb->cursor_x = 0;
     tb->cursor_y =
       (tb->cursor_y + 1) % tb->height;
-  }
-  else
-  {
+  } else {
     tb->cursor_x++;
   }
   return;
 }
 
-void textbuffer_cursor_regress(textbuffer_t *tb)
+void textbuffer_cursor_regress(struct textbuffer *tb)
 {
   if (!tb)
     return;
 
-  if (tb->cursor_x == 0)
-  {
-    if (tb->cursor_y == 0) return;
+  if (tb->cursor_x == 0) {
+    if (tb->cursor_y == 0)
+      return;
     tb->cursor_y--;
     tb->cursor_x = tb->width - 1;
-  }
-  else
-  {
+  } else {
     tb->cursor_x--;
   }
   return;
 }
 
-textbuffer_entry_t textbuffer_cursor_read(textbuffer_t *tb)
+struct textbuffer_entry textbuffer_cursor_read(struct textbuffer *tb)
 {
   if (!tb || tb->cursor_x >= tb->width
       || tb->cursor_y >= tb->height)
-    goto exit;
+    return (struct textbuffer_entry) {0};  
 
   unsigned int index = tb->cursor_y * tb->width + tb->cursor_x;
   return tb->buff[index];
-  
- exit:
-  return (textbuffer_entry_t) {0};  
 }
 
-void textbuffer_cursor_newline(textbuffer_t *tb)
+void textbuffer_cursor_newline(struct textbuffer *tb)
 {
-  if (!tb) return;
+  if (!tb)
+    return;
 
   tb->cursor_x = 0;
   tb->cursor_y = (tb->cursor_y + 1) % tb->height;

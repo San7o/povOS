@@ -17,10 +17,10 @@
 
 #include <kernel/textbuffer.h>
 
-typedef struct console {
-  void (*draw)(const textbuffer_t *textbuffer);
+struct console {
+  void (*draw)(const struct textbuffer *textbuffer);
   void (*set_cursor)(unsigned int x, unsigned int y);
   void (*clear)(void);
-} console_t;
+};
 
 #endif // POVOS_KERNEL_CONSOLE_H

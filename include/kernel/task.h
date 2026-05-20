@@ -12,13 +12,13 @@
 
 #define TASK_NAME_LEN 16
 
-typedef struct task {
-  char        name[TASK_NAME_LEN];
-  cpu_regs_t  regs;
-  vmmgr_t    *vmmgr;
-} task_t;
+struct task {
+  char  name[TASK_NAME_LEN];
+  struct vmmgr  *vmmgr;
+  struct cpu_regs  regs;
+};
 
-task_t task_create(cpu_regs_t regs, vmmgr_t *vmmgr,
-                   const char name[TASK_NAME_LEN]);
+struct task task_create(struct cpu_regs regs, struct vmmgr *vmmgr,
+                        const char name[TASK_NAME_LEN]);
 
 #endif // POVOS_KERNEL_TASK_H

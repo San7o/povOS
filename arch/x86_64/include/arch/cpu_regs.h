@@ -15,7 +15,7 @@
 // don't currently care about (because they are not really used
 // anywhere other than during boot maybe), so there is no point in
 // storing them.
-typedef struct cpu_regs {
+struct _packed cpu_regs {
 
   // General Purtpose Registers
 
@@ -88,9 +88,9 @@ typedef struct cpu_regs {
   // MMX Registers...
   // SSE registers...
   
-} _packed cpu_regs_t;
+};
 
-typedef union cpu_rflags_reg {
+union _packed cpu_rflags_reg {
   struct _packed {
     u8_t cf     : 1;  // carry flag
     u8_t r1     : 1;  // reserved
@@ -116,9 +116,9 @@ typedef union cpu_rflags_reg {
     u64_t r5    : 43;  // reserved
   } values;
   u64_t raw;
-} _packed cpu_rflags_reg_t;
+};
 
-typedef union cpu_cr0_reg {
+union _packed cpu_cr0_reg {
   struct _packed {
     u8_t pe    : 1;  // protected mode enable
     u8_t mp    : 1;  // monitor co-processor
@@ -137,10 +137,10 @@ typedef union cpu_cr0_reg {
     u32_t r4;        // reserved
   } values;
   u64_t raw;
-} _packed cpu_cr9_reg_t;
+};
 
 // Note that CR3 must be page aligned
-typedef union cpu_cr3_reg {
+union _packed cpu_cr3_reg {
   struct _packed {
     u8_t r1   : 2;  // reserved
     u8_t pwt  : 1;  // Page-Level Write Through
@@ -153,7 +153,7 @@ typedef union cpu_cr3_reg {
     u64_t pdb  : 53; // Physical Base Address of the PML4 
   } values_pcide;    // when cr4.pcide = 1
   u64_t raw;
-} _packed cpu_cr3_reg_t;
+};
 
 //
 // Functions
@@ -163,9 +163,9 @@ u64_t regs_get_cr3(void);
 u64_t regs_get_rflags(void);
 
 // Save all registers in [regs]
-void regs_save(cpu_regs_t *regs);
+void regs_save(struct cpu_regs *regs);
 
 // Perform context switching
-void cpu_do_context_switch(cpu_regs_t *regs);
+void cpu_do_context_switch(struct cpu_regs *regs);
 
 #endif // POVOS_ARCH_X86_64_CPU_REGS_H

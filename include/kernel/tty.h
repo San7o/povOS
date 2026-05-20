@@ -20,18 +20,18 @@
 #include <kernel/textbuffer.h>
 #include <kernel/console.h>
 
-typedef struct tty {
-  textbuffer_t        *textbuffer;
-  textbuffer_style_t   style;
-  console_t           *console;
-} tty_t;
+struct tty {
+  struct textbuffer *textbuffer;
+  struct textbuffer_style style;
+  struct console *console;
+};
 
-void tty_init(tty_t *tty, textbuffer_t *textbuffer,
-              textbuffer_style_t style, console_t *console);
+void tty_init(struct tty *tty, struct textbuffer *textbuffer,
+              struct textbuffer_style style, struct console *console);
 
-void tty_write_input(tty_t *tty, input_event_t event);
-void tty_write(tty_t *tty, const char *buf, size_t len);
+void tty_write_input(struct tty *tty, struct input_event event);
+void tty_write(struct tty *tty, const char *buf, size_t len);
 
-void tty_flush(tty_t *tty);
+void tty_flush(struct tty *tty);
 
 #endif // POVOS_KERNEL_TTY_H

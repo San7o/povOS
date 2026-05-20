@@ -56,14 +56,19 @@
 #include <libk/stddef.h>
 #include <libk/stdbool.h>
 
-typedef struct semaphore {
+struct semaphore {
   volatile u64_t count;
-} semaphore_t;
+};
 
 // A mutex is a binary semaphore
-typedef semaphore_t mutex_t;
+struct mutex {
+  volatile u64_t count;
+};
+
 // A spinlock loops the cpu while waiting for the lock to unlock
-typedef mutex_t spinlock_t;
+struct spinlock {
+  volatile u64_t count;
+};
 
 // Atomic compare and exchange
 //
@@ -73,23 +78,23 @@ typedef mutex_t spinlock_t;
 u64_t atomic_cmpxchg(volatile u64_t *a, u64_t b, u64_t cmp_val);
 
 // Initializes semaphore count to [n]
-void semaphore_init(semaphore_t *mu, u64_t n);
+void semaphore_init(struct semaphore *mu, u64_t n);
 // decrements the value of the semaphore, and if the semaphore is
 // negative, waits until the semaphore is released by the process
 // holding it.
-void semaphore_wait(semaphore_t *mu);
+void semaphore_wait(struct semaphore *mu);
 //  increments the semaphore and, if it is still negative, indicates
 //  to the scheduler to wake the next waiting process in the queue.
-void semaphore_signal(semaphore_t *mu);
+void semaphore_signal(struct semaphore *mu);
 
-void mutex_init(mutex_t *mu);
-void mutex_lock(mutex_t *mu);               // blocking
-bool mutex_try_lock(mutex_t *mu);           // non-blocking
-void mutex_unlock(mutex_t *mu);
+void mutex_init(struct mutex *mu);
+void mutex_lock(struct mutex *mu);               // blocking
+bool mutex_try_lock(struct mutex *mu);           // non-blocking
+void mutex_unlock(struct mutex *mu);
 
-void spinlock_init(spinlock_t *sl);
-void spinlock_lock(spinlock_t *sl);         // blocking
-bool spinlock_try_lock(spinlock_t *sl);     // non-blocking
-void spinlock_unlock(spinlock_t *sl);
+void spinlock_init(struct spinlock *sl);
+void spinlock_lock(struct spinlock *sl);         // blocking
+bool spinlock_try_lock(struct spinlock *sl);     // non-blocking
+void spinlock_unlock(struct spinlock *sl);
 
 #endif // POVOS_KERNEL_SYNC_H

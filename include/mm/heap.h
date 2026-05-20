@@ -15,7 +15,7 @@
 
 #include <mm/vmmgr.h>
 
-bool  heap_init(vmmgr_t *vmmgr, size_t initial_size);
+bool  heap_init(struct vmmgr *vmmgr, size_t initial_size);
 
 void *kmalloc(size_t size);
 void  kfree(void *ptr);

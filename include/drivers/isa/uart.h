@@ -69,33 +69,33 @@
 #include <stdarg.h>
 #include <bits/port.h>
 
-typedef struct uart_port {
+struct uart_port {
   port_t port;
   bool   initialized;
-} uart_port_t;
+};
 
-extern uart_port_t uart_port1;
-extern uart_port_t uart_port2;
-extern uart_port_t uart_port3;
-extern uart_port_t uart_port4;
-extern uart_port_t uart_port5;
-extern uart_port_t uart_port6;
-extern uart_port_t uart_port7;
-extern uart_port_t uart_port8;
+extern struct uart_port uart_port1;
+extern struct uart_port uart_port2;
+extern struct uart_port uart_port3;
+extern struct uart_port uart_port4;
+extern struct uart_port uart_port5;
+extern struct uart_port uart_port6;
+extern struct uart_port uart_port7;
+extern struct uart_port uart_port8;
 
 //
 // Functions
 //
 
-bool uart_init_port(uart_port_t *uart_port);
-bool uart_is_transmit_ready(uart_port_t uart_port);
-void uart_putc(uart_port_t uart_port, u8_t c);
-void uart_write_str(uart_port_t uart_port, const char *str);
-void uart_write_hex(uart_port_t uart_port, u64_t num);
+bool uart_init_port(struct uart_port *uart_port);
+bool uart_is_transmit_ready(struct uart_port uart_port);
+void uart_putc(struct uart_port uart_port, u8_t c);
+void uart_write_str(struct uart_port uart_port, const char *str);
+void uart_write_hex(struct uart_port uart_port, u64_t num);
 
-int uart_printf(uart_port_t uart_port, const char* fmt, ...);
-int uart_vprintf(uart_port_t uart_port, const char* fmt, va_list args);
+int uart_printf(struct uart_port uart_port, const char* fmt, ...);
+int uart_vprintf(struct uart_port uart_port, const char* fmt, va_list args);
 
-char uart_getc(uart_port_t port);
+char uart_getc(struct uart_port port);
 
 #endif // POVOS_DRIVERS_UART_H

@@ -28,6 +28,7 @@ char *itoa(int val, char *buf, int base)
   char* p = buf;
   char* p1, *p2;
   unsigned long uval = (val < 0 && base == 10) ? -val : val;
+  char tmp;
 
   do {
     *p++ = "0123456789abcdef"[uval % base];
@@ -36,10 +37,12 @@ char *itoa(int val, char *buf, int base)
   if (val < 0 && base == 10) *p++ = '-';
   *p = '\0';
 
-  p1 = buf; p2 = p - 1;
-  while (p1 < p2)
-  {
-    char tmp = *p1; *p1++ = *p2; *p2-- = tmp;
+  p1 = buf;
+  p2 = p - 1;
+  while (p1 < p2) {
+    tmp = *p1;
+    *p1++ = *p2;
+    *p2-- = tmp;
   }
   return buf;
 }

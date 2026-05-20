@@ -10,74 +10,68 @@
 #include "keyboard_scanmap.h"
 
 // Currently active keyboard
-static keyboard_t *keyboard_active = NULL;
+static struct keyboard *keyboard_active = NULL;
 
-void keyboard_init(keyboard_t *keyboard, keyboard_type_t type,
+void keyboard_init(struct keyboard *keyboard, enum keyboard_type type,
                    void* input)
 {
-  if (!keyboard) return;
+  if (!keyboard)
+    return;
 
   keyboard->type      = type;
   keyboard->input     = input;
   keyboard->_internal = 0;
-  memset(keyboard->state, 0, _KEY_MAX * sizeof(keycode_t));
+  memset(keyboard->state, 0, _KEY_MAX * sizeof(enum keycode));
   keyboard->events_rb.writer_index = 0;
   keyboard->events_rb.reader_index = 0;
   memset(&keyboard->events_rb.events, 0,
-         KEYBOARD_EVENTS_RB_SIZE * sizeof(keyboard_event_t));
+         KEYBOARD_EVENTS_RB_SIZE * sizeof(struct keyboard_event));
   
   return;
 }
 
-void keyboard_update(keyboard_t *keyboard, keyboard_event_t event)
+void keyboard_update(struct keyboard *keyboard, struct keyboard_event event)
 {
   if (!keyboard || event.key == KEY_NONE
-      || event.key < 0 || event.key >= _KEY_MAX) return;
+      || event.key < 0 || event.key >= _KEY_MAX)
+    return;
 
   keyboard->state[event.key] = event.pressed;
 
   // For future me: careful with future deadlock here
   keyboard_events_add(keyboard, event);
   
-  input_update((input_t*) keyboard->input, event);
+  input_update((struct input*) keyboard->input, event);
 
   return;
 }
 
 // Implements keyboard_event_from_scancode for keyboards of type
 // KEYBOARD_TYPE_PS2_SET1
-static keyboard_event_t
-keyboard_event_from_scancode_ps2_set1(keyboard_t *keyboard,
-                                      u8_t        scancode)
+static struct keyboard_event
+keyboard_event_from_scancode_ps2_set1(struct keyboard *keyboard,
+                                      u8_t scancode)
 {
   if (!keyboard)
     goto exit;
   
-  if (keyboard->_internal == 1)
-  {
+  if (keyboard->_internal == 1) {
     keyboard->_internal = 0;
     return keyboard_scanmap_ps2_set1_escaped[scancode];
-  }
-  else
-  {
-    if (scancode == 0xE0)
-    {
+  } else {
+    if (scancode == 0xE0) {
       keyboard->_internal = 1;
       goto exit;
     }
-    
     return keyboard_scanmap_ps2_set1[scancode];
   }
 
  exit:
-  return (keyboard_event_t) {
-    .pressed = false,
-    .key     = KEY_NONE,
-  };
+  return KEYBOARD_EVENT_MAKE(false, KEY_NONE);
 }
 
-keyboard_event_t keyboard_event_from_scancode(keyboard_t *keyboard,
-                                              u8_t        scancode)
+struct keyboard_event keyboard_event_from_scancode(struct keyboard *keyboard,
+                                                   u8_t scancode)
 {
   if (!keyboard)
     goto exit;
@@ -95,27 +89,25 @@ keyboard_event_t keyboard_event_from_scancode(keyboard_t *keyboard,
   }
 
  exit:
-  return (keyboard_event_t) {
-    .pressed = false,
-    .key     = KEY_NONE,
-  };
+  return KEYBOARD_EVENT_MAKE(false, KEY_NONE);
 }
 
-void keyboard_set_active(keyboard_t *keyboard)
+void keyboard_set_active(struct keyboard *keyboard)
 {
   keyboard_active = keyboard;
   return;
 }
 
-keyboard_t *keyboard_get_active(void)
+struct keyboard *keyboard_get_active(void)
 {
   return keyboard_active;
 }
 
-void keyboard_events_add(keyboard_t *keyboard,
-                         keyboard_event_t event)
+void keyboard_events_add(struct keyboard *keyboard,
+                         struct keyboard_event event)
 {
-  if (!keyboard) return;
+  if (!keyboard)
+    return;
 
   keyboard->events_rb.events[keyboard->events_rb.writer_index] = event;
   keyboard->events_rb.writer_index =
@@ -124,14 +116,16 @@ void keyboard_events_add(keyboard_t *keyboard,
   return;
 }
 
-keyboard_event_t keyboard_events_get(keyboard_t *keyboard)
+struct keyboard_event keyboard_events_get(struct keyboard *keyboard)
 {
-  if (!keyboard) goto exit;
+  if (!keyboard)
+    goto exit;
 
   if (keyboard->events_rb.reader_index ==
-      keyboard->events_rb.writer_index) goto exit;
+      keyboard->events_rb.writer_index)
+    goto exit;
 
-  keyboard_event_t event =
+  struct keyboard_event event =
     keyboard->events_rb.events[keyboard->events_rb.reader_index];
   keyboard->events_rb.reader_index =
     (keyboard->events_rb.reader_index + 1) % KEYBOARD_EVENTS_RB_SIZE;
@@ -139,13 +133,10 @@ keyboard_event_t keyboard_events_get(keyboard_t *keyboard)
   return event;
   
  exit:
-  return (keyboard_event_t) {
-    .pressed = false,
-    .key     = KEY_NONE,
-  };
+  return KEYBOARD_EVENT_MAKE(false, KEY_NONE);
 } 
 
-bool keyboard_is_key_pressed(keyboard_t *keyboard, keycode_t key)
+bool keyboard_is_key_pressed(struct keyboard *keyboard, enum keycode key)
 {
   if (!keyboard) return false;
   return keyboard->state[key];

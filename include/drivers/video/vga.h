@@ -223,15 +223,15 @@
 
 typedef u8_t vga_color_t;
 
-typedef struct vga_style {
+struct vga_style {
   vga_color_t foreground;
   vga_color_t background;
-} vga_style_t;
+};
 
 // Convert a vga_style_t into bytes for the VGA text buffer
 #define VGA_STYLE_BYTES(style) (style.foreground | (style.background << 4))
 #define VGA_STYLE_MAKE(fg, bg) \
-  (vga_style_t) { .foreground = fg, .background = bg }
+  (struct vga_style) { .foreground = fg, .background = bg }
 
 // Some default colors
 #define VGA_STYLE_BLUE  VGA_STYLE_MAKE(VGA_COLOR_WHITE, VGA_COLOR_BLUE)
@@ -249,18 +249,21 @@ typedef struct vga_style {
 // VGA_TEXT_BUFFER_SIZE.
 
 // An entry in the vga text buffer
-typedef struct vga_text_entry {
+struct _packed vga_text_entry {
   u8_t value;
   u8_t style;   // use VGA_STYLE_BYTES(style)
-} _packed vga_text_entry_t;
+};
+
+#define VGA_TEXT_ENTRY_MAKE(_value, _style) \
+  (struct vga_text_entry) { .value = _value, .style = VGA_STYLE_BYTES(_style) }
 
 #define VGA_TEXT_BUFFER_START      MM_PHYS_TO_VIRT(0x000B8000)
 #define VGA_TEXT_BUFFER_WIDTH      80
 #define VGA_TEXT_BUFFER_HEIGHT     25
 #define VGA_TEXT_BUFFER_SIZE       (VGA_TEXT_BUFFER_WIDTH * VGA_TEXT_BUFFER_HEIGHT)
-#define VGA_TEXT_BUFFER_EXTENT     (80*25* sizeof(vga_text_entry_t))   // bytes
+#define VGA_TEXT_BUFFER_EXTENT     (80*25* sizeof(struct vga_text_entry))   // bytes
 
-extern vga_text_entry_t *vga_textbuffer;
+extern struct vga_text_entry *vga_textbuffer;
 
 //
 // VGA framebuffer
@@ -298,10 +301,10 @@ void vga_set_graphics_mode(void); // aka mode 13h (320x200 linear 256-color mode
 
 // Text mode
 
-void   vga_putc(int offset, u8_t c, vga_style_t style);
-size_t vga_print(int offset, const char* str, vga_style_t style);
-size_t vga_print_hex(int offset, u64_t num, vga_style_t style);
-void   vga_clear(vga_style_t style);
+void   vga_putc(int offset, u8_t c, struct vga_style style);
+size_t vga_print(int offset, const char* str, struct vga_style style);
+size_t vga_print_hex(int offset, u64_t num, struct vga_style style);
+void   vga_clear(struct vga_style style);
 void   vga_set_cursor(unsigned int x, unsigned int y);
 
 // Graphics mode
@@ -309,6 +312,6 @@ void   vga_set_cursor(unsigned int x, unsigned int y);
 void vga_draw_pixel(int x, int y, vga_color_t color);
 
 // VGA console
-extern console_t vga_console;
+extern struct console vga_console;
 
 #endif // POVOS_DRIVERS_VGA_H

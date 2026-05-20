@@ -31,56 +31,58 @@ typedef unsigned char keycode_raw_t;
 // Maps from keycode to char*
 extern const char* keycode_str[_KEY_MAX];
 
-typedef enum keyboard_type {
+enum keyboard_type {
   KEYBOARD_NONE      = 0,
   KEYBOARD_TYPE_PS2_SET1,
   KEYBOARD_TYPE_PS2_SET2,
   KEYBOARD_TYPE_PS2_SET3,
   __KEYBOARD_TYPE,
-} keyboard_type_t;
+};
 
 //
 // The event
 // ---------
 //
-typedef struct keyboard_event {
-  bool        pressed;   // false = released
-  keycode_t   key;
-} keyboard_event_t;
+struct keyboard_event {
+  bool  pressed;   // false = released
+  enum keycode  key;
+};
+#define KEYBOARD_EVENT_MAKE(_pressed, _key) \
+  (struct keyboard_event) { .pressed = _pressed, .key = _key }
 
 #define KEYBOARD_EVENTS_RB_SIZE   256
 
 // A ring buffer
-typedef struct keyboard_events_rb {
-  keyboard_event_t events[KEYBOARD_EVENTS_RB_SIZE];
+struct keyboard_events_rb {
+  struct keyboard_event events[KEYBOARD_EVENTS_RB_SIZE];
   unsigned int     writer_index;
   unsigned int     reader_index;
-} keyboard_events_rb_t;
+};
 
 //
 // The keyboard
 // ------------
 //
-typedef struct keyboard {
+struct keyboard {
   // Public
-  keyboard_type_t         type;
-  bool                    state[_KEY_MAX];
-  keyboard_events_rb_t    events_rb;   // ring buffer
-  void*                   input;    // pointer to an input_t device
+  enum keyboard_type         type;
+  bool                         state[_KEY_MAX];
+  struct keyboard_events_rb    events_rb;   // ring buffer
+  void*                        input;       // pointer to an input device
   
   // Private
   unsigned int _internal;   // For internal use, do not modify
-} keyboard_t;
+};
 
 //
 // Functions
 //
 
 // Use this function when creating a new keyboard
-void keyboard_init(keyboard_t *keyboard, keyboard_type_t type,
+void keyboard_init(struct keyboard *keyboard, enum keyboard_type type,
                    void* input_dev);
 // Register a new event
-void keyboard_update(keyboard_t *keyboard, keyboard_event_t event);
+void keyboard_update(struct keyboard *keyboard, struct keyboard_event event);
 
 //
 // Active keyboard
@@ -92,9 +94,9 @@ void keyboard_update(keyboard_t *keyboard, keyboard_event_t event);
 // the active keyboard:
 //
 // Get the currently active keyboard
-void keyboard_set_active(keyboard_t *keyboard);
+void keyboard_set_active(struct keyboard *keyboard);
 // Set the currently active keyboard (may be NULL if none was set)
-keyboard_t *keyboard_get_active(void);
+struct keyboard *keyboard_get_active(void);
 
 //
 // Keyboard state query
@@ -102,17 +104,17 @@ keyboard_t *keyboard_get_active(void);
 //
 // Register a new event to the ring buffer
 // This is called in `keyboard_update`
-void keyboard_events_add(keyboard_t *keyboard,
-                         keyboard_event_t event);
+void keyboard_events_add(struct keyboard *keyboard,
+                         struct keyboard_event event);
 // Returns event.key = KEY_NONE when no events are found
-keyboard_event_t keyboard_events_get(keyboard_t *keyboard);
-bool keyboard_is_key_pressed(keyboard_t *keyboard, keycode_t key);
+struct keyboard_event keyboard_events_get(struct keyboard *keyboard);
+bool keyboard_is_key_pressed(struct keyboard *keyboard, enum keycode key);
 
 //
 // Conversion functions
 // --------------------
 //
-keyboard_event_t keyboard_event_from_scancode(keyboard_t *keyboard,
-                                              u8_t        scancode);
+struct keyboard_event keyboard_event_from_scancode(struct keyboard *keyboard,
+                                                   u8_t scancode);
 
 #endif // POVOS_DRIVERS_KEYBOARD_H

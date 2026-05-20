@@ -6,10 +6,10 @@
 #include <kernel/task.h>   // implements
 #include <libk/string.h>
 
-task_t task_create(cpu_regs_t regs, vmmgr_t *vmmgr,
-                   const char name[TASK_NAME_LEN])
+struct task task_create(struct cpu_regs regs, struct vmmgr *vmmgr,
+                        const char name[TASK_NAME_LEN])
 {  
-  task_t task = {
+  struct task task = {
     .regs  = regs,
     .vmmgr = vmmgr,
   };

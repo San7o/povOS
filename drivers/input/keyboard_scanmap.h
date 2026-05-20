@@ -15,7 +15,7 @@
 
 #include <drivers/input/keyboard.h>
 
-extern const keyboard_event_t keyboard_scanmap_ps2_set1[];
-extern const keyboard_event_t keyboard_scanmap_ps2_set1_escaped[];
+extern const struct keyboard_event keyboard_scanmap_ps2_set1[];
+extern const struct keyboard_event keyboard_scanmap_ps2_set1_escaped[];
 
 #endif // POVOS_DRIVERS_INPUT_KEYBOARD_SCANMAP_H

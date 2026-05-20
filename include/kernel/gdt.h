@@ -14,10 +14,10 @@
 #include <kernel/macros.h>
 #include <libk/stddef.h>
 
-typedef struct gdtr {
+struct _packed gdtr {
   u16_t limit;
   u64_t base;
-} _packed gdtr_t;
+};
 
 // Reload the GDT once you changed virtual memory
 void gdt_reload(void);

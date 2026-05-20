@@ -13,8 +13,7 @@ unsigned int sleep_ms(u64_t milliseconds)
   u64_t elapsed_time_ms = 0;
   u64_t last_time_ms = time_ms;
   
-  while(elapsed_time_ms < milliseconds)
-  {
+  while(elapsed_time_ms < milliseconds) {
     elapsed_time_ms += time_ms - last_time_ms;
     last_time_ms = time_ms;
     cpu_halt();
@@ -30,5 +29,6 @@ unsigned int sleep(u64_t seconds)
 
 void sleep_ticks(u64_t clicks)
 {
-  if (clicks) while(clicks--) { NOP; };
+  if (clicks)
+    while(clicks--) { NOP; };
 }

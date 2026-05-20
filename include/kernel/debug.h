@@ -26,7 +26,7 @@
 
 void debug_dump_regs_uart(void);   // implemented in assembly
 void debug_dump_regs_uart2(void);
-void debug_dump_regs_uart3(cpu_regs_t regs);
+void debug_dump_regs_uart3(struct cpu_regs regs);
 
 //
 // Memory
@@ -42,7 +42,7 @@ void debug_print_pmmgr_bitfield(void);
 //
 
 void debug_enumerate_pci_devices(void);
-void debug_enumerate_pcie_devices(pcie_acpi_sdt_t *pcie_sdt);
+void debug_enumerate_pcie_devices(struct pcie_acpi_sdt *pcie_sdt);
 
 //
 // Misc
@@ -56,9 +56,9 @@ void debug_vga_draw_flag(void);
 
 // Input
 
-void debug_dump_input_loop(input_t *input, void* hpet_base_reg);
-void debug_dump_keyboard_event_uart(keyboard_event_t event);
-void debug_dump_input_event_uart(input_event_t event);
+void debug_dump_input_loop(struct input *input, void* hpet_base_reg);
+void debug_dump_keyboard_event_uart(struct keyboard_event event);
+void debug_dump_input_event_uart(struct input_event event);
 
 void debug_sleep(void);
 void debug_print_true_rand(void);

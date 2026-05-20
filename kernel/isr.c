@@ -20,16 +20,19 @@ void isr_common_handler(u8_t  isr_number,
                         u64_t* sp)
 {
   uart_write_str(uart_port1, "[isr] ");
-  if (isr_number < ISR_EXCEPTION_COUNT)
+  
+  if (isr_number < ISR_EXCEPTION_COUNT) {
     uart_write_str(uart_port1, isr_exception_string[isr_number]);
-  else
+  } else {
     uart_write_hex(uart_port1, isr_number);
+  }
+  
   uart_write_str(uart_port1, ", error code: ");
   uart_write_hex(uart_port1, error_code);
   uart_putc(uart_port1, '\n');
 
   // Dump registers
-  cpu_regs_t ct_regs;
+  struct cpu_regs ct_regs;
   ct_regs = scheduler.tasks[current_task].task.regs;
   // These need to match the assembly code
   ct_regs.rax    = sp[0];
@@ -65,17 +68,18 @@ void isr_keyboard_handler(u8_t  isr_number,
   UNUSED(error_code);
   UNUSED(sp);
 
-  keyboard_t *keyboard;
-  keyboard_event_t event;
+  struct keyboard *keyboard;
+  struct keyboard_event event;
   u8_t scancode;
   
   keyboard = keyboard_get_active();
-  if (!keyboard) goto exit;
+  if (!keyboard)
+    goto exit;
   
   scancode = ps2_read_data();
-  event =
-    keyboard_event_from_scancode(keyboard, scancode);
-  if (event.key == KEY_NONE) goto exit;
+  event = keyboard_event_from_scancode(keyboard, scancode);
+  if (event.key == KEY_NONE)
+    goto exit;
 
   // Update the keyboard
   keyboard_update(keyboard, event);
@@ -96,7 +100,7 @@ void isr_pit_channel_0_handler(u8_t  isr_number,
   UNUSED(error_code);
   UNUSED(sp);
   
-  cpu_regs_t* ct_regs;
+  struct cpu_regs* ct_regs;
   
   time_ms++;
   pic_ack();
@@ -105,8 +109,7 @@ void isr_pit_channel_0_handler(u8_t  isr_number,
     return;
 
   static u64_t last_sched_time_ms = 0;
-  if (time_ms - last_sched_time_ms > SCHED_FREQ * 1000)
-  {
+  if (time_ms - last_sched_time_ms > SCHED_FREQ * 1000) {
     // Call the scheduler
     
     // Save registers of the current task

@@ -7,37 +7,42 @@
 #include <kernel/tty.h>
 #include <libk/string.h>
 
-void input_init(input_t *input, input_keymap_t *keymap, void *tty)
+void input_init(struct input *input, input_keymap_t *keymap, void *tty)
 {
-  if (!input) return;
-  memset((void*)input, 0, sizeof(input_t));
+  if (!input)
+    return;
+  
+  memset((void*)input, 0, sizeof(struct input));
   input->keymap = keymap;
   input->tty = tty;
   return;
 }
 
-void input_events_add(input_t *input, input_event_t event)
+void input_events_add(struct input *input, struct input_event event)
 {
-  if (!input) return;
+  if (!input)
+    return;
 
   input->events_rb.events[input->events_rb.writer_index] = event;
   input->events_rb.writer_index =
     (input->events_rb.writer_index + 1) % INPUT_EVENTS_RB_SIZE;
 
-  tty_write_input((tty_t*) input->tty, event);
-  tty_flush((tty_t*) input->tty);
+  tty_write_input((struct tty*) input->tty, event);
+  tty_flush((struct tty*) input->tty);
     
   return;
 }
 
-input_event_t input_events_get(input_t *input)
+struct input_event input_events_get(struct input *input)
 {
-  if (!input) goto exit;
+  if (!input)
+    goto exit;
 
   if (input->events_rb.reader_index ==
-      input->events_rb.writer_index) goto exit;
+      input->events_rb.writer_index)
+    goto exit;
 
-  input_event_t event =
+  struct input_event event =
     input->events_rb.events[input->events_rb.reader_index];
   input->events_rb.reader_index =
     (input->events_rb.reader_index + 1) % INPUT_EVENTS_RB_SIZE;
@@ -45,14 +50,15 @@ input_event_t input_events_get(input_t *input)
   return event;
   
  exit:
-  return (input_event_t) {
+  return (struct input_event) {
     .type = INPUT_EVENT_TYPE_NONE,
   };
 }
 
-void input_update(input_t *input, keyboard_event_t event)
+void input_update(struct input *input, struct keyboard_event event)
 {
-  if (!input) return;
+  if (!input)
+    return;
 
   switch (event.key)
   {
@@ -82,16 +88,13 @@ void input_update(input_t *input, keyboard_event_t event)
 
   char c = (*input->keymap)[event.key][input->modifiers.shift];
 
-  if (c == 0)  // key not present in layout
-  {
-    input_events_add(input, (input_event_t) {
+  if (c == 0) {  // key not present in layout
+    input_events_add(input, (struct input_event) {
         .type = INPUT_EVENT_TYPE_KEYBOARD,
         .e.key = event,
       });
-  }
-  else
-  {
-    input_events_add(input, (input_event_t) {
+  } else {
+    input_events_add(input, (struct input_event) {
         .type = INPUT_EVENT_TYPE_CHAR,
         .e.c = c,
       });

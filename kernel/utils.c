@@ -34,8 +34,7 @@ void reboot(void)
   disable_interrupts();
 
   // Clear all keyboard buffers (output and command buffers)
-  do
-  {
+  do {
     temp = port_inb(KBRD_INTRFC);       // empty user data
     if ((temp & KBRD_BIT_KDATA) != 0)
       port_inb(KBRD_IO);                // empty keyboard data

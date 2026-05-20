@@ -14,16 +14,14 @@
 
 // The ACPI RSDP is identified by a "RSD PTR " string (notice
 // the space at the end) and can be confirmed via a checksum.
-static size_t acpi_locate_rsdp_range(range_t range)
+static size_t acpi_locate_rsdp_range(struct range range)
 {
   const char *id      = ACPI_RSDP_SIGNATURE;
   unsigned int id_len = strlen(id);
   char* addr = (void*)range.start;
 
-  while ((size_t) ((void*)addr) < range.end - sizeof(acpi_rsdp_t))
-  {
-    if (strncmp(id, addr, id_len) == 0)
-    {
+  while ((size_t) ((void*)addr) < range.end - sizeof(struct acpi_rsdp)) {
+    if (strncmp(id, addr, id_len) == 0) {
       // Check checksum ACPI 1.0
       unsigned int sum = 0;
       for (unsigned int i = 0; i < 20; ++i)
@@ -31,11 +29,10 @@ static size_t acpi_locate_rsdp_range(range_t range)
       if ((sum & 0xF) != 0)
         goto next;
 
-      acpi_rsdp_t *rsdp = (void*)addr;
-      if (rsdp->revision == ACPI_VERSION_2)
-      {
+      struct acpi_rsdp *rsdp = (void*)addr;
+      if (rsdp->revision == ACPI_VERSION_2) {
         // Check checksum ACPI 2.0
-        for (unsigned int i = 20; i < sizeof(acpi_rsdp_t); ++i)
+        for (unsigned int i = 20; i < sizeof(struct acpi_rsdp); ++i)
           sum += addr[i];
         if ((sum & 0xF) != 0)
           goto next;
@@ -53,41 +50,41 @@ static size_t acpi_locate_rsdp_range(range_t range)
 
 // We don't know where the pointer is, so we need to check possible
 // memory locations for the identifier.
-acpi_rsdp_t* acpi_locate_rsdp(void)
+struct acpi_rsdp* acpi_locate_rsdp(void)
 {
   u32_t *mmap_num_entries = MM_PHYS_TO_VIRT(BIOS_MMAP_NUM_ENTRIES_ADDR);
-  bios_mmap_entry_t *mmap = MM_PHYS_TO_VIRT(BIOS_MMAP_ENTRIES_ADDR);
-  if (!mmap_num_entries || !mmap) return NULL;
+  struct bios_mmap_entry *mmap = MM_PHYS_TO_VIRT(BIOS_MMAP_ENTRIES_ADDR);
+  if (!mmap_num_entries || !mmap)
+    return NULL;
   
-  range_t range;
+  struct range range;
   
   // First, check EBDA (Extended BIOS Data Area), 0x00080000 - 0x0009FFFF
   u16_t* ebda_seg = MM_PHYS_TO_VIRT(0x40E);
   size_t ebda_physical_addr = ((size_t)(*ebda_seg)) << 4;
   printk("[acpi] EBDA located at: %x\n", ebda_physical_addr);
 
-  range = (range_t){
+  range = (struct range){
     .start = ebda_physical_addr,
     .end   = ebda_physical_addr + 1024,
   };
   size_t addr = acpi_locate_rsdp_range(range);
   if (addr != 0)
-    return (acpi_rsdp_t*) addr;
+    return (struct acpi_rsdp*) addr;
   
   // Second, check BIOS read-only memory space between 0x000E0000 and
   // 0x000FFFFF
-  range = (range_t){
+  range = (struct range){
     .start = (size_t) MM_PHYS_TO_VIRT(0x000E0000),
     .end   = (size_t) MM_PHYS_TO_VIRT(0x000FFFFF),
   };
   addr = acpi_locate_rsdp_range(range);
   if (addr != 0)
-    return (acpi_rsdp_t*) addr;
+    return (struct acpi_rsdp*) addr;
 
   
   // For last, check the memory map
-  for (u32_t i = 0; i < *mmap_num_entries; ++i)
-  {
+  for (u32_t i = 0; i < *mmap_num_entries; ++i) {
     if (mmap[i].type != BIOS_MMAP_TYPE_ACPI_RECLAIMABLE)
       continue;
 
@@ -97,53 +94,54 @@ acpi_rsdp_t* acpi_locate_rsdp(void)
       (u64_t)mmap[i].length_low | ((u64_t) mmap[i].length_high << 32);
     u64_t end = base + length;
 
-    range = (range_t){
+    range = (struct range){
       .start = (size_t) MM_PHYS_TO_VIRT(base),
       .end   = end,
     };
 
     size_t addr = acpi_locate_rsdp_range(range);
     if (addr != 0)
-      return (acpi_rsdp_t*) addr;
+      return (struct acpi_rsdp*) addr;
   }
   
   
   return NULL;
 }
 
-void* acpi_locate_sdt(acpi_rsdp_t* rsdp, const char signature[4])
+void* acpi_locate_sdt(struct acpi_rsdp* rsdp, const char signature[4])
 {
   if (!rsdp) return NULL;
 
-  page_entry_flags_t page_flags = {
+  struct page_entry_flags page_flags = {
     .rw = 1,
   };
   
-  if (rsdp->revision == ACPI_VERSION_1)
-  {
+  if (rsdp->revision == ACPI_VERSION_1) {
     // ACPI 1.0
     phys_addr_t rsdt_phys = (phys_addr_t)rsdp->rsdt_address;
-    if (rsdt_phys == 0) return NULL;
+    if (rsdt_phys == 0)
+      return NULL;
 
     // Map a virtual address to rsdt_phys
-    acpi_rsdt_t* rsdt_virt = MM_PHYS_TO_VIRT(rsdt_phys);
+    struct acpi_rsdt* rsdt_virt = MM_PHYS_TO_VIRT(rsdt_phys);
     paging_add_entry((void*)rsdt_phys, rsdt_virt, page_flags);
     
     if (strncmp((char*)rsdt_virt->header.signature,
                 ACPI_RSDT_SIGNATURE,
                 ACPI_SDT_SIGNATURE_SIZE)
-        != 0) return NULL;
+        != 0)
+      return NULL;
 
     // Iterate over the entires, looking for [signature]
     unsigned int entry_len =
-      (rsdt_virt->header.length - sizeof(acpi_sdt_header_t)) / 4;
-    for (unsigned int i = 0; i < entry_len; ++i)
-    {
+      (rsdt_virt->header.length - sizeof(struct acpi_sdt_header)) / 4;
+    for (unsigned int i = 0; i < entry_len; ++i) {
       phys_addr_t entry_phys = rsdt_virt->entries[i];
-      if (entry_phys == 0) continue;
+      if (entry_phys == 0)
+        continue;
 
       // Map a virtual address to rsdt_phys
-      acpi_sdt_header_t* entry_virt = MM_PHYS_TO_VIRT(entry_phys);
+      struct acpi_sdt_header* entry_virt = MM_PHYS_TO_VIRT(entry_phys);
       paging_add_entry((void*)entry_phys, entry_virt, page_flags);
       
       if (strncmp((char*)entry_virt->signature, signature,
@@ -152,32 +150,32 @@ void* acpi_locate_sdt(acpi_rsdp_t* rsdp, const char signature[4])
       
     }
     return NULL;
-  }
-  else
-  {
+  } else {
     // ACPI 2.0
     phys_addr_t xsdt_phys = (phys_addr_t)rsdp->xsdt_address;
-    if (xsdt_phys == 0) return NULL;
+    if (xsdt_phys == 0)
+      return NULL;
 
     // Map xsdt_virt to xsdt_phys
-    acpi_xsdt_t* xsdt_virt = MM_PHYS_TO_VIRT(xsdt_phys);
+    struct acpi_xsdt* xsdt_virt = MM_PHYS_TO_VIRT(xsdt_phys);
     paging_add_entry((void*)xsdt_phys, xsdt_virt, page_flags);
     
     if (strncmp((char*)xsdt_virt->header.signature,
                 ACPI_XSDT_SIGNATURE,
                 ACPI_SDT_SIGNATURE_SIZE)
-        != 0) return NULL;
+        != 0)
+      return NULL;
 
     // Iterate over the entires, looking for [signature]
     unsigned int entry_len =
-      (xsdt_virt->header.length - sizeof(acpi_sdt_header_t)) / 4;
-    for (unsigned int i = 0; i < entry_len; ++i)
-    {
-      acpi_sdt_header_t *entry_phys = (void*)xsdt_virt->entries[i];
-      if (entry_phys == 0) return NULL;
+      (xsdt_virt->header.length - sizeof(struct acpi_sdt_header)) / 4;
+    for (unsigned int i = 0; i < entry_len; ++i) {
+      struct acpi_sdt_header *entry_phys = (void*)xsdt_virt->entries[i];
+      if (entry_phys == 0)
+        return NULL;
 
       // Map a virtual address to rsdt_phys
-      acpi_sdt_header_t* entry_virt = MM_PHYS_TO_VIRT(entry_phys);
+      struct acpi_sdt_header* entry_virt = MM_PHYS_TO_VIRT(entry_phys);
       paging_add_entry((void*)entry_phys, entry_virt, page_flags);
       
       if (strncmp((char*)entry_virt->signature, signature,

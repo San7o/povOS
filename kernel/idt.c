@@ -8,22 +8,23 @@
 #include <mm/layout.h>
 
 // The IDT
-idt_gate_t idt[IDT_ENTRIES] __attribute__((aligned(16))) = {0};
+struct idt_gate idt[IDT_ENTRIES] _aligned(16) = {0};
 
 // This descriptor will be loaded with the `lidt` instruction to tell
 // the position of the IDT to the CPU
-idt_descriptor_t idt_descriptor __attribute__((aligned(16))) = {0};
+struct idt_descriptor idt_descriptor _aligned(16) = {0};
 
 void idt_set_gate(u8_t  gate_number,
                   u64_t isr_address,
                   bool  is_trap)
 {
   u8_t attributes = 0x8E;   // 0b10001110
-  if (is_trap) attributes |= 0x01;
+  if (is_trap)
+    attributes |= 0x01;
 
   // Refer to the documentation in the header to understand these
   // values
-  idt[gate_number] = (idt_gate_t) {
+  idt[gate_number] = (struct idt_gate) {
     .base_low      = (u16_t) (isr_address & 0xFFFF),
     .cs_selector   = 0x08,
     .ist           = 0,
@@ -39,7 +40,7 @@ void idt_set(void)
 {
   disable_interrupts();
 
-  idt_descriptor = (idt_descriptor_t) {
+  idt_descriptor = (struct idt_descriptor) {
     .size   = sizeof(idt) - 1,
     .offset = (u64_t) &idt,
   };

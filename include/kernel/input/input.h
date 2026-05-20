@@ -35,51 +35,51 @@
 // Types
 //
 
-typedef enum input_type {
+enum input_type {
   INPUT_EVENT_TYPE_NONE = 0,
   INPUT_EVENT_TYPE_CHAR,
   INPUT_EVENT_TYPE_KEYBOARD,
   _INPUT_TYPE_MAX,
-} input_type_t;
+};
 
-typedef struct input_modifiers {
+struct input_modifiers {
   bool shift;
   bool ctrl;
   bool alt;
   bool meta;
-} input_modifiers_t;
+};
 
-typedef struct input_event {
-  input_type_t   type;
+struct input_event {
+  enum input_type type;
   union {
-    char               c;
-    keyboard_event_t   key;
+    char c;
+    struct keyboard_event key;
   } e;
-} input_event_t;
+};
 
 #define INPUT_EVENTS_RB_SIZE   256
 
-typedef struct input_event_rb {
-  input_event_t   events[INPUT_EVENTS_RB_SIZE];
-  unsigned int    writer_index;
-  unsigned int    reader_index;
-} input_event_rb_t;
+struct input_event_rb {
+  struct input_event  events[INPUT_EVENTS_RB_SIZE];
+  unsigned int  writer_index;
+  unsigned int  reader_index;
+};
 
-typedef struct input {
-  void*               tty;   // pointer to a tty
-  input_event_rb_t    events_rb;
-  input_modifiers_t   modifiers;
-  input_keymap_t*     keymap;
-} input_t;
+struct input {
+  void*  tty;   // pointer to a tty
+  struct input_event_rb   events_rb;
+  struct input_modifiers  modifiers;
+  input_keymap_t*    keymap;
+};
 
 //
 // Functions
 //
 
-void input_init(input_t *input, input_keymap_t *keymap, void *tty);
-void input_update(input_t *input, keyboard_event_t event);
+void input_init(struct input *input, input_keymap_t *keymap, void *tty);
+void input_update(struct input *input, struct keyboard_event event);
 
-void          input_events_add(input_t *input, input_event_t event);
-input_event_t input_events_get(input_t *input);
+void input_events_add(struct input *input, struct input_event event);
+struct input_event input_events_get(struct input *input);
 
 #endif // POVOS_KERNEL_INPUT_H

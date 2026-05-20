@@ -7,8 +7,11 @@
 #define POVOS_KERNEL_MACROS_H
 
 #define _packed __attribute__((packed))
+#define _aligned(X) __attribute__((aligned(X)))
 
 #define NOP __asm__ volatile ("nop")
+
+#define ARRAY_SIZE(x) ((sizeof x) / (sizeof *x))
 
 // X86_PAUSE
 //

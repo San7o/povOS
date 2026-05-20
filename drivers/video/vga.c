@@ -6,12 +6,12 @@
 #include <drivers/video/vga.h>   // implements
 #include <bits/port.h>
 
-vga_text_entry_t *vga_textbuffer  = 0;
-vga_color_t      *vga_framebuffer = 0;
+struct vga_text_entry  *vga_textbuffer  = 0;
+vga_color_t  *vga_framebuffer = 0;
 
 void vga_init(void)
 {
-  vga_textbuffer  = (vga_text_entry_t*) VGA_TEXT_BUFFER_START;
+  vga_textbuffer  = (struct vga_text_entry*) VGA_TEXT_BUFFER_START;
   vga_framebuffer = (vga_color_t*) VGA_FRAME_BUFFER_START;
 }
 
@@ -64,8 +64,7 @@ static void vga_write_regs(unsigned char *regs)
 	port_outb(VGA_MISC_OUTPUT_WRITE_REGISTER, *regs);
 	regs++;
   // write sequencer regs
-	for(i = 0; i < VGA_NUM_SEQ_REGS; i++)
-	{
+	for(i = 0; i < VGA_NUM_SEQ_REGS; i++) {
 		port_outb(VGA_SEQUENCER_ADDRESS_REGISTER, i);
 		port_outb(VGA_SEQUENCER_DATA_REGISTER, *regs);
 		regs++;
@@ -79,22 +78,19 @@ static void vga_write_regs(unsigned char *regs)
 	regs[0x03] |= 0x80;
 	regs[0x11] &= ~0x80;
   // write crtc regs
-	for(i = 0; i < VGA_NUM_CRTC_REGS; i++)
-	{
+	for(i = 0; i < VGA_NUM_CRTC_REGS; i++) {
 		port_outb(VGA_CRTC_ADDRESS_REGISTER, i);
 		port_outb(VGA_CRTC_DATA_REGISTER, *regs);
 		regs++;
 	}
   // write graphics controller regs
-	for(i = 0; i < VGA_NUM_GC_REGS; i++)
-	{
+	for(i = 0; i < VGA_NUM_GC_REGS; i++) {
 		port_outb(VGA_GRAPHICS_ADDRESS_REGISTER, i);
 		port_outb(VGA_GRAPHICS_DATA_REGISTER, *regs);
 		regs++;
 	}
   // write attribute controller regs
-	for(i = 0; i < VGA_NUM_AC_REGS; i++)
-	{
+	for(i = 0; i < VGA_NUM_AC_REGS; i++) {
 		(void)port_inb(VGA_INPUT_STATUS_1_COLOR_READ_REGISTER);
 		port_outb(VGA_ATTRIBUTE_CTRL_ADDRESS_REGISTER, i);
 		port_outb(VGA_ATTRIBUTE_CTRL_ADDRESS_REGISTER, *regs);
@@ -120,22 +116,19 @@ void vga_set_text_mode(void)
 }
 */
 
-void vga_putc(int offset, u8_t c, vga_style_t style)
+void vga_putc(int offset, u8_t c, struct vga_style style)
 {
-  if (offset >= VGA_TEXT_BUFFER_SIZE) return;
+  if (offset >= VGA_TEXT_BUFFER_SIZE)
+    return;
   
-  vga_textbuffer[offset] = (vga_text_entry_t) {
-    .value = c,
-    .style = VGA_STYLE_BYTES(style),
-  };
+  vga_textbuffer[offset] = VGA_TEXT_ENTRY_MAKE(c, style);
   return;
 }
 
-size_t vga_print(int offset, const char* str, vga_style_t style)
+size_t vga_print(int offset, const char* str, struct vga_style style)
 {
   size_t i = 0;
-  while (*str != '\0' && i + offset < VGA_TEXT_BUFFER_SIZE)
-  {
+  while (*str != '\0' && i + offset < VGA_TEXT_BUFFER_SIZE) {
     vga_putc(i + offset, *str, style);
     ++str;
     ++i;
@@ -143,28 +136,24 @@ size_t vga_print(int offset, const char* str, vga_style_t style)
   return i;
 }
 
-size_t vga_print_hex(int offset, u64_t num, vga_style_t style)
+size_t vga_print_hex(int offset, u64_t num, struct vga_style style)
 {
   vga_putc(offset, '0', style);
   vga_putc(offset + 1, 'x', style);
   offset += 2;
   
-  for (unsigned long i = 0; i < sizeof(num) * 2; ++i)
-  {
+  for (unsigned long i = 0; i < sizeof(num) * 2; ++i) {
     unsigned char hex = (num >> (sizeof(num) * 8 - 4 * i - 4)) & 0xF;
-    if (hex > 9)
-    {
+    if (hex > 9) {
       vga_putc(offset + i, 'A' + hex - 10, style);
-    }
-    else
-    {
+    } else {
       vga_putc(offset + i, '0' + hex, style);
     }
   }
   return 0;
 }
 
-void vga_clear(vga_style_t style)
+void vga_clear(struct vga_style style)
 {
   for (int i = 0; i < VGA_TEXT_BUFFER_SIZE; ++i)
     vga_putc(i, ' ', style);

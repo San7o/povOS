@@ -22,7 +22,7 @@
 #define BIOS_MMAP_ENTRIES_ADDR       ((void*)0x5004)
 
 // Address Range Descriptor Structure
-typedef struct bios_mmap_entry {
+struct _packed bios_mmap_entry {
   u32_t base_low;
   u32_t base_high;
   u32_t length_low;
@@ -39,6 +39,6 @@ typedef struct bios_mmap_entry {
   // descriptor represents memory used for logging hardware
   // errors. The rest is reserved.
   u32_t acpi;
-} _packed bios_mmap_entry_t;
+};
 
 #endif // POVOS_MM_BIOS_MMAP_H

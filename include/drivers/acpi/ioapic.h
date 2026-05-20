@@ -95,14 +95,14 @@
 #define IOAPIC_ACPI_SIGNATURE "APIC"
 
 // Common header for each record type
-typedef struct ioapic_record_header {
+struct _packed ioapic_record_header {
   // Specifies which specific record this entry represents
   // You should cast this header to the corresponding entry to access
   // the fields
   u8_t entry_type;
   // The length of this record
   u8_t length;
-} _packed ioapic_record_header_t;
+};
 
 //
 // Local APIC record - type 0
@@ -114,8 +114,8 @@ typedef struct ioapic_record_header {
 // When using the APIC interrupt model, each processor in the system
 // is required to have a Processor Local APIC record in the MADT, and
 // a processor device object in the DSDT.
-typedef struct ioapic_record_local_apic {
-  ioapic_record_header_t header;
+struct _packed ioapic_record_local_apic {
+  struct ioapic_record_header header;
   // (depricated) The OS associates this Local APIC Structure with a
   // processor object in the namespace when the _UID child object of
   // the processor’s device object (or the ProcessorId listed in the
@@ -128,7 +128,7 @@ typedef struct ioapic_record_local_apic {
   #define IOAPIC_LOCAL_APIC_ENABLED_FLAG          0x0
   #define IOAPIC_LOCAL_APIC_ONLINE_CAPABLE_FLAG   0x1
   u32_t flags;
-} _packed ioapic_record_local_apic_t;
+};
 
 //
 // I/O APIC Structure - type 1
@@ -140,8 +140,8 @@ typedef struct ioapic_record_local_apic {
 // system interrupts are uniquely associated with the I/O APIC
 // interrupt inputs. There is one I/O APIC structure for each I/O APIC
 // in the system.
-typedef struct ioapic_record_ioapic {
-  ioapic_record_header_t header;
+struct _packed ioapic_record_ioapic {
+  struct ioapic_record_header header;
   // The I/O APIC’s ID
   u8_t ioapic_id;
   u8_t reserved;
@@ -154,7 +154,7 @@ typedef struct ioapic_record_ioapic {
   // interrupt inputs start. The number of interrupt inputs is
   // determined by the I/O APIC’s Max Redir Entry register
   u32_t gsystem_int_base;
-} _packed ioapic_record_ioapic_t;
+};
 
 //
 // Interrupt source override structure - type 2
@@ -177,8 +177,8 @@ typedef struct ioapic_record_ioapic {
 // connected to I/O APIC interrupt input 2, then you would need an
 // Interrupt Source Override where the source entry is ‘0’ and the
 // Global System Interrupt is ‘2.’
-typedef struct ioapic_record_int_src_override {
-  ioapic_record_header_t header;
+struct _packed ioapic_record_int_src_override {
+  struct ioapic_record_header header;
   // 0 constant, meaning ISA
   u8_t bus;
   // Bus-relative interrupt source
@@ -204,7 +204,7 @@ typedef struct ioapic_record_int_src_override {
   //    11 Level-triggered
   #define IOAPIC_INT_TRIGGER_MODE_FLAG  (0x3 << 2)
   u16_t flags;
-} _packed ioapic_record_int_src_override_t;
+};
 
 //
 // Non-Maskable Interrupt Source - type 3
@@ -213,13 +213,13 @@ typedef struct ioapic_record_int_src_override {
 // (S)APIC interrupt inputs should be enabled as non-maskable. Any
 // source that is non-maskable will not be available for use by
 // devices.
-typedef struct ioapic_record_nmi_src {
-  ioapic_record_header_t header;
+struct _packed ioapic_record_nmi_src {
+  struct ioapic_record_header header;
   // Same as interrupt source flags (IOAPIC_INT_*)
   u16_t flags;
   // The Global System Interrupt that this NMI will signal
   u32_t gsystem_interrupt;
-} _packed ioapic_record_nmi_src_t;
+};
 
 //
 // Local APIC NMI - type 4
@@ -233,8 +233,8 @@ typedef struct ioapic_record_nmi_src {
 // structure. For example, if the platform has 4 processors with ID
 // 0-3 and NMI is connected LINT1 for processor 3 and 2, two Local
 // APIC NMI entries would be needed in the MADT.
-typedef struct ioapic_record_nmi {
-  ioapic_record_header_t header;
+struct _packed ioapic_record_nmi {
+  struct ioapic_record_header header;
   // (depricated) Value corresponding to the _UID listed in the
   // processor’s device object, or the Processor ID corresponding to
   // the ID listed in the processor object. A value of 0xFF signifies
@@ -244,7 +244,7 @@ typedef struct ioapic_record_nmi {
   u16_t flags;
   // Local APIC interrupt input LINTn to which NMI is connected.
   u8_t  local_apic_lint;
-} _packed ioapic_record_nmi_t;
+};
 
 //
 // Local APIC Address Override - type 5
@@ -257,12 +257,12 @@ typedef struct ioapic_record_nmi {
 // for all local APICs (and local SAPICs), rather than the address
 // contained in the MADT’s table header. Only one Local APIC Address
 // Override Structure may be defined.
-typedef struct ioapic_record_local_apic_addr_override {
-  ioapic_record_header_t header;
+struct _packed ioapic_record_local_apic_addr_override {
+  struct ioapic_record_header header;
   u16_t  reserved;
   // Physical address of Local APIC
   u64_t  local_apic_addr;
-} _packed ioapic_record_local_apic_addr_override_t;
+};
 
 // Record type 6 to 8 (SAPIC)
 // TODO
@@ -274,8 +274,8 @@ typedef struct ioapic_record_local_apic_addr_override {
 // logical processors are required to have a processor device object
 // in the DSDT and must convey the processor’s APIC information to
 // OSPM using the Processor Local X2APIC structure.
-typedef struct ioapic_record_proc_local_x2apic {
-  ioapic_record_header_t header;
+struct _packed ioapic_record_proc_local_x2apic {
+  struct ioapic_record_header header;
   u16_t reserved;
   // The processor's local x2APIC ID
   u32_t x2apic_id;
@@ -286,13 +286,13 @@ typedef struct ioapic_record_proc_local_x2apic {
   // _UID child object of the processor device evaluates to a numeric
   // value, by matching the numeric value with this field.
   u32_t acpi_processor_uid;
-} _packed ioapic_record_proc_local_x2apic_t;
+};
 
 // Record type 0xA to 0x10 (GIC)
 // TODO
 
-typedef struct ioapic_acpi_sdt {
-  acpi_sdt_header_t header;
+struct _packed ioapic_acpi_sdt {
+  struct acpi_sdt_header header;
   // The 32-bit physical address at which each processor can access
   // its local interrupt controller.
   u32_t local_addr;
@@ -309,8 +309,8 @@ typedef struct ioapic_acpi_sdt {
   // This is because sizeof(ioapic_record_header_t) is not the size
   // of the entire record, you need to compute it dynamically by
   // reading the lenght field in the record header.
-  ioapic_record_header_t records[];
-} _packed ioapic_acpi_sdt_t;
+  struct ioapic_record_header records[];
+};
 
 //
 // Registers
@@ -360,16 +360,16 @@ typedef struct ioapic_acpi_sdt {
 #define IOAPIC_IOREDTBL_REG_INDEX_LOW(n)   (0x10 + 2 * n)      // r/w
 #define IOAPIC_IOREDTBL_REG_INDEX_HIGH(n)  (0x10 + 2 * n + 1)  // r/w
 
-typedef union ioapic_ioapicid_reg {
+union _packed ioapic_ioapicid_reg {
   struct {
     u32_t reserved  : 24;
     u8_t  id        : 4;
     u8_t  reserved2 : 4;
   } values;
   u32_t raw;
-} _packed ioapic_ioapicid_reg_t;
+};
 
-typedef union ioapic_apicver_reg {
+union _packed ioapic_apicver_reg {
   struct _packed {
     u8_t apic_version;  // r
     u8_t reserved;
@@ -382,9 +382,9 @@ typedef union ioapic_apicver_reg {
     u8_t  reserved2;
   } values;
   u32_t raw;
-} _packed ioapic_ioapic_reg_t;
+};
 
-typedef union ioapic_ioapicarb_reg {
+union _packed ioapic_ioapicarb_reg {
   struct _packed {
     u16_t reserved;
     u8_t  reserved2;
@@ -393,9 +393,9 @@ typedef union ioapic_ioapicarb_reg {
     u8_t  reserved3 : 4;
   } values;
   u32_t raw;
-} _packed ioapic_ioapicarb_reg_t;
+};
 
-typedef union ioapic_ioredtbl_reg {
+union _packed ioapic_ioredtbl_reg {
   struct _packed {
     // The vector field is an 8 bit field containing the interrupt
     // vector for this interrupt. Vector values range from 0x10 to
@@ -475,7 +475,7 @@ typedef union ioapic_ioredtbl_reg {
     u8_t destination_field;       // r/w
   } values;
   u64_t raw;
-} _packed ioapic_ioredtbl_reg_t;
+};
 
 //
 // Functions

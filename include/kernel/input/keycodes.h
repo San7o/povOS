@@ -12,7 +12,7 @@
 //
 // The keycode type is a general abstraction over the scancodes.
 //
-typedef enum keycode {
+enum keycode {
     // Reserved
     KEY_NONE            = 0x00,
 
@@ -174,9 +174,9 @@ typedef enum keycode {
     KEY_SYSTEM_WAKE     = 0x7E,
 
     _KEY_MAX,
-} keycode_t;
+};
 
 // Convert keycode to string
-const char* keycode_to_string(keycode_t key);
+const char* keycode_to_string(enum keycode key);
 
 #endif // POVOS_KERNEL_INPUT_KEYCODES_H
