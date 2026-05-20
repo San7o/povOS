@@ -20,6 +20,7 @@
 #include <kernel/console.h>
 #include <kernel/tty.h>
 #include <kernel/sched.h>
+#include <kernel/klog.h>
 #include <drivers/isa/pic.h>
 #include <drivers/isa/pit.h>
 #include <drivers/isa/uart.h>
@@ -101,9 +102,9 @@ int kernel_main(void)
   
   struct acpi_rsdp* acpi_rsdp = acpi_locate_rsdp();
   if (!acpi_rsdp) {
-    printk("[error] Could not find ACPI RSDP table\n");
+    kerr("Could not find ACPI RSDP table\n");
   } else {
-    printk("[info] Found ACPI RSDP at: %x\n", acpi_rsdp);
+    kinfo("Found ACPI RSDP at: %x\n", acpi_rsdp);
 
     struct page_entry_flags page_flags = { .rw = 1 };
 
@@ -113,9 +114,9 @@ int kernel_main(void)
       acpi_locate_sdt(acpi_rsdp, HPET_ACPI_SIGNATURE);
 
     if (!hpet) {
-      printk("[error] Could not find HPET timer\n");
+      kerr("Could not find HPET timer\n");
     } else {
-      printk("[info] Found HPET timer, register at address: %x\n", hpet->address);
+      kinfo("Found HPET timer, register at address: %x\n", hpet->address);
       
       // Identity map
       hpet_base = MM_PHYS_TO_VIRT(hpet->address);
@@ -129,9 +130,9 @@ int kernel_main(void)
     struct ioapic_acpi_sdt *ioapic_base =
       acpi_locate_sdt(acpi_rsdp, IOAPIC_ACPI_SIGNATURE);
     if (!ioapic_base) {
-      printk("[error] Could not find I/O APIC from ACPI\n");
+      kerr("Could not find I/O APIC from ACPI\n");
     } else {
-      printk("[info] Found I/O APIC from ACPI\n");
+      kinfo("Found I/O APIC from ACPI\n");
 
       struct ioapic_record_header* record_it = &ioapic_base->records[0];
       
@@ -141,8 +142,8 @@ int kernel_main(void)
         {
         case 1: {
           struct ioapic_record_ioapic *ioapic_struct = (void*)record_it;
-          printk("[info] [ioapic] Found an APIC Structure with id %d, addr %x\n",
-                 ioapic_struct->ioapic_id, ioapic_struct->ioapic_addr);
+          kinfo("[ioapic] Found an APIC Structure with id %d, addr %x\n",
+                ioapic_struct->ioapic_id, ioapic_struct->ioapic_addr);
           break;
         }
         default:
@@ -160,9 +161,9 @@ int kernel_main(void)
 
   struct pcie_acpi_sdt* pcie_sdt = acpi_locate_sdt(acpi_rsdp, PCIE_ACPI_SIGNATURE);
   if (!pcie_sdt) {
-    printk("[error] Could not locate PCIe sdt\n");
+    kerr("Could not locate PCIe sdt\n");
   } else {
-    printk("[info] Found PCIe sdt\n");
+    kinfo("Found PCIe sdt\n");
     // debug_dump_mem_page(pcie_sdt->entries[0].base_addr, 32);
     debug_enumerate_pcie_devices(pcie_sdt);
 
@@ -170,23 +171,23 @@ int kernel_main(void)
     if (edu_init(&edu, pcie_sdt)) {
       u32_t edu_id = edu_read_identification(&edu);
 
-      printk("[info] [edu] Initialized EDU device\n");
-      printk("[info] [edu] identification: %x\n", edu_id);
+      kinfo("[edu] Initialized EDU device\n");
+      kinfo("[edu] identification: %x\n", edu_id);
 
       edu_int_raise(&edu);
     } else {
-      printk("[error] error initializing EDU device\n");
+      kerr("error initializing EDU device\n");
     }
   }
 
   if (ata_enabled(ATA_BUS1_BASE_PORT)) {
-    printk("[error] error ATA port\n");
+    kerr("error ATA port\n");
   } else {
     u8_t ata_buff[ATA_SECTOR_SIZE] = {0};
     if (!ata_read(ATA_BUS1_BASE_PORT, ata_buff, 5, 1)) {
-      printk("[error] error reading from ATA drive\n");
+      kerr("error reading from ATA drive\n");
     } else {
-      printk("[info] ATA read: %s\n", ata_buff);
+      kinfo("ATA read: %s\n", ata_buff);
     }
   }
 

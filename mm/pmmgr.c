@@ -8,6 +8,7 @@
 #include <mm/layout.h>
 #include <kernel/utils.h>
 #include <kernel/range.h>
+#include <kernel/klog.h>
 #include <libk/stdbool.h>
 #include <libk/stdio.h>
 #include <libk/string.h>
@@ -178,7 +179,7 @@ int pmmgr_init(void)
                                            *mmap_num_entries);
 
     // Useful debug print
-    printk("[debug] [pmmgr] range_candidate.start = %x, range_candidate.end = %x\n",
+    kdebug("[pmmgr] range_candidate.start = %x, range_candidate.end = %x\n",
            range_candidate.start, range_candidate.end);
 
     if (range_candidate.end - range_candidate.start >= bitfield_pages * PAGE_SIZE)

@@ -5,6 +5,7 @@
 
 #include <drivers/acpi/acpi.h>   // implements
 #include <kernel/range.h>
+#include <kernel/klog.h>
 #include <mm/pmmgr.h>
 #include <mm/paging.h>
 #include <mm/layout.h>
@@ -62,7 +63,7 @@ struct acpi_rsdp* acpi_locate_rsdp(void)
   // First, check EBDA (Extended BIOS Data Area), 0x00080000 - 0x0009FFFF
   u16_t* ebda_seg = MM_PHYS_TO_VIRT(0x40E);
   size_t ebda_physical_addr = ((size_t)(*ebda_seg)) << 4;
-  printk("[acpi] EBDA located at: %x\n", ebda_physical_addr);
+  kdebug("[acpi] EBDA located at: %x\n", ebda_physical_addr);
 
   range = (struct range){
     .start = ebda_physical_addr,

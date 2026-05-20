@@ -37,6 +37,7 @@ architecture.
   - filesystem
     - virtual filesystem
   - random number generation
+  - logging
 - drivers:
   - PS/2
   - UART

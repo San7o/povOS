@@ -5,6 +5,7 @@
 
 #include <kernel/sched.h>   // implements
 #include <kernel/utils.h>
+#include <kernel/klog.h>
 #include <arch/cpu_regs.h>
 #include <libk/string.h>
 #include <libk/stdio.h>
@@ -23,7 +24,7 @@ void sched_switch_to(task_id_t task_id)
     }
   }
 
-  printk("[sched] switching to task %l %s\n",
+  ktrace("[sched] switching to task %l %s\n",
          task_id, scheduler.tasks[task_id].task.name);
   
   cpu_do_context_switch(&scheduler.tasks[task_id].task.regs);

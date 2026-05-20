@@ -21,6 +21,7 @@ Modern documents:
 - [ACPI Specification (6.6)](https://uefi.org/htmlspecs/ACPI_Spec_6_4_html/): standard for
   "Plug and Play" devices and their resources. The specification
   provides the structure of all types of tables.
+- [UEFI Specification 2.11](https://uefi.org/sites/default/files/resources/UEFI_Spec_Final_2.11.pdf): Standard firmware interface.
 - [Intel I/O Controller Hub 9 (ICH9)
   Family](https://www.intel.com/content/dam/doc/datasheet/io-controller-hub-9-datasheet.pdf):
   modern southbridge, providing a massive amount of
