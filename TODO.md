@@ -152,7 +152,6 @@ to have.
 ## Chores
 
 - logging system
-- standardized error numbers
 - read-write lock
 - power off: surprisingly, doing this right is a bit more complicated than you
   think. It may require some power management infrastructure.
