@@ -40,23 +40,78 @@ An advanced topic would be to have the OS choose which frontend to use (by
 setting some data in a specific section for example, but this would require the
 kernel to be in ELF and the bootloader to know about ELF format).
 
+In the real world, we would also have a trusted execution layer and signed
+bootloaders, but that is for another day.
+
 ## Driver Model
 
 One of the most important framework in the kernel is the driver model. We need:
 
-- device class abstraction: each device has some metadata (such as name) and it
-  belongs to a class, which defines different operations (`devclass_ops`).
-  Example of classes are busses.
+- device class abstraction: manages the lifecycle of devices and drivers,
+  defines operations that the driver must implement.
+
+```c
+struct devclass {
+    enum devclass_type type;
+    struct device_list devices;
+    struct driver_list drivers;
+};
+
+struct devclass_ops {
+    int (*probe) (struct device* dev);
+    int (*remove) (struct device* dev);
+};
+```
+
 - device abstraction: just data about a device (bus, ID, name). It is the
   equivalent to the device tree represented as a C api. It may contain hardcoded
-  devices and probed devices during runtime, and it can be added or removed, so
-  it must be dynamic. Every device class should manage their devices.
+  devices and probed devices during runtime, and it can be added or removed
+  (plug and play), so it must be dynamic. 
+
+```c
+struct device {
+    const char* name;
+    enum devclass_type type;
+};
+
+struct pci_dev_id {
+    int vendor_id;
+    int device_id;
+};
+
+struct pci_dev {
+    struct device dev;
+    struct pci_device_id id;
+};
+```
+
 - driver abstraction: a driver has some id data and belongs to a class, it
   implements its operations. A driver may be added or removed during runtime so
   there must exist a dynamic structure of drivers managed by the device class.
 
+```c
+struct driver {
+    const char *name;
+    enum devclass_type type;
+};
+
+struct pci_driver {
+    struct driver driver;
+    struct pci_device_id id;
+    struct devclass_ops ops;
+};
+```
+
 The device looks at its devices and tries to match a driver (calling the
 driver's `probe` function.
+
+FreeBSD's design is very clean:
+https://docs.freebsd.org/en/books/arch-handbook/newbus/
+
+Also check out:
+
+https://www.kernel.org/doc/html/latest/driver-api/driver-model/index.html
+https://docs.u-boot.org/en/latest/develop/driver-model/design.html
 
 ## Scheduler
 
