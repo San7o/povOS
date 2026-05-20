@@ -40,7 +40,8 @@ virt_addr_t vmm_alloc(struct vmmgr *vmmgr,
                       size_t length,
                       vmmgr_flags_t flags)
 {
-  if (!vmmgr) return 0;
+  if (!vmmgr)
+    return 0;
 
   // Align the length to the nearest page
   length = PAGE_ALIGN_UP(length);

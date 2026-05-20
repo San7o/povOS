@@ -96,16 +96,16 @@ struct _packed pcie_common_config_space_header {
   u16_t vendor_id;
   u16_t device_id;
   #define PCIE_CONFIG_SPACE_CMD_IO_ENABLE                    0
-  #define PCIE_CONFIG_SPACE_CMD_MEMORY_ENABLE            (1<<0)
-  #define PCIE_CONFIG_SPACE_CMD_BUS_MASTER_ENABLE        (1<<1)
-  #define PCIE_CONFIG_SPACE_CMD_SPECIAL_CYCLE_ENABLE     (1<<2)
-  #define PCIE_CONFIG_SPACE_CMD_MEM_WRITE                (1<<3)
-  #define PCIE_CONFIG_SPACE_CMD_VGA_PALETTE_SNOOP        (1<<4)
-  #define PCIE_CONFIG_SPACE_CMD_PARITY_ERROR_RESPONSE    (1<<5)
-  #define PCIE_CONFIG_SPACE_CMD_IDSEL_STEPPING           (1<<6)
-  #define PCIE_CONFIG_SPACE_CMD_SERR_ENABLE              (1<<7)
-  #define PCIE_CONFIG_SPACE_CMD_FAST_TRANSACTIONS_ENABLE (1<<8)
-  #define PCIE_CONFIG_SPACE_CMD_INT_DISABLE              (1<<9)
+  #define PCIE_CONFIG_SPACE_CMD_MEMORY_ENABLE                BIT(0)
+  #define PCIE_CONFIG_SPACE_CMD_BUS_MASTER_ENABLE            BIT(1)
+  #define PCIE_CONFIG_SPACE_CMD_SPECIAL_CYCLE_ENABLE         BIT(2)
+  #define PCIE_CONFIG_SPACE_CMD_MEM_WRITE                    BIT(3)
+  #define PCIE_CONFIG_SPACE_CMD_VGA_PALETTE_SNOOP            BIT(4)
+  #define PCIE_CONFIG_SPACE_CMD_PARITY_ERROR_RESPONSE        BIT(5)
+  #define PCIE_CONFIG_SPACE_CMD_IDSEL_STEPPING               BIT(6)
+  #define PCIE_CONFIG_SPACE_CMD_SERR_ENABLE                  BIT(7)
+  #define PCIE_CONFIG_SPACE_CMD_FAST_TRANSACTIONS_ENABLE     BIT(8)
+  #define PCIE_CONFIG_SPACE_CMD_INT_DISABLE                  BIT(9)
   u16_t command;
   u16_t status;
   u8_t  revision_id;

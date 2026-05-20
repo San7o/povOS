@@ -7,7 +7,10 @@
 #define POVOS_KERNEL_MACROS_H
 
 #define _packed __attribute__((packed))
-#define _aligned(X) __attribute__((aligned(X)))
+#define _aligned(x) __attribute__((aligned(x)))
+
+#define BIT(x)       (((u32_t) 1) << (x))
+#define BIT_ULL(x)   (((u64_t) 1) << (x))
 
 #define NOP __asm__ volatile ("nop")
 

@@ -153,9 +153,6 @@ to have.
 
 - logging system
 - standardized error numbers
-- big style change following Linux's style. Refactor lots of code, no more than
-  3 intentaions for example.
-- add macro BIT(x) for (1 << x), and BIT_ULL(x) ((u64_t 1) << x)
 - read-write lock
 - power off: surprisingly, doing this right is a bit more complicated than you
   think. It may require some power management infrastructure.
