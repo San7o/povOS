@@ -132,11 +132,11 @@ void debug_dump_input_loop(struct input *input, void* hpet_base_reg)
   
   while(1) {
     // Tick seconds
-    if (time_ms / 1000 > previous_time_s) {
-      previous_time_s = time_ms / 1000;
+    if (glob_time_ms / 1000 > previous_time_s) {
+      previous_time_s = glob_time_ms / 1000;
 
       uart_printf(uart_port1, "[debug] [isr] [pit 0] time: %d s\n",
-                  time_ms / 1000);
+                  glob_time_ms / 1000);
 
       if (hpet_base_reg) {
         hpet_counter = hpet_poll(hpet_base_reg);
@@ -190,15 +190,15 @@ void debug_print_memory_map_uart(void)
 
 void debug_print_pmmgr_bitfield(void)
 {
-  u8_t *bitfield = MM_PHYS_TO_VIRT(pmmgr.bitfield);
+  u8_t *bitfield = MM_PHYS_TO_VIRT(glob_pmmgr.bitfield);
   u64_t i;
   int bit, val;
   
   uart_printf(uart_port1, "[debug] [pmmgr] Bitfield of size %d:\n",
-              pmmgr.size);
+              glob_pmmgr.size);
   uart_write_str(uart_port1, "[debug] [pmmgr] [0x0000000000000000] ");
   
-  for (i = 0; i < pmmgr.size; ++i) {
+  for (i = 0; i < glob_pmmgr.size; ++i) {
     for (bit = 0; bit < 8; ++bit) {
       val = (bitfield[i] >> bit) & 1;
       uart_write_str(uart_port1, (val == 1) ? "1" : "0");      

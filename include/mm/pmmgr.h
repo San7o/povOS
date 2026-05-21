@@ -28,7 +28,7 @@ struct pmmgr {
 
 // The global physical memory manager
 // Needs to be initialized before using it
-extern struct pmmgr pmmgr;
+extern struct pmmgr glob_pmmgr;
 
 // Returns a negative number in case of failure
 int pmmgr_init(void);

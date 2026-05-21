@@ -263,7 +263,7 @@ struct _packed vga_text_entry {
 #define VGA_TEXT_BUFFER_SIZE       (VGA_TEXT_BUFFER_WIDTH * VGA_TEXT_BUFFER_HEIGHT)
 #define VGA_TEXT_BUFFER_EXTENT     (80*25* sizeof(struct vga_text_entry))   // bytes
 
-extern struct vga_text_entry *vga_textbuffer;
+extern struct vga_text_entry *glob_vga_textbuffer;
 
 //
 // VGA framebuffer
@@ -276,7 +276,7 @@ extern struct vga_text_entry *vga_textbuffer;
 #define VGA_FRAME_BUFFER_SIZE      (VGA_FRAME_BUFFER_WIDTH * VGA_FRAME_BUFFER_END)
 #define VGA_FRAME_BUFFER_EXTENT    (VGA_FRAME_BUFFER_SIZE * sizeof(vga_color_t))  // bytes
 
-extern vga_color_t      *vga_framebuffer;
+extern vga_color_t  *glob_vga_framebuffer;
 
 //
 // Functions
@@ -312,6 +312,6 @@ void   vga_set_cursor(unsigned int x, unsigned int y);
 void vga_draw_pixel(int x, int y, vga_color_t color);
 
 // VGA console
-extern struct console vga_console;
+extern struct console glob_vga_console;
 
 #endif // POVOS_DRIVERS_VGA_H

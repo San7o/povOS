@@ -13,7 +13,7 @@
 #include <libk/stdio.h>
 #include <libk/string.h>
 
-struct pmmgr pmmgr;
+struct pmmgr glob_pmmgr;
 
 // Memory will not be allocated in these intervals "[a; b)"
 // Memory mapped IO regions should be put here
@@ -190,13 +190,13 @@ int pmmgr_init(void)
     bitfield_range.start = range_candidate.start + 1;
   }
 
-  pmmgr.bitfield = (u8_t*) range_candidate.start;
-  pmmgr.size     = bitfield_len_bytes;
+  glob_pmmgr.bitfield = (u8_t*) range_candidate.start;
+  glob_pmmgr.size     = bitfield_len_bytes;
 
   // Fill the bitfield
 
   for (u64_t i = 0; i < bitfield_pages * PAGE_SIZE; ++i) {
-    pmmgr.bitfield[i] = 0;
+    glob_pmmgr.bitfield[i] = 0;
     for (int bit = 0; bit < 8; ++bit) {
       bool available = true;
       struct range this_page = {
@@ -230,13 +230,13 @@ int pmmgr_init(void)
       }
       // Check bitfield
       if (available) {
-        if (this_page.start < (u64_t)pmmgr.bitfield + bitfield_pages * PAGE_SIZE
-            && this_page.end >= (u64_t)pmmgr.bitfield)
+        if (this_page.start < (u64_t)glob_pmmgr.bitfield + bitfield_pages * PAGE_SIZE
+            && this_page.end >= (u64_t)glob_pmmgr.bitfield)
           available = false;
       }
 
       if (available)
-        pmmgr.bitfield[i] |= (1 << bit);
+        glob_pmmgr.bitfield[i] |= (1 << bit);
     }
   }
   
@@ -245,8 +245,8 @@ int pmmgr_init(void)
 
 phys_addr_t pmmgr_alloc_page(void)
 {
-  u8_t *bitfield = MM_PHYS_TO_VIRT(pmmgr.bitfield);
-  for (u64_t i = 0; i < pmmgr.size; ++i) {
+  u8_t *bitfield = MM_PHYS_TO_VIRT(glob_pmmgr.bitfield);
+  for (u64_t i = 0; i < glob_pmmgr.size; ++i) {
     for (unsigned int bit = 0; bit < 8; ++bit) {
       if (bitfield[i] & (1 << bit)) {
         // Free page found
@@ -268,5 +268,5 @@ void pmmgr_free_page(phys_addr_t page)
   u64_t byte  = frame / 8;
   u64_t bit   = frame % 8;
 
-  pmmgr.bitfield[byte] &= ~(1 << bit);
+  glob_pmmgr.bitfield[byte] &= ~(1 << bit);
 }

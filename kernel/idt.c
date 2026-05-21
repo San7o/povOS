@@ -8,11 +8,11 @@
 #include <mm/layout.h>
 
 // The IDT
-struct idt_gate idt[IDT_ENTRIES] _aligned(16) = {0};
+struct idt_gate glob_idt[IDT_ENTRIES] _aligned(16) = {0};
 
 // This descriptor will be loaded with the `lidt` instruction to tell
 // the position of the IDT to the CPU
-struct idt_descriptor idt_descriptor _aligned(16) = {0};
+struct idt_descriptor glob_idt_descriptor _aligned(16) = {0};
 
 void idt_set_gate(u8_t  gate_number,
                   u64_t isr_address,
@@ -24,7 +24,7 @@ void idt_set_gate(u8_t  gate_number,
 
   // Refer to the documentation in the header to understand these
   // values
-  idt[gate_number] = (struct idt_gate) {
+  glob_idt[gate_number] = (struct idt_gate) {
     .base_low      = (u16_t) (isr_address & 0xFFFF),
     .cs_selector   = 0x08,
     .ist           = 0,
@@ -40,9 +40,9 @@ void idt_set(void)
 {
   disable_interrupts();
 
-  idt_descriptor = (struct idt_descriptor) {
-    .size   = sizeof(idt) - 1,
-    .offset = (u64_t) &idt,
+  glob_idt_descriptor = (struct idt_descriptor) {
+    .size   = sizeof(glob_idt) - 1,
+    .offset = (u64_t) &glob_idt,
   };
   
   // The various isr are implemented in assembly
@@ -81,7 +81,7 @@ void idt_set(void)
   idt_set_gate(32, (u64_t) isr32, false);
   idt_set_gate(33, (u64_t) isr33, false);
 
-  idt_load((u64_t) &idt_descriptor);
+  idt_load((u64_t) &glob_idt_descriptor);
 
   enable_interrupts();
   

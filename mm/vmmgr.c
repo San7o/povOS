@@ -30,7 +30,7 @@ void vmmgr_activate(struct vmmgr *vmmgr)
     return;
   paging_load(vmmgr->pml4t);
 
-  kernel_hhdm_offset = MM_HHDM_OFFSET;
+  glob_kernel_hhdm_offset = MM_HHDM_OFFSET;
 
   gdt_reload();
   return;

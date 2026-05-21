@@ -31,7 +31,7 @@ static void vga_console_clear(void)
   return;
 }
 
-struct console vga_console = {
+struct console glob_vga_console = {
   .draw         = vga_console_draw,
   .set_cursor   = vga_console_set_cursor,
   .clear        = vga_console_clear,

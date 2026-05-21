@@ -33,7 +33,7 @@ void isr_common_handler(u8_t  isr_number,
 
   // Dump registers
   struct cpu_regs ct_regs;
-  ct_regs = scheduler.tasks[current_task].task.regs;
+  ct_regs = glob_scheduler.tasks[glob_current_task].task.regs;
   // These need to match the assembly code
   ct_regs.rax    = sp[0];
   ct_regs.rcx    = sp[1];
@@ -102,18 +102,18 @@ void isr_pit_channel_0_handler(u8_t  isr_number,
   
   struct cpu_regs* ct_regs;
   
-  time_ms++;
+  glob_time_ms++;
   pic_ack();
 
-  if (!scheduler.initialized)
+  if (!glob_scheduler.initialized)
     return;
 
   static u64_t last_sched_time_ms = 0;
-  if (time_ms - last_sched_time_ms > SCHED_FREQ * 1000) {
+  if (glob_time_ms - last_sched_time_ms > SCHED_FREQ * 1000) {
     // Call the scheduler
     
     // Save registers of the current task
-    ct_regs = &scheduler.tasks[current_task].task.regs;
+    ct_regs = &glob_scheduler.tasks[glob_current_task].task.regs;
     // These need to match the assembly code
     ct_regs->rax    = sp[0];
     ct_regs->rcx    = sp[1];
@@ -135,7 +135,7 @@ void isr_pit_channel_0_handler(u8_t  isr_number,
     ct_regs->rsp    = sp[20];
     ct_regs->cr3     = regs_get_cr3();
     
-    last_sched_time_ms = time_ms;
+    last_sched_time_ms = glob_time_ms;
     
     sched_switch_next();
 

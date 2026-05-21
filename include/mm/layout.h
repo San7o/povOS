@@ -44,12 +44,12 @@
 // Actual offset of higher-half kernel
 // We need this dynamic global value since it is different during eary
 // boot and normal execution
-extern u64_t kernel_hhdm_offset;
+extern u64_t glob_kernel_hhdm_offset;
 
 #define PML4T_INDEX(addr)  (((addr) >> 39) & 511)
 #define PDPT_INDEX(addr)   (((addr) >> 30) & 511)
 
-#define MM_PHYS_TO_VIRT(phys)  ((void*)((u64_t)(phys) + kernel_hhdm_offset))
-#define MM_VIRT_TO_PHYS(virt)  ((u64_t)(virt) - kernel_hhdm_offset)
+#define MM_PHYS_TO_VIRT(phys)  ((void*)((u64_t)(phys) + glob_kernel_hhdm_offset))
+#define MM_VIRT_TO_PHYS(virt)  ((u64_t)(virt) - glob_kernel_hhdm_offset)
 
 #endif // POVOS_MM_MEMORY_H

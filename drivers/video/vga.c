@@ -6,13 +6,13 @@
 #include <drivers/video/vga.h>   // implements
 #include <bits/port.h>
 
-struct vga_text_entry  *vga_textbuffer  = 0;
-vga_color_t  *vga_framebuffer = 0;
+struct vga_text_entry  *glob_vga_textbuffer = 0;
+vga_color_t  *glob_vga_framebuffer = 0;
 
 void vga_init(void)
 {
-  vga_textbuffer  = (struct vga_text_entry*) VGA_TEXT_BUFFER_START;
-  vga_framebuffer = (vga_color_t*) VGA_FRAME_BUFFER_START;
+  glob_vga_textbuffer  = (struct vga_text_entry*) VGA_TEXT_BUFFER_START;
+  glob_vga_framebuffer = (vga_color_t*) VGA_FRAME_BUFFER_START;
 }
 
 int vga_get_memory_map(void)
@@ -121,7 +121,7 @@ void vga_putc(int offset, u8_t c, struct vga_style style)
   if (offset >= VGA_TEXT_BUFFER_SIZE)
     return;
   
-  vga_textbuffer[offset] = VGA_TEXT_ENTRY_MAKE(c, style);
+  glob_vga_textbuffer[offset] = VGA_TEXT_ENTRY_MAKE(c, style);
   return;
 }
 
@@ -182,5 +182,5 @@ void vga_draw_pixel(int x, int y, vga_color_t color)
       || x < 0 || y < 0)
     return;
 
-  vga_framebuffer[y * VGA_FRAME_BUFFER_WIDTH + x] = color;
+  glob_vga_framebuffer[y * VGA_FRAME_BUFFER_WIDTH + x] = color;
 }

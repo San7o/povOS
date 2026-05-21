@@ -26,8 +26,8 @@ struct scheduler {
   bool  initialized;
 };
 
-extern struct scheduler  scheduler;
-extern task_id_t  current_task;
+extern struct scheduler  glob_scheduler;
+extern task_id_t  glob_current_task;
 
 void  sched_init(struct vmmgr *vmmgr);
 void  sched_loop(void);

@@ -5,4 +5,4 @@
 
 #include <mm/layout.h>   // implements
 
-u64_t kernel_hhdm_offset = 0;
+u64_t glob_kernel_hhdm_offset = 0;

@@ -9,6 +9,6 @@
 #include <libk/stddef.h>
 
 // Global time counter in milliseconds
-extern u64_t time_ms;
+extern u64_t glob_time_ms;
 
 #endif // POVOS_KERNEL_TIME_H

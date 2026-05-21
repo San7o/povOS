@@ -214,7 +214,7 @@ int kernel_main(void)
                   VGA_TEXT_BUFFER_WIDTH, VGA_TEXT_BUFFER_HEIGHT, 0, 0);
 
   struct tty tty;
-  tty_init(&tty, &textbuffer, TEXTBUFFER_STYLE_BW, &vga_console);
+  tty_init(&tty, &textbuffer, TEXTBUFFER_STYLE_BW, &glob_vga_console);
   
   struct input input;
   input_init(&input, &input_keymap_us, &tty);

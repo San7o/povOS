@@ -5,4 +5,4 @@
 
 #include <kernel/time.h>   // implements
 
-u64_t time_ms = 0;
+u64_t glob_time_ms = 0;

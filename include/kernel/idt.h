@@ -112,7 +112,7 @@ struct _packed idt_gate {
 // The corresponsing entry for a given interrupt vector is pointed to
 // in memory by scaling the vector by 16 and adding it to the value in
 // the offset field in the IDTR.
-extern struct idt_gate idt[IDT_ENTRIES];
+extern struct idt_gate glob_idt[IDT_ENTRIES];
 
 // 
 // Location
@@ -137,7 +137,7 @@ struct _packed idt_descriptor {
   u64_t offset;   // address of idt
 };
 
-extern struct idt_descriptor idt_descriptor;
+extern struct idt_descriptor glob_idt_descriptor;
 
 //
 // Interrupt Service Routines
