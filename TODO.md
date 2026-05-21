@@ -94,12 +94,12 @@ struct driver {
     const char *name;
     int priv_size;
     enum devclass_type type;
+    struct devclass_ops *ops;
 };
 
 struct pci_driver {
     struct driver driver;
     struct pci_device_id id;
-    struct devclass_ops *ops;
 };
 ```
 
