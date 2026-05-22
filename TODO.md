@@ -141,6 +141,8 @@ to have.
 - userspace
 - have a `menuconfig`-like and `Kconfig`-like kernel configuration system
 - use multiple cores eventually
+- study realtime considerations (deterministic allocation time, interrupt top
+  half and bottom half)
 
 ## Drivers
 

@@ -46,8 +46,6 @@ struct device_list {
   struct device_list_elem *tail;
 };
 
-bool device_try_match(struct device *dev, struct driver *driver);
-
 // Driver
 // ------
 //
@@ -85,10 +83,6 @@ struct devclass_ops {
   int (*remove) (struct device* dev);
 };
 
-void devclass_init(struct devclass *dclass);
-void devclass_register_device(struct devclass *dclass, struct device *dev);
-void devclass_register_driver(struct devclass *dclass, struct driver *driver);
-
 // Devclass Manager
 // ----------------
 
@@ -98,6 +92,11 @@ struct devclass_manager {
 
 extern struct devclass_manager *glob_devclass_manager;
 
-void devclass_manager_init(struct devclass_manager *dcm);
+void devclass_manager_init(void);
+
+bool devclass_register_device(struct device *dev);
+bool devclass_register_driver(struct driver *driver);
+
+bool devclass_try_match(struct device *dev, struct driver *driver);
 
 #endif // POVOS_DRIVER_MODEL_H

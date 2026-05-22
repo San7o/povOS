@@ -38,9 +38,8 @@
 // C entrypoint
 int kernel_main(void)
 {
-  //
   // Sanity checks
-  //
+  // -------------
 
   vga_init();
   if (vga_get_memory_map() != 0x3) {
@@ -63,9 +62,8 @@ int kernel_main(void)
   
   // Checks successfull
 
-  //
   // Setup memory management
-  //
+  // -----------------------
   
   debug_print_memory_map_uart();
   
@@ -84,9 +82,8 @@ int kernel_main(void)
   (void) some_mem;
   // debug_print_pmmgr_bitfield();
   
-  //
   // Setup interrupts
-  //
+  // ----------------
   
   pit_set_count(1193); // one tick per millisecond
   
@@ -94,10 +91,11 @@ int kernel_main(void)
 
   idt_set();    // Setup the IDT
 
-  //
   // Setup devices
+  // -------------
   //
-  
+  // We do this manually until the device model if fully implemented
+ 
   void* hpet_base   = NULL;
   
   struct acpi_rsdp* acpi_rsdp = acpi_locate_rsdp();
@@ -202,9 +200,8 @@ int kernel_main(void)
   debug_dump_regs_uart2();
   // breakpoint();
   
-  //
   // Setup tty
-  //
+  // ---------
   
   vga_init();
   
@@ -231,9 +228,8 @@ int kernel_main(void)
   //debug_sleep();
   //reboot();
 
-  //
   // Scheduler
-  //
+  // ---------
   
   // Test Task A
   u64_t *stack_top_a = (u64_t*)((u64_t)kmalloc(4096) + 4096);
