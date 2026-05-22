@@ -3,9 +3,8 @@
 # Mail:    giovanni.santini@proton.me
 # Github:  @San7o
 
-#
 # Configuration flags
-#
+# -------------------
 
 ARCH ?= x86_64
 

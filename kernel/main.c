@@ -94,7 +94,7 @@ int kernel_main(void)
   // Setup devices
   // -------------
   //
-  // We do this manually until the device model if fully implemented
+  // We do this manually until the device model fully implemented
  
   void* hpet_base   = NULL;
   
