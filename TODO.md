@@ -132,6 +132,9 @@ to have.
 - interrupt API: you should be able to mask, register and redirect interrupts in
   an arch-independent way
   - have a software interrupt vector
+  - Drivers should use `request_irq()` and `free_irq()`, `disable_irq()` and
+    `enable_irq()`. Some lower level platform plumbing may also have to take
+    into accout CPU local IRQ with an `request_percpu_irq()` api.
 - general device model: bus, device, driver abstractions
 - vfs: the VFS interface is already implemented, now a filesystem that uses it
   should be implemented too, like FAT32.
