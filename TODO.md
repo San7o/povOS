@@ -34,7 +34,11 @@ Todo, in order:
 - have a well-defined bootloader to kernel API
 - have a well-defined intermediate bootloader API
 - port the current bootloader to the new APIs
-- have an uefi backed
+
+To make this bootloader useful to boot other operating systems, it should
+implement an UEFI interface to the kernel. This is the absolute standard for PCs
+and servers. Embedded devices use a simpler interface, usually they are just
+passed a pointer to the device tree.
 
 An advanced topic would be to have the OS choose which frontend to use (by
 setting some data in a specific section for example, but this would require the
@@ -158,8 +162,7 @@ to have.
 
 ## Chores
 
+- Implement something like `log_msg_ret(msg, val)`
 - read-write lock
 - power off: surprisingly, doing this right is a bit more complicated than you
   think. It may require some power management infrastructure.
-- develop a custom emulated device in qemu, such as a temperature sensor using
-  i2c
