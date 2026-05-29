@@ -129,6 +129,8 @@ to have.
 
 ## Kernel
 
+- make physical memory reference counted, free them if their virtual memory gets
+  freed and their reference count goes to 0
 - interrupt API: you should be able to mask, register and redirect interrupts in
   an arch-independent way
   - have a software interrupt vector
