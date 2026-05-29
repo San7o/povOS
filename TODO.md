@@ -49,74 +49,13 @@ bootloaders, but that is for another day.
 
 ## Driver Model
 
-One of the most important framework in the kernel is the driver model. We need:
+One of the most important framework in the kernel is the driver model. I have
+already setup the basic interface, I need to work on (in order):
 
-- device class abstraction: manages the lifecycle of devices and drivers,
-  defines operations that the driver must implement.
-
-```c
-struct devclass {
-    enum devclass_type type;
-    struct device_list devices;
-    struct driver_list drivers;
-};
-
-struct devclass_ops {
-    int (*probe) (struct device* dev);
-    int (*remove) (struct device* dev);
-};
-```
-
-- device abstraction: just data about a device (bus, ID, name). It is the
-  equivalent to the device tree represented as a C api. It may contain hardcoded
-  devices and probed devices during runtime, and it can be added or removed
-  (plug and play), so it must be dynamic. 
-
-```c
-struct device {
-    const char* name;
-    enum devclass_type type;
-};
-
-struct pci_dev_id {
-    int vendor_id;
-    int device_id;
-};
-
-struct pci_dev {
-    struct device dev;
-    struct pci_device_id id;
-};
-```
-
-- driver abstraction: a driver has some id data and belongs to a class, it
-  implements its operations. A driver may be added or removed during runtime so
-  there must exist a dynamic structure of drivers managed by the device class.
-
-```c
-struct driver {
-    const char *name;
-    int priv_size;
-    enum devclass_type type;
-    struct devclass_ops *ops;
-};
-
-struct pci_driver {
-    struct driver driver;
-    struct pci_device_id id;
-};
-```
-
-The device looks at its devices and tries to match a driver (calling the
-driver's `probe` function.
-
-FreeBSD's design is very clean:
-https://docs.freebsd.org/en/books/arch-handbook/newbus/
-
-Also check out:
-
-https://www.kernel.org/doc/html/latest/driver-api/driver-model/index.html
-https://docs.u-boot.org/en/latest/develop/driver-model/design.html
+- implement the functions of the driver model
+- do automatic driver and device registration
+- do automatic driver <-> device initialization
+- move some drivers to this model
 
 ## Scheduler
 
