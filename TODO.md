@@ -80,6 +80,7 @@ to have.
   - Drivers should use `request_irq()` and `free_irq()`, `disable_irq()` and
     `enable_irq()`. Some lower level platform plumbing may also have to take
     into accout CPU local IRQ with an `request_percpu_irq()` api.
+  - add hardIRQ and softIRQ distinction
 - general device model: bus, device, driver abstractions
 - vfs: the VFS interface is already implemented, now a filesystem that uses it
   should be implemented too, like FAT32.
@@ -103,5 +104,6 @@ to have.
 
 - Implement something like `log_msg_ret(msg, val)`
 - read-write lock
+- use `stdnoreturn.h` when necessary
 - power off: surprisingly, doing this right is a bit more complicated than you
   think. It may require some power management infrastructure.
