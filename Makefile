@@ -4,32 +4,18 @@
 # Github:  @San7o
 
 include config.mk
+include rules.mk
 include $(SUBPROJECTS_MAKE_CONF)
 
 all: povos
 
 ##@ Build
 
-povos: $(KERNEL_BIN) $(BOOT_BIN) ## build povOS + bootloader
-	cp $(BOOT_BIN) $(POVOS_BIN)
-	cat $(KERNEL_BIN) >> $(POVOS_BIN)
-	./scripts/check_bootloader_sectors.sh $(ARCH)
-	./scripts/patch_size.sh
-	dd if=/dev/zero bs=1 count=512 >> $(POVOS_BIN)
-	truncate -s %512 $(POVOS_BIN)
+.PHONY: povos
+povos: $(POVOS_BIN) ## build povOS + bootloader
 
-$(KERNEL_BIN): $(OBJ)
-	$(LD) $(KERNEL_LDFLAGS) --oformat binary -o $@ $^
-	$(LD) $(KERNEL_LDFLAGS) -o $@.elf $^
-
+.PHONY: bootloader
 bootloader: $(BOOT_BIN) ## build the bootloader
-
-$(BOOT_BIN): $(BOOT_ASM)
-	$(ASM) -f bin $(BOOT_ASM) -o $@
-
-$(DRIVE).img:
-	qemu-img create -f raw $(DRIVE).img $(DRIVE_SIZE)
-	echo "TEST_POVOS" | dd of=$(DRIVE).img bs=1 seek=2560 conv=notrunc
 
 ##@ Run
 
@@ -68,12 +54,3 @@ devices: ## print available qemu devices
 .PHONY: help
 help: ## Display this help.
 	@awk 'BEGIN {FS = ":.*##"; printf "povOS\n\n    make <target>\n\ntargets:\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  %-15s %s\n", $$1, $$2 } /^##@/ { printf "\n%s\n", substr($$0, 5) } ' ${MAKEFILE_LIST}
-
-%.o: %.c
-	@echo " [CC] "$@
-	@$(CC) $(CFLAGS) -o $@ $^
-
-%.o: %.asm
-	@echo " [AS] "$@
-	@$(ASM) $(ASFLAGS) $< -o $@
-
