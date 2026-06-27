@@ -102,6 +102,7 @@ to have.
 
 ## Chores
 
+- Add a `system_state` global variable.
 - Implement something like `log_msg_ret(msg, val)`
 - read-write lock
 - use `stdnoreturn.h` when necessary

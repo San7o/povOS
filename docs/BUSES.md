@@ -1,7 +1,7 @@
 # Buses
 
 A list of buses you would find on a modern PC. There are so many to
-accomodade different devices at different speeds, and for legacy
+accomodate different devices at different speeds, and for legacy
 reasons of course.
 
 ## High-Speed
