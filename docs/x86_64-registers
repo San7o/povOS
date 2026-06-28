@@ -1,5 +1,8 @@
+x86_64 Registers
+================
+
 General Purpose Registers
-=========================
+-------------------------
 
   / ============================================================== \
   | 64b  | 32b | 16b  | hi8  | 8b   | Description                  |
@@ -21,3 +24,43 @@ General Purpose Registers
   | R14  | R14D| R14W |  -   | R14B | General purpose              |
   | R15  | R15D| R15W |  -   | R15B | General purpose              |
   \ ============================================================== /
+
+Special Registers
+-----------------
+
+- Segments
+  - `cs`: code segment
+  - `ds`: data segment
+  - `ss`: stack segment
+  - `ex`: extra segment
+  - `fs`: general-purpose segment
+  - `gs`: general-purpose segment
+- `rflags`
+- Control registers `cr0` to `cr8`
+- Debug registers `dr0` to `dr7`
+- Test registers `tr6` and `tr7`
+
+Model Specific Registers (MSR)
+------------------------------
+
+Some registers are accessed through special instructions `rdmsr`, `wrmsr` and
+`rdtsc`:
+
+- `wrmsr`: writes the contents of registers EDX:EAX into the 64-bit model
+  specific register (MSR) specified in the ECX register.
+- `rdmsr`: reads the contents of a 64-bit model specific register (MSR)
+  specified in the ECX register into registers EDX:EAX.
+- `rdtsc` (Read Time-Stamp Counter): Reads the current value of the processor’s
+  time-stamp counter (a 64-bit MSR) into the EDX:EAX registers.
+
+Special instructions
+--------------------
+
+- `cpuid`: returns processor identification and feature information in the EAX,
+  EBX, ECX, and EDX registers.
+- `lgdt`: load gdt
+- `hlt`: halt
+- `cli`: disable interrupts
+- `sti`: enable interrupts
+- `int`: create interrupt
+- `cld`: clear direction flag

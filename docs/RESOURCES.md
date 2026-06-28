@@ -35,6 +35,7 @@ describes a common architecture for the PC (replaced by ACPI)
   interface any compliant device (real or emulated) with a driver.
 - [POSIX
   Standard](https://pubs.opengroup.org/onlinepubs/9799919799.2024edition/download/index.html)
+- [ELF Specification](https://refspecs.linuxfoundation.org/elf/elf.pdf)
 
 ### x86
 
