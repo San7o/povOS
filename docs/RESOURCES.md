@@ -1,6 +1,6 @@
 # Resources
 
-Legacy documents (still very useful):
+## Legacy documents (still very useful)
 
 - [MultiProcessor
 Specification](https://web.archive.org/web/20121002210153/http://download.intel.com/design/archives/processors/pro/docs/24201606.pdf)
@@ -15,8 +15,7 @@ describes a common architecture for the PC (replaced by ACPI)
   0.6.96](https://www.gnu.org/software/grub/manual/multiboot/multiboot.html):
   standard interface implemented by bootloaders
 
-
-Modern documents:
+## Modern documents
 
 - [UEFI Specification
   2.11](https://uefi.org/sites/default/files/resources/UEFI_Spec_Final_2.11.pdf):
@@ -34,6 +33,11 @@ Modern documents:
   devices of different types. Originally developed as a standard for
   paravirtualized devices implemented by a hypervisor, it can be used to
   interface any compliant device (real or emulated) with a driver.
+- [POSIX
+  Standard](https://pubs.opengroup.org/onlinepubs/9799919799.2024edition/download/index.html)
+
+### x86
+
 - [Intel 64 and IA-32 Architectures Software Developer’s
   Manuals](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html):
   one of the most important books to master, it explains all CPU functionalities
@@ -42,10 +46,14 @@ Modern documents:
   Family](https://www.intel.com/content/dam/doc/datasheet/io-controller-hub-9-datasheet.pdf):
   modern southbridge, providing a massive amount of functionality. This is
   qemu's `q32-9.0` emulated machine.
-- [POSIX
-  Standard](https://pubs.opengroup.org/onlinepubs/9799919799.2024edition/download/index.html)
 
-Useful theory:
+### ARM
+
+- [FF-A](https://developer.arm.com/Architectures/Firmware%20Framework%20for%20A-Profile#Technical-Specifications):
+  a standard interface for software components in the Non-secure state, for
+  example OS and Hypervisors, to communicate with this firmware.
+
+### Useful theory
 
 - [ CppCon 2017: Fedor Pikus "Read, Copy, Update, then what? RCU for
   non-kernel
