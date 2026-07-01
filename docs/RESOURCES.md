@@ -33,6 +33,8 @@ describes a common architecture for the PC (replaced by ACPI)
   devices of different types. Originally developed as a standard for
   paravirtualized devices implemented by a hypervisor, it can be used to
   interface any compliant device (real or emulated) with a driver.
+- [NVMe Specifications](https://nvmexpress.org/specifications/): modern
+  interface for non-volatile memory, usually NAND flash used in SSDs like M2.
 - [POSIX
   Standard](https://pubs.opengroup.org/onlinepubs/9799919799.2024edition/download/index.html)
 - [ELF Specification](https://refspecs.linuxfoundation.org/elf/elf.pdf)
