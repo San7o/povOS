@@ -2,8 +2,8 @@
 
 povOS is an operating system for the PC, with ACPI.
 
-NOTE: I am preparing to make the OS cross platform and multicore, this will take
-some time. For the mean time I am developing a new bootloader,
+*NOTE*: I am preparing to make the OS cross-architecture and multicore, this
+will take some time. Meanwhile I am developing a new bootloader,
 [iperboot](https://github.com/San7o/iperboot/), check it out!
 
 ## Features
