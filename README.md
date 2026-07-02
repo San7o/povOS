@@ -1,43 +1,37 @@
 ![](./povos-banner.jpeg)
 
-povOS is an operating system for an IBM-compatible PC using the x86_64
-architecture.
-
-- Author:  Giovanni Santini
-- Mail:    giovanni.santini@proton.me
-- License: MIT
+povOS is an operating system for the PC, with ACPI.
 
 ## Features
 
 - custom bootloader
 - custom standard library
-- kernel:
-  - IDT (Interrupt Descriptor Tabe) and ISR (Interrupt Service Routines)
-  - input (supports multiple keyboard layouts)
-  - textbuffer
-  - framebuffer
-  - console
-  - tty
-  - time tracking
-  - sleep
-  - memory management
-    - physical memory management
-    - paging
-    - virtual memory manager
-    - free-list based memory allocator
-    - heap
-    - higher half kernel, RAM mapped in high memory
-  - multitasking
-    - tasks
-    - context switching
-    - scheduler
-    - semaphores
-    - mutexes
-    - spinlocks
-  - filesystem
-    - virtual filesystem
-  - random number generation
-  - logging
+- interrupts
+- input (supports multiple keyboard layouts)
+- textbuffer
+- framebuffer
+- console
+- tty
+- time tracking
+- sleep
+- memory management
+  - physical memory management
+  - paging
+  - virtual memory manager
+  - free-list based memory allocator
+  - heap
+  - higher half kernel, RAM mapped in high memory
+- multitasking
+  - tasks
+  - context switching
+  - scheduler
+  - semaphores
+  - mutexes
+  - spinlocks
+- filesystem
+  - virtual filesystem
+- random number generation
+- logging
 - drivers:
   - PS/2
   - UART
