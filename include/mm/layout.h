@@ -17,12 +17,18 @@
 //
 //   Start                End                 Size     Usage
 //   ---------------------------------------------------------------
-//   0x0000000000000000 - 0xFFFF7FFFFFFFFFFF  128 TB   Userspace 
-//   0xFFFF800000000000 - 0xFFFFFDFFFFFFFFFF  127 TB   RAM
+//   0x0000000000000000 - 0x00007FFFFFFFFFFF  128 TB   Userspace 
+//   0x0000800000000000 - 0xFFFF7FFFFFFFFFFF           Unmapped
+//   0xFFFF800000000000 - 0xFFFFFDFFFFFFFFFF  126 TB   RAM
 //   0xFFFFFE0000000000 - 0xFFFFFE7FFFFFFFFF  512 GB   Page Tables
 //   0xFFFFFE8000000000 - 0xFFFFFFFF7FFFFFFF  510 GB   Free
 //   0xFFFFFFFF80000000 - 0xFFFFFFFFFFFFFFFF  2 GB     Kernel
 // 
+// Note the unmapped area. This is mandatory and is the consequence of the
+// Canonical Address Rule. Essentially, since we have only 47 bits for
+// addressing, bits 48 to 63 are the same as bit 47. This means that everything
+// in between (1 << 47) and ((0b11111111111111111 << 47) - 1) cannot be accessed
+//
 
 #include <libk/stddef.h>
 
