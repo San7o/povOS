@@ -1,21 +1,6 @@
 # Resources
 
-## Legacy documents (still very useful)
-
-- [MultiProcessor
-Specification](https://web.archive.org/web/20121002210153/http://download.intel.com/design/archives/processors/pro/docs/24201606.pdf)
-describes a common architecture for the PC (replaced by ACPI)
-- [PIIX3
-  Datasheet](https://www.alldatasheet.com/datasheet-pdf/pdf/66093/INTEL/PIIX3.html):
-  the old southbridge (replaced by PCH, which is retro-compatible),
-  allows accesses to a lot of devices including the ancient (but very
-  easy to work with) ISA-based devices like PIT and PIC, and "newer"
-  toys like IOAPIC.
-- [Multiboot Specification version
-  0.6.96](https://www.gnu.org/software/grub/manual/multiboot/multiboot.html):
-  standard interface implemented by bootloaders
-
-## Modern documents
+## Standards and specifications
 
 - [UEFI Specification
   2.11](https://uefi.org/sites/default/files/resources/UEFI_Spec_Final_2.11.pdf):
@@ -39,26 +24,49 @@ describes a common architecture for the PC (replaced by ACPI)
   Standard](https://pubs.opengroup.org/onlinepubs/9799919799.2024edition/download/index.html)
 - [ELF Specification](https://refspecs.linuxfoundation.org/elf/elf.pdf)
 
-### x86
+## x86
 
 - [Intel 64 and IA-32 Architectures Software Developer’s
   Manuals](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html):
-  one of the most important books to master, it explains all CPU functionalities
-  like paging, segmentation, virtualization and the rest.
+  one of the most important reference, it explains all CPU functionalities like
+  paging, segmentation, virtualization and the rest.
 - [Intel I/O Controller Hub 9 (ICH9)
   Family](https://www.intel.com/content/dam/doc/datasheet/io-controller-hub-9-datasheet.pdf):
   modern southbridge, providing a massive amount of functionality. This is
   qemu's `q32-9.0` emulated machine.
+- [AMD64 Architecture Programmer's Manual, Volumes
+  1-5](https://docs.amd.com/v/u/en-US/40332_4.09_APM_PUB): AMD reference for its
+  CPUs, very well explained (maybe better than intel?)
+- [BIOS and Kernel Developer’s Guide (BKDG) for
+  AMD](https://www.amd.com/content/dam/amd/en/documents/archived-tech-docs/programmer-references/49125_15h_Models_30h-3Fh_BKDG.pdf):
+  importante reference for firmware, explains initialization sequences for
+  various components
 
-### ARM
+## ARM
 
 - [FF-A](https://developer.arm.com/Architectures/Firmware%20Framework%20for%20A-Profile#Technical-Specifications):
   a standard interface for software components in the Non-secure state, for
   example OS and Hypervisors, to communicate with this firmware.
 
-### Useful theory
+## Useful theory
 
 - [ CppCon 2017: Fedor Pikus "Read, Copy, Update, then what? RCU for
   non-kernel
   programmers"](https://www.youtube.com/watch?v=rxQ5K9lo034): explains
   RCU, which is very useful for read-mostly data structures
+
+## Legacy documents (still very useful)
+
+- [MultiProcessor
+Specification](https://web.archive.org/web/20121002210153/http://download.intel.com/design/archives/processors/pro/docs/24201606.pdf)
+describes a common architecture for the PC (replaced by ACPI)
+- [PIIX3
+  Datasheet](https://www.alldatasheet.com/datasheet-pdf/pdf/66093/INTEL/PIIX3.html):
+  the old southbridge (replaced by PCH, which is retro-compatible),
+  allows accesses to a lot of devices including the ancient (but very
+  easy to work with) ISA-based devices like PIT and PIC, and "newer"
+  toys like IOAPIC.
+- [Multiboot Specification version
+  0.6.96](https://www.gnu.org/software/grub/manual/multiboot/multiboot.html):
+  standard interface implemented by bootloaders
+
