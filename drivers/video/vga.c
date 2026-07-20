@@ -3,8 +3,8 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <drivers/video/vga.h>   // implements
 #include <bits/port.h>
+#include <drivers/video/vga.h>   // implements
 
 struct vga_text_entry  *glob_vga_textbuffer = 0;
 vga_color_t  *glob_vga_framebuffer = 0;

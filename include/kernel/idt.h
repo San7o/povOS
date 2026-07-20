@@ -47,8 +47,8 @@
 //
 
 #include <kernel/macros.h>
-#include <libk/stddef.h>
 #include <libk/stdbool.h>
+#include <libk/stddef.h>
 
 // Gates
 // -----

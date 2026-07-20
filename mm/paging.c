@@ -3,11 +3,11 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
+#include <libk/string.h>
+#include <mm/layout.h>
 #include <mm/paging.h>   // implements
 #include <mm/pmmgr.h>
 #include <mm/vmmgr.h>
-#include <mm/layout.h>
-#include <libk/string.h>
 
 struct page_table *paging_pml4t_init(void)
 {

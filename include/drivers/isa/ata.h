@@ -23,10 +23,10 @@
 //             https://www.karry.cz/files/ata2.pdf
 //
 
-#include <kernel/macros.h>
-#include <libk/stddef.h>
-#include <libk/stdbool.h>
 #include <bits/port.h>
+#include <kernel/macros.h>
+#include <libk/stdbool.h>
+#include <libk/stddef.h>
 
 #define ATA_SECTOR_SIZE 512
 

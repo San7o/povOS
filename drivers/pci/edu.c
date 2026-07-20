@@ -4,9 +4,9 @@
 // Github:  @San7o
 
 #include <drivers/pci/edu.h>   // implements
-#include <mm/pmmgr.h>
-#include <mm/paging.h>
 #include <libk/unistd.h>
+#include <mm/paging.h>
+#include <mm/pmmgr.h>
 
 #define EDU_ALLOC      0
 #define EDU_BUS        0

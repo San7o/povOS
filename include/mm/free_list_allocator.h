@@ -23,7 +23,7 @@
 #ifndef FREE_LIST_ALLOC_MAX_NUM_CHUNKS
   #define FREE_LIST_ALLOC_MAX_NUM_CHUNKS 1024
 #endif
-  
+
 struct free_list_alloc_chunk {
   char*  start;
   size_t size;

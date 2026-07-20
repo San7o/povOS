@@ -4,14 +4,14 @@
 // Github:  @San7o
 
 #include <drivers/acpi/acpi.h>   // implements
-#include <kernel/range.h>
 #include <kernel/klog.h>
+#include <kernel/range.h>
+#include <libk/stddef.h>
+#include <libk/stdio.h>
+#include <libk/string.h>
 #include <mm/pmmgr.h>
 #include <mm/paging.h>
 #include <mm/layout.h>
-#include <libk/string.h>
-#include <libk/stdio.h>
-#include <libk/stddef.h>
 
 // The ACPI RSDP is identified by a "RSD PTR " string (notice
 // the space at the end) and can be confirmed via a checksum.

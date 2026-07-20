@@ -3,8 +3,8 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <drivers/isa/uart.h>   // implements
 #include <bits/port.h>
+#include <drivers/isa/uart.h>   // implements
 #include <libk/stdlib.h>
 
 #define UART_PORT_MAKE(_port) (struct uart_port) \

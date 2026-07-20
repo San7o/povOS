@@ -13,12 +13,12 @@
 // Various debugging functions to inspect the state of the kernel
 //
 
+#include <arch/cpu_regs.h>
 #include <drivers/input/keyboard.h>
 #include <drivers/video/vga.h>
 #include <drivers/pci/pcie.h>
 #include <kernel/input/input.h>
 #include <mm/pmmgr.h>
-#include <arch/cpu_regs.h>
 
 //
 // CPU

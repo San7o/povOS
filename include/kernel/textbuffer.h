@@ -19,7 +19,7 @@ typedef u8_t textbuffer_color_t;
 
 struct textbuffer_style {
   textbuffer_color_t  foreground;
-  textbuffer_color_t  background;  
+  textbuffer_color_t  background;
 };
 
 #define TEXTBUFFER_STYLE_MAKE(fg, bg) \

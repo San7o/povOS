@@ -3,12 +3,12 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <mm/vmmgr.h>   // implements
-#include <mm/pmmgr.h>
-#include <mm/paging.h>
-#include <mm/layout.h>
 #include <kernel/gdt.h>
 #include <libk/string.h>
+#include <mm/layout.h>
+#include <mm/vmmgr.h>   // implements
+#include <mm/paging.h>
+#include <mm/pmmgr.h>
 
 void vmmgr_setup(struct vmmgr *vmmgr)
 {

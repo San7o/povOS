@@ -3,8 +3,8 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <kernel/sync.h>   // implements
 #include <kernel/macros.h>
+#include <kernel/sync.h>   // implements
 #include <kernel/utils.h>
 
 void semaphore_init(struct semaphore *s, u64_t n)

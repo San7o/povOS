@@ -3,15 +3,15 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <mm/pmmgr.h>   // implements
-#include <mm/paging.h>
-#include <mm/layout.h>
-#include <kernel/utils.h>
-#include <kernel/range.h>
 #include <kernel/klog.h>
+#include <kernel/range.h>
+#include <kernel/utils.h>
 #include <libk/stdbool.h>
 #include <libk/stdio.h>
 #include <libk/string.h>
+#include <mm/layout.h>
+#include <mm/paging.h>
+#include <mm/pmmgr.h>   // implements
 
 struct pmmgr glob_pmmgr;
 

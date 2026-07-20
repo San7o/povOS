@@ -3,8 +3,8 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <drivers/isa/ps2.h>   // implements
 #include <bits/port.h>
+#include <drivers/isa/ps2.h>   // implements
 
 unsigned char ps2_read_data(void)
 {

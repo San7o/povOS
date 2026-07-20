@@ -3,8 +3,8 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <kernel/textbuffer.h>   // implements
 #include <drivers/video/vga.h>
+#include <kernel/textbuffer.h>   // implements
 
 void textbuffer_init(struct textbuffer *tb,
                      struct textbuffer_entry *buff,

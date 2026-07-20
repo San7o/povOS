@@ -3,9 +3,9 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
+#include <bits/port.h>
 #include <drivers/isa/pit.h>   // implements
 #include <kernel/utils.h>
-#include <bits/port.h>
 
 u16_t pit_read_count(void)
 {

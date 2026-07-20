@@ -3,35 +3,35 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <libk/stdlib.h>
-#include <libk/stdbool.h>
-#include <libk/string.h>
-#include <libk/stdio.h>
-#include <mm/pmmgr.h>
-#include <mm/vmmgr.h>
-#include <mm/bios_mmap.h>
-#include <mm/heap.h>
-#include <mm/layout.h>
-#include <kernel/idt.h>
-#include <kernel/debug.h>
-#include <kernel/utils.h>
-#include <kernel/input/input.h>
-#include <kernel/textbuffer.h>
-#include <kernel/console.h>
-#include <kernel/tty.h>
-#include <kernel/sched.h>
-#include <kernel/klog.h>
-#include <drivers/isa/pic.h>
-#include <drivers/isa/pit.h>
-#include <drivers/isa/uart.h>
-#include <drivers/pci/pcie.h>
 #include <drivers/acpi/acpi.h>
 #include <drivers/acpi/hpet.h>
 #include <drivers/acpi/ioapic.h>
-#include <drivers/video/vga.h>
 #include <drivers/input/keyboard.h>
-#include <drivers/pci/edu.h>
 #include <drivers/isa/ata.h>
+#include <drivers/isa/pic.h>
+#include <drivers/isa/pit.h>
+#include <drivers/isa/uart.h>
+#include <drivers/pci/edu.h>
+#include <drivers/pci/pcie.h>
+#include <drivers/video/vga.h>
+#include <kernel/console.h>
+#include <kernel/debug.h>
+#include <kernel/idt.h>
+#include <kernel/input/input.h>
+#include <kernel/klog.h>
+#include <kernel/sched.h>
+#include <kernel/textbuffer.h>
+#include <kernel/tty.h>
+#include <kernel/utils.h>
+#include <libk/stdbool.h>
+#include <libk/stdio.h>
+#include <libk/stdlib.h>
+#include <libk/string.h>
+#include <mm/bios_mmap.h>
+#include <mm/heap.h>
+#include <mm/layout.h>
+#include <mm/pmmgr.h>
+#include <mm/vmmgr.h>
 
 #include "banner.h"
 

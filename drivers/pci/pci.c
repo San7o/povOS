@@ -3,8 +3,8 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <drivers/pci/pci.h>   // implements
 #include <bits/port.h>
+#include <drivers/pci/pci.h>   // implements
 #include <kernel/macros.h>
 
 void pci_writew(u32_t value)

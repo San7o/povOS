@@ -3,19 +3,19 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <libk/unistd.h>
-#include <kernel/debug.h>   // implements
-#include <mm/paging.h>
-#include <kernel/time.h>
 #include <drivers/isa/uart.h>
 #include <drivers/video/vga.h>
 #include <drivers/pci/pci.h>
 #include <drivers/acpi/hpet.h>
-#include <mm/bios_mmap.h>
-#include <mm/pmmgr.h>
-#include <mm/layout.h>
-#include <kernel/utils.h>
+#include <kernel/debug.h>   // implements
 #include <kernel/sync.h>
+#include <kernel/time.h>
+#include <kernel/utils.h>
+#include <libk/unistd.h>
+#include <mm/bios_mmap.h>
+#include <mm/layout.h>
+#include <mm/paging.h>
+#include <mm/pmmgr.h>
 
 void debug_dump_regs_uart3(struct cpu_regs regs)
 {

@@ -6,6 +6,7 @@
 #ifndef POVOS_ARCH_X86_64_CPU_REGS_H
 #define POVOS_ARCH_X86_64_CPU_REGS_H
 
+#include <libk/stddef.h>
 #include <kernel/macros.h>
 
 //

@@ -16,9 +16,9 @@
 // logic of the "terminal interface" or a simple text editor.
 //
 
+#include <kernel/console.h>
 #include <kernel/input/input.h>
 #include <kernel/textbuffer.h>
-#include <kernel/console.h>
 
 struct tty {
   struct textbuffer *textbuffer;

@@ -16,10 +16,10 @@
 // Physical Memory Manager and maps it via paging.
 //
 
-#include <libk/stddef.h>
 #include <libk/stdbool.h>
-#include <mm/paging.h>
+#include <libk/stddef.h>
 #include <mm/free_list_allocator.h>
+#include <mm/paging.h>
 
 #define VMMGR_MAX_OBJECTS 1024
 

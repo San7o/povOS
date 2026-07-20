@@ -4,8 +4,8 @@
 // Github:  @San7o
 
 #include <drivers/isa/isa.h>   // implements
-#include <kernel/utils.h>
 #include <kernel/macros.h>
+#include <kernel/utils.h>
 
 #define ISA_INIT_KEY 0x6a
 

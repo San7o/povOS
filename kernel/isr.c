@@ -3,15 +3,15 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <kernel/isr.h>   // implements
+#include <drivers/input/keyboard.h>
+#include <drivers/isa/pic.h>
+#include <drivers/isa/ps2.h>
+#include <drivers/isa/uart.h>
 #include <kernel/debug.h>
-#include <kernel/time.h>
+#include <kernel/isr.h>   // implements
 #include <kernel/macros.h>
 #include <kernel/sched.h>
-#include <drivers/isa/uart.h>
-#include <drivers/isa/ps2.h>
-#include <drivers/isa/pic.h>
-#include <drivers/input/keyboard.h>
+#include <kernel/time.h>
 
 #include "isr_string.h"
 

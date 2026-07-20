@@ -143,7 +143,7 @@ enum keycode {
     KEY_PRINT_SCREEN    = 0x67,
     KEY_PAUSE           = 0x68,
     KEY_APPLICATION     = 0x69,
-    
+
     // Multimedia Controls
     KEY_MUTE            = 0x6A,
     KEY_VOLUME_UP       = 0x6B,
@@ -152,7 +152,7 @@ enum keycode {
     KEY_STOP            = 0x6E,
     KEY_NEXT_TRACK      = 0x6F,
     KEY_PREV_TRACK      = 0x70,
-    
+
     // Application Launchers
     KEY_CALCULATOR      = 0x71,
     KEY_MAIL            = 0x72,

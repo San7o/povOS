@@ -3,8 +3,8 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <kernel/tty.h>
 #include <drivers/video/vga.h>
+#include <kernel/tty.h>
 
 void tty_init(struct tty *tty, struct textbuffer *textbuffer,
               struct textbuffer_style style, struct console *console)

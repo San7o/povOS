@@ -23,9 +23,9 @@
 //      https://uefi.org/htmlspecs/ACPI_Spec_6_4_html/
 //
 
-#include <mm/bios_mmap.h>
 #include <kernel/macros.h>
 #include <libk/stddef.h>
+#include <mm/bios_mmap.h>
 
 //
 // Root System Description Pointer

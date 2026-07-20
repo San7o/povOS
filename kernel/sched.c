@@ -3,12 +3,12 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
+#include <arch/cpu_regs.h>
+#include <kernel/klog.h>
 #include <kernel/sched.h>   // implements
 #include <kernel/utils.h>
-#include <kernel/klog.h>
-#include <arch/cpu_regs.h>
-#include <libk/string.h>
 #include <libk/stdio.h>
+#include <libk/string.h>
 
 struct scheduler  glob_scheduler = {0};
 task_id_t  glob_current_task = 0;

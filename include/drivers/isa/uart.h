@@ -65,9 +65,9 @@
 // Types
 //
 
+#include <bits/port.h>
 #include <libk/stdbool.h>
 #include <stdarg.h>
-#include <bits/port.h>
 
 struct uart_port {
   port_t port;

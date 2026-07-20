@@ -53,8 +53,8 @@
 //   reading the old generation and frees the old memory.
 //   
 
-#include <libk/stddef.h>
 #include <libk/stdbool.h>
+#include <libk/stddef.h>
 
 struct semaphore {
   volatile u64_t count;

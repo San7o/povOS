@@ -3,8 +3,8 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <drivers/isa/pic.h>   // implements
 #include <bits/port.h>
+#include <drivers/isa/pic.h>   // implements
 #include <kernel/utils.h>
 
 void pic_remap(void)

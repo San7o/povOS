@@ -4,7 +4,6 @@
 // Github:  @San7o
 
 #include <kernel/klog.h>   // implements
-
 #include <libk/stdio.h>
 
 enum klog_level glob_klog_level = KLOG_LEVEL_TRACE;

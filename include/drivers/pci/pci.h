@@ -6,8 +6,6 @@
 #ifndef POVOS_DRIVERS_PCI_H
 #define POVOS_DRIVERS_PCI_H
 
-#include <libk/stddef.h>
-
 //
 // PCI
 // ===
@@ -28,6 +26,8 @@
 // some way to get the vendor + device id (register 0x0) and the
 // status (register 0x1).
 //
+
+#include <libk/stddef.h>
 
 // PCI CONFIG ADDRESS
 //

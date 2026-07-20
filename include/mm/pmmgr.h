@@ -15,8 +15,8 @@
 // size blocks (PAGE_SIZE).
 //
 
-#include <mm/bios_mmap.h>
 #include <libk/stddef.h>
+#include <mm/bios_mmap.h>
 
 typedef u64_t phys_addr_t;
 

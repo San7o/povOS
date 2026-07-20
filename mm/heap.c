@@ -3,8 +3,8 @@
 // Mail:    giovanni.santini@proton.me
 // Github:  @San7o
 
-#include <mm/heap.h>   // implements
 #include <mm/free_list_allocator.h>
+#include <mm/heap.h>   // implements
 
 static struct free_list_alloc kheap;
 
