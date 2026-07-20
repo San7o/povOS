@@ -105,6 +105,7 @@ to have.
 - Add a `system_state` global variable.
 - Add a `GENMASK` macro
 - Add a `regmap` abstraction
+- Add memory barriers to port operations
 - Sort the headers
 - Implement something like `log_msg_ret(msg, val)`
 - read-write lock

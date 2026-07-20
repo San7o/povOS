@@ -87,5 +87,5 @@
 //
 
 unsigned char ps2_read_data(void);
-                                
+
 #endif // POVOS_DRIVERS_PS2_H

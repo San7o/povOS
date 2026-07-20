@@ -14,6 +14,6 @@ void gdt_reload(void)
   gdtr.base = (u64_t)MM_PHYS_TO_VIRT(gdtr.base);
 
   __asm__ volatile("lgdt %0" : : "m"(gdtr));
-    
+
   gdt_flush();
 }

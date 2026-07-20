@@ -18,14 +18,14 @@ debug_dump_regs_uart:
   mov rsi, debug_dump_regs_uart_rax_str
   call uart_write_str
   mov rsi, rax
-  mov rdi, [uart_port1]  
+  mov rdi, [uart_port1]
   call uart_write_hex
   mov rdi, [uart_port1]
   mov rsi, `\n`
   call uart_putc
-  
+
   ;; rbx
-  mov rdi, [uart_port1]  
+  mov rdi, [uart_port1]
   mov rsi, debug_dump_regs_uart_rbx_str
   call uart_write_str
   mov rdi, [uart_port1]
@@ -34,7 +34,7 @@ debug_dump_regs_uart:
   mov rdi, [uart_port1]
   mov rsi, `\n`
   call uart_putc
-  
+
   ;; rcx
   mov rdi, [uart_port1]
   mov rsi, debug_dump_regs_uart_rcx_str
@@ -42,10 +42,10 @@ debug_dump_regs_uart:
   mov rdi, [uart_port1]
   mov rsi, rcx
   call uart_write_hex
-  mov rdi, [uart_port1]  
+  mov rdi, [uart_port1]
   mov rsi, `\n`
   call uart_putc
-  
+
   ;; rdx
   mov rdi, [uart_port1]
   mov rsi, debug_dump_regs_uart_rdx_str
@@ -67,7 +67,7 @@ debug_dump_regs_uart:
   mov rdi, [uart_port1]
   mov rsi, `\n`
   call uart_putc
-  
+
   ;; rdi
   mov rdi, [uart_port1]
   mov rsi, debug_dump_regs_uart_rdi_str
@@ -199,7 +199,7 @@ debug_dump_regs_uart:
   mov rdi, [uart_port1]
   mov rsi, `\n`
   call uart_putc
-  
+
   ;; rflags
   mov rdi, [uart_port1]
   mov rsi, debug_dump_regs_uart_rflags_str
@@ -222,7 +222,7 @@ debug_dump_regs_uart:
   mov rdi, [uart_port1]
   mov rsi, `\n`
   call uart_putc
-  
+
   pop rax
   pop rsi
   pop rdi
@@ -233,10 +233,10 @@ debug_dump_regs_uart_rbx_str:   db `[debug] [regs] rbx: `, 0
 debug_dump_regs_uart_rcx_str:   db `[debug] [regs] rcx: `, 0
 debug_dump_regs_uart_rdx_str:   db `[debug] [regs] rdx: `, 0
 debug_dump_regs_uart_rsi_str:   db `[debug] [regs] rsi: `, 0
-debug_dump_regs_uart_rdi_str:   db `[debug] [regs] rdi: `, 0  
+debug_dump_regs_uart_rdi_str:   db `[debug] [regs] rdi: `, 0
 debug_dump_regs_uart_rsp_str:   db `[debug] [regs] rsp: `, 0
 debug_dump_regs_uart_rbp_str:   db `[debug] [regs] rbp: `, 0
-debug_dump_regs_uart_r8_str:    db `[debug] [regs] r8:  `, 0  
+debug_dump_regs_uart_r8_str:    db `[debug] [regs] r8:  `, 0
 debug_dump_regs_uart_r9_str:    db `[debug] [regs] r9:  `, 0
 debug_dump_regs_uart_r10_str:   db `[debug] [regs] r10: `, 0
 debug_dump_regs_uart_r11_str:   db `[debug] [regs] r11: `, 0

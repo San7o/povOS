@@ -14,9 +14,9 @@ void vmmgr_setup(struct vmmgr *vmmgr)
 {
   if (!vmmgr)
     return;
-  
+
   vmmgr->pml4t = paging_pml4t_init();
-  
+
   free_list_alloc_init(&vmmgr->vas_allocator,
                        0,  // start
                        KERNEL_BASE_ADDR // end
@@ -55,7 +55,7 @@ virt_addr_t vmm_alloc(struct vmmgr *vmmgr,
     pflags.nx = 0;
   if (flags & VMMGR_FLAG_USER)
     pflags.user = 1;
-  
+
   for (unsigned int i = 0; i < pages; ++i) {
     phys_addr_t paddr = pmmgr_alloc_page();
     virt_addr_t vaddr = addr + i * PAGE_SIZE;
@@ -75,6 +75,6 @@ virt_addr_t vmm_alloc(struct vmmgr *vmmgr,
       break;
     }
   }
-  
+
   return addr;
 }

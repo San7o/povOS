@@ -15,7 +15,7 @@ void tty_init(struct tty *tty, struct textbuffer *textbuffer,
   tty->textbuffer = textbuffer;
   tty->console    = console;
   tty->style      = style;
-  
+
   return;
 }
 
@@ -59,7 +59,7 @@ void tty_write_input(struct tty *tty, struct input_event event)
   default:
     break;
   }
-  
+
   return;
 }
 
@@ -77,7 +77,7 @@ void tty_write(struct tty *tty, const char *buf, size_t len)
 {
   if (!tty || !buf)
     return;
-  
+
   for (size_t i = 0; i < len; ++i)
   {
     char c = buf[i];
@@ -85,7 +85,7 @@ void tty_write(struct tty *tty, const char *buf, size_t len)
     {
     case '\n':
       textbuffer_cursor_newline(tty->textbuffer);
-      break;        
+      break;
     case '\t':
       tty_write_space(tty);
       break;
@@ -101,10 +101,10 @@ void tty_flush(struct tty *tty)
 {
   if (!tty || !tty->console || !tty->textbuffer)
     return;
-  
+
   tty->console->draw(tty->textbuffer);
   tty->console->set_cursor(tty->textbuffer->cursor_x,
                            tty->textbuffer->cursor_y);
-  
+
   return;
 }

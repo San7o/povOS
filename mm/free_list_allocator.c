@@ -33,7 +33,7 @@ void free_list_alloc_init(struct free_list_alloc *fla, void* memory, size_t size
 {
   if (!fla)
     return;
-  
+
   free_list_alloc_chunk_list_reset(&fla->free_chunks);
   free_list_alloc_chunk_list_reset(&fla->used_chunks);
   free_list_alloc_chunk_list_add(&fla->free_chunks, memory, size);
@@ -55,7 +55,7 @@ void *free_list_alloc_malloc(struct free_list_alloc *fla, size_t size)
                                      size);
     if (!used_chunk)
       goto exit;
-    
+
     fla->free_chunks.chunks[i].start = fla->free_chunks.chunks[i].start + size;
     fla->free_chunks.chunks[i].size  = fla->free_chunks.chunks[i].size - size;
 
@@ -70,14 +70,14 @@ void free_list_alloc_free(struct free_list_alloc *fla, void *ptr)
 {
   if (!fla)
     goto exit;
-  
+
   struct free_list_alloc_chunk *free_chunk_after = NULL;
   struct free_list_alloc_chunk *free_chunk_before = NULL;
   struct free_list_alloc_chunk *used_chunk =
     free_list_alloc_chunk_list_get(&fla->used_chunks, ptr);
   if (!used_chunk)
     goto exit;
-  
+
   for (size_t i = 0; i < fla->free_chunks.len; ++i) {
     if (fla->free_chunks.chunks[i].start ==
         used_chunk->start + used_chunk->size)
@@ -141,7 +141,7 @@ void *free_list_alloc_realloc(struct free_list_alloc *fla, void *ptr, size_t siz
     free_list_alloc_chunk_list_get(&fla->used_chunks, ptr);
   if (!used_chunk)
     return NULL;
-  
+
   char* mem = free_list_alloc_malloc(fla, size);
   if (!mem)
     return NULL;
@@ -178,7 +178,7 @@ free_list_alloc_chunk_list_remove(struct free_list_alloc_chunk_list *chunk_list,
 {
   if (!chunk_list)
     return;
-  
+
   size_t i = 0;
   while (i < chunk_list->len) {
     if (chunk_list->chunks[i].start == start)
@@ -187,7 +187,7 @@ free_list_alloc_chunk_list_remove(struct free_list_alloc_chunk_list *chunk_list,
   }
   if (i >= chunk_list->len)
     return;
-  
+
   for (i = i+1; i < chunk_list->len; ++i) {
     chunk_list->chunks[i-1] = chunk_list->chunks[i];
   }
@@ -201,7 +201,7 @@ free_list_alloc_chunk_list_get(struct free_list_alloc_chunk_list *chunk_list,
 {
   if (!chunk_list)
     return NULL;
-  
+
   for (size_t i = 0; i < chunk_list->len; ++i)
     if (chunk_list->chunks[i].start == start)
       return &chunk_list->chunks[i];

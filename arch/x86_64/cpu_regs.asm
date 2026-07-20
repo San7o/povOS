@@ -10,14 +10,14 @@
 regs_get_cr3:
   mov rax, cr3
   ret
-  
+
   ;; -----------------------------------------------------------------
   ;; Returns the value of rflags in rax
 regs_get_rflags:
   pushfq
   pop rax
   ret
-  
+
   ;; -----------------------------------------------------------------
   ;; Save all registers in [rdi], which must be a pointer to a
   ;; cpu_regs_t struct.
@@ -42,7 +42,7 @@ regs_save:
   lea rax, [rsp + 8]            ; Point to where RSP was before `call`
                                 ; pushed RIP
   mov [rdi+48], rax
-  
+
   ;; rip
   mov rax, [rsp]
   mov [rdi + 128], rax
@@ -62,7 +62,7 @@ regs_save:
   ;; pointer
 cpu_do_context_switch:
   ; RDI = pointer to cpu_regs_t
-    
+
   ; Switch Address Space
   mov rax, [rdi + 144] ; cr3
   mov cr3, rax
@@ -70,7 +70,7 @@ cpu_do_context_switch:
   ; Construct the IRETQ frame on the NEW stack
   mov rbx, [rdi + 48]  ; New RSP
   mov rsp, rbx         ; Switch stack pointer immediately
-    
+
   ; Push the IRETQ frame (SS, RSP, RFLAGS, CS, RIP)
   push qword 0x10      ; New SS (Usually Data Selector, e.g., 0x10)
   push rbx             ; New RSP

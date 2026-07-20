@@ -55,7 +55,7 @@ void debug_dump_mem_page(phys_addr_t phys_mem, size_t count)
   void* virt_mem;
   u64_t* mem;
   unsigned int i;
-  
+
   // Map a virtual address to rsdt_phys
   // We can identity map this
   virt_mem = (void*)phys_mem;
@@ -105,7 +105,7 @@ void debug_dump_input_event_uart(struct input_event event)
     uart_write_str(uart_port1, "unknown");
     break;
   }
-  
+
   uart_putc(uart_port1, '\n');
   return;
 }
@@ -129,7 +129,7 @@ void debug_dump_input_loop(struct input *input, void* hpet_base_reg)
   u64_t previous_time_s = 0;
   u64_t hpet_counter;
   struct input_event event;
-  
+
   while(1) {
     // Tick seconds
     if (glob_time_ms / 1000 > previous_time_s) {
@@ -144,11 +144,11 @@ void debug_dump_input_loop(struct input *input, void* hpet_base_reg)
                     hpet_counter);
       }
     }
-    
+
     event = input_events_get(input);
     if (event.type == INPUT_EVENT_TYPE_NONE)
       continue;
-    
+
     debug_dump_input_event_uart(event);
   }
 }
@@ -159,10 +159,10 @@ void debug_print_memory_map_uart(void)
   struct bios_mmap_entry *mmap = BIOS_MMAP_ENTRIES_ADDR;
   u64_t base, length;
   u32_t i;
-  
+
   if (!mmap_num_entries || !mmap)
     return;
-  
+
   uart_write_str(uart_port1, "[debug] [memory map] Memory map entries: ");
   uart_write_hex(uart_port1, (u64_t) *mmap_num_entries);
   uart_putc(uart_port1, '\n');
@@ -178,13 +178,13 @@ void debug_print_memory_map_uart(void)
 
     uart_write_str(uart_port1, ", type: ");
     uart_write_hex(uart_port1, (u64_t) mmap[i].type);
-    
+
     uart_write_str(uart_port1, ", acpi: ");
     uart_write_hex(uart_port1, (u64_t) mmap[i].acpi);
 
     uart_putc(uart_port1, '\n');
   }
-  
+
   return;
 }
 
@@ -193,15 +193,15 @@ void debug_print_pmmgr_bitfield(void)
   u8_t *bitfield = MM_PHYS_TO_VIRT(glob_pmmgr.bitfield);
   u64_t i;
   int bit, val;
-  
+
   uart_printf(uart_port1, "[debug] [pmmgr] Bitfield of size %d:\n",
               glob_pmmgr.size);
   uart_write_str(uart_port1, "[debug] [pmmgr] [0x0000000000000000] ");
-  
+
   for (i = 0; i < glob_pmmgr.size; ++i) {
     for (bit = 0; bit < 8; ++bit) {
       val = (bitfield[i] >> bit) & 1;
-      uart_write_str(uart_port1, (val == 1) ? "1" : "0");      
+      uart_write_str(uart_port1, (val == 1) ? "1" : "0");
     }
 
     if ((i + 1) % 8 == 0) {
@@ -211,24 +211,24 @@ void debug_print_pmmgr_bitfield(void)
       uart_write_str(uart_port1, "] ");
     }
   }
-  
+
   uart_putc(uart_port1, '\n');
 }
 
 void debug_vga_draw_flag(void)
 {
   int x, y;
-  
+
   for (x = 0; x < 320 / 3; ++x)
-  for (y = 0; y < 200; ++y)    
+  for (y = 0; y < 200; ++y)
     vga_draw_pixel(x, y, VGA_COLOR_GREEN);
-  
+
   for (x = 0; x < 320 / 3; ++x)
-  for (y = 0; y < 200; ++y)    
+  for (y = 0; y < 200; ++y)
     vga_draw_pixel(320 / 3 + x, y, VGA_COLOR_WHITE);
-  
+
   for (x = 0; x < 320 / 3; ++x)
-  for (y = 0; y < 200; ++y)    
+  for (y = 0; y < 200; ++y)
     vga_draw_pixel(320 / 3 * 2 + x, y, VGA_COLOR_RED);
 }
 
@@ -236,16 +236,16 @@ void debug_enumerate_pci_devices(void)
 {
   int bus, slot, func;
   struct pci_device_vendor pci_dv;
-  
+
   for (bus = 0; bus < 256; bus++)
   for (slot = 0; slot < 32; slot++)
   for (func = 0; func < 8; func++) {
-    
+
     pci_dv = pci_get_device_vendor(bus, slot, func);
 
     if (pci_dv.vendor_id == PCI_DEVICE_VENDOR_NONE)
       continue;
-        
+
     uart_printf(uart_port1, "[debug] [pci] Bus %d, Slot %d: Vendor: %s (%x), Device: %s (%x), Func: %d\n", 
                 bus, slot, pci_dv.vendor_name, pci_dv.vendor_id,
                 pci_dv.device_name, pci_dv.device_id, func);
@@ -269,7 +269,7 @@ void debug_enumerate_pcie_devices(struct pcie_acpi_sdt *pcie_sdt)
   num_allocations =
     (pcie_sdt->header.length - sizeof(struct acpi_sdt_header) - 8)
     / sizeof(struct pcie_acpi_entry);
-  
+
   uart_printf(uart_port1, "[debug] [pcie] Found %d PCIe Host Bridge Allocations\n",
               num_allocations);
 
@@ -291,14 +291,14 @@ void debug_enumerate_pcie_devices(struct pcie_acpi_sdt *pcie_sdt)
           if (pcie_hdr->vendor_id == PCI_DEVICE_VENDOR_NONE) {
             if (function == 0)
                 break;
-            continue; 
+            continue;
           }
 
           // Found
-          
+
           vendor_name = pci_get_vendor_name(pcie_hdr->vendor_id);
           device_name = pci_get_device_name(pcie_hdr->vendor_id, pcie_hdr->device_id);
-          
+
           uart_printf(uart_port1,
                       "[debug] [pcie] BDF %d %d %d: vendor %s (%x), device %s (%x)\n",
                       bus, device, function,
@@ -308,7 +308,7 @@ void debug_enumerate_pcie_devices(struct pcie_acpi_sdt *pcie_sdt)
           // Check if it's a multi-function device. 
           // If not, we don't need to check functions 1-7.
           if (function == 0 && (pcie_hdr->header_type & 0x80) == 0)
-            break; 
+            break;
         }
       }
     }
@@ -336,12 +336,12 @@ static struct spinlock sp;
 void debug_test_task_a_fn(void)
 {
   spinlock_init(&sp);
-  
+
   while(1) {
     if (spinlock_try_lock(&sp)) {
       uart_printf(uart_port1, "[debug] Hello from task A!\n");
       sleep_ms(500);
-      
+
       spinlock_unlock(&sp);
     } else {
       uart_printf(uart_port1, "[debug] task A: locked out\n");
@@ -355,7 +355,7 @@ void debug_test_task_b_fn(void)
     if (spinlock_try_lock(&sp)) {
       uart_printf(uart_port1, "[debug] Hello from task B!\n");
       sleep_ms(500);
-      
+
       spinlock_unlock(&sp);
     } else {
       uart_printf(uart_port1, "[debug] task B: locked out\n");

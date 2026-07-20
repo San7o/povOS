@@ -44,7 +44,7 @@ void idt_set(void)
     .size   = sizeof(glob_idt) - 1,
     .offset = (u64_t) &glob_idt,
   };
-  
+
   // The various isr are implemented in assembly
   idt_set_gate(0,  (u64_t) isr0, true);
   idt_set_gate(1,  (u64_t) isr1, true);
@@ -84,6 +84,6 @@ void idt_set(void)
   idt_load((u64_t) &glob_idt_descriptor);
 
   enable_interrupts();
-  
+
   return;
 }

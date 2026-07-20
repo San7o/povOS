@@ -26,7 +26,7 @@ void keyboard_init(struct keyboard *keyboard, enum keyboard_type type,
   keyboard->events_rb.reader_index = 0;
   memset(&keyboard->events_rb.events, 0,
          KEYBOARD_EVENTS_RB_SIZE * sizeof(struct keyboard_event));
-  
+
   return;
 }
 
@@ -40,7 +40,7 @@ void keyboard_update(struct keyboard *keyboard, struct keyboard_event event)
 
   // For future me: careful with future deadlock here
   keyboard_events_add(keyboard, event);
-  
+
   input_update((struct input*) keyboard->input, event);
 
   return;
@@ -54,7 +54,7 @@ keyboard_event_from_scancode_ps2_set1(struct keyboard *keyboard,
 {
   if (!keyboard)
     goto exit;
-  
+
   if (keyboard->_internal == 1) {
     keyboard->_internal = 0;
     return keyboard_scanmap_ps2_set1_escaped[scancode];
@@ -112,7 +112,7 @@ void keyboard_events_add(struct keyboard *keyboard,
   keyboard->events_rb.events[keyboard->events_rb.writer_index] = event;
   keyboard->events_rb.writer_index =
     (keyboard->events_rb.writer_index + 1) % KEYBOARD_EVENTS_RB_SIZE;
-  
+
   return;
 }
 
@@ -131,10 +131,10 @@ struct keyboard_event keyboard_events_get(struct keyboard *keyboard)
     (keyboard->events_rb.reader_index + 1) % KEYBOARD_EVENTS_RB_SIZE;
 
   return event;
-  
+
  exit:
   return KEYBOARD_EVENT_MAKE(false, KEY_NONE);
-} 
+}
 
 bool keyboard_is_key_pressed(struct keyboard *keyboard, enum keycode key)
 {

@@ -31,7 +31,7 @@ void textbuffer_init(struct textbuffer *tb,
       },
     };
   }
-  
+
   return;
 }
 
@@ -67,7 +67,7 @@ struct textbuffer_entry textbuffer_read(struct textbuffer *tb,
   if (!tb || x >= tb->width || y >= tb->height
       || x < 0 || y < 0)
     return (struct textbuffer_entry) {0};
-  
+
   return tb->buff[y * tb->width + x];
 }
 
@@ -94,7 +94,7 @@ void textbuffer_cursor_move(struct textbuffer *tb,
 
   tb->cursor_x = x;
   tb->cursor_y = y;
-  
+
   return;
 }
 void textbuffer_cursor_advance(struct textbuffer *tb)
@@ -132,7 +132,7 @@ struct textbuffer_entry textbuffer_cursor_read(struct textbuffer *tb)
 {
   if (!tb || tb->cursor_x >= tb->width
       || tb->cursor_y >= tb->height)
-    return (struct textbuffer_entry) {0};  
+    return (struct textbuffer_entry) {0};
 
   unsigned int index = tb->cursor_y * tb->width + tb->cursor_x;
   return tb->buff[index];
@@ -145,6 +145,6 @@ void textbuffer_cursor_newline(struct textbuffer *tb)
 
   tb->cursor_x = 0;
   tb->cursor_y = (tb->cursor_y + 1) % tb->height;
-  
+
   return;
 }

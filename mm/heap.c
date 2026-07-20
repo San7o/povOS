@@ -14,7 +14,7 @@ bool heap_init(struct vmmgr *vmmgr, size_t initial_size)
   if (!ptr) return false;
 
   free_list_alloc_init(&kheap, ptr, initial_size);
-  
+
   return true;
 }
 

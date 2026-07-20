@@ -15,7 +15,7 @@ static void vga_console_draw(const struct textbuffer *textbuffer)
              VGA_STYLE_MAKE(textbuffer->buff[i].style.foreground,
                             textbuffer->buff[i].style.background));
   }
-  
+
   return;
 }
 

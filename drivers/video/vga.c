@@ -120,7 +120,7 @@ void vga_putc(int offset, u8_t c, struct vga_style style)
 {
   if (offset >= VGA_TEXT_BUFFER_SIZE)
     return;
-  
+
   glob_vga_textbuffer[offset] = VGA_TEXT_ENTRY_MAKE(c, style);
   return;
 }
@@ -141,7 +141,7 @@ size_t vga_print_hex(int offset, u64_t num, struct vga_style style)
   vga_putc(offset, '0', style);
   vga_putc(offset + 1, 'x', style);
   offset += 2;
-  
+
   for (unsigned long i = 0; i < sizeof(num) * 2; ++i) {
     unsigned char hex = (num >> (sizeof(num) * 8 - 4 * i - 4)) & 0xF;
     if (hex > 9) {
@@ -167,12 +167,12 @@ void vga_set_cursor(unsigned int x, unsigned int y)
     return;
 
   u16_t pos = y * VGA_TEXT_BUFFER_WIDTH + x;
-  
-	port_outb(VGA_CRTC_ADDRESS_REGISTER, VGA_CRTC_CURSOR_LOCATION_LOW_REGISTER_INDEX);
-	port_outb(VGA_CRTC_DATA_REGISTER, (u8_t) (pos & 0xFF));
-	port_outb(VGA_CRTC_ADDRESS_REGISTER, VGA_CRTC_CURSOR_LOCATION_HIGH_REGISTER_INDEX);
+
+  port_outb(VGA_CRTC_ADDRESS_REGISTER, VGA_CRTC_CURSOR_LOCATION_LOW_REGISTER_INDEX);
+  port_outb(VGA_CRTC_DATA_REGISTER, (u8_t) (pos & 0xFF));
+  port_outb(VGA_CRTC_ADDRESS_REGISTER, VGA_CRTC_CURSOR_LOCATION_HIGH_REGISTER_INDEX);
   port_outb(VGA_CRTC_DATA_REGISTER, (u8_t) ((pos >> 8) & 0xFF));
-  
+
   return;
 }
 

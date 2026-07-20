@@ -51,7 +51,7 @@ char* pci_get_vendor_name(u16_t vendor)
   for (unsigned int i = 0; i < ARRAY_SIZE(pci_known_names); ++i)
     if (pci_known_names[i].vendor_id == vendor)
       return pci_known_names[i].vendor_name;
-  
+
   return "Unknown";
 }
 
@@ -61,14 +61,14 @@ char* pci_get_device_name(u16_t vendor, u16_t device)
     if (pci_known_names[i].vendor_id == vendor
         && pci_known_names[i].device_id == device)
       return pci_known_names[i].device_name;
-  
+
   return "Unknown";
 }
 
 struct pci_device_vendor pci_get_device_vendor(u8_t bus, u8_t slot, u8_t func)
 {
   struct pci_device_vendor vd = {0};
-  
+
   // Register 0, offset 0 contains device id and vendor id
   vd.vendor_id = pci_readw(bus, slot, func, 0);
   if (vd.vendor_id != PCI_DEVICE_VENDOR_NONE) {

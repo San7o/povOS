@@ -15,14 +15,14 @@ void semaphore_init(struct semaphore *s, u64_t n)
 void semaphore_wait(struct semaphore *s)
 {
   u64_t current_count;
-  
+
   while (1) {
     current_count = s->count;
-        
+
     if (current_count > 0) {
       if (atomic_cmpxchg(&s->count, current_count - 1, current_count)
           == current_count)
-        break; 
+        break;
     } else {
       X86_PAUSE;
     }

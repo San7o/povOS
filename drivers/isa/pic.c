@@ -12,7 +12,7 @@ void pic_remap(void)
   // ICW1: Start initialization in cascade mode
   port_outb(PIC_MASTER_CMD, PIC_ICW1_INIT | PIC_ICW1_ICW4);
   io_wait();
-  
+
   port_outb(PIC_SLAVE_CMD, PIC_ICW1_INIT | PIC_ICW1_ICW4);
   io_wait();
 
@@ -24,15 +24,15 @@ void pic_remap(void)
   // Slave PIC offsets to 0x28 (Int 40)
   port_outb(PIC_SLAVE_DATA, 0x28);
   io_wait();
-  
+
   // ICW3: Tell master PIC there is a slave at IRQ 2
   port_outb(PIC_MASTER_DATA, 1 << 2);
   io_wait();
-    
+
   // Tell slave PIC its cascade identity (2)
   port_outb(PIC_SLAVE_DATA, 2);
   io_wait();
-  
+
   // ICW4: Set mode to 8086
   port_outb(PIC_MASTER_DATA, PIC_ICW4_8086);
   io_wait();
@@ -46,7 +46,7 @@ void pic_remap(void)
   // Keep all slave interrupts masked for now
   port_outb(PIC_SLAVE_DATA, 0xFF);    // 0b11111111
   io_wait();
-  
+
   return;
 }
 

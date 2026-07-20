@@ -52,7 +52,7 @@
 idt_load:
   lidt [rdi]
   ret
-  
+
   ;;
   ;; Interrupt service routines implementation
   ;; -----------------------------------------
@@ -61,7 +61,7 @@ idt_load:
   ;; function.
 %macro ISR_HANDLER 1
   cli
-  
+
   ;; save all registers
   push r15
   push r14
@@ -84,7 +84,7 @@ idt_load:
   mov rdx, rsp                  ; Stack pointer
 
   call %1
-  
+
   pop rax
   pop rcx
   pop rdx
@@ -100,17 +100,17 @@ idt_load:
   pop r13
   pop r14
   pop r15
-  
+
   add rsp, 16     ; Cleans up the pushed error code and pushed ISR number
 
   sti
   iretq
 %endmacro
-  
+
   ;; Some isr push a 32 bit error code. Here we manually push a 0
   ;; value so that the isr handler can expect to have the save number
   ;; of elements in the stack to pop.
-  
+
   ;;  0: Divide Error fault
 isr0:
   push qword 0    ; push a dummy error code to keep a uniform stack frame
@@ -128,13 +128,13 @@ isr2:
   push qword 0                   ; dummy value
   push qword 2                   ; isr number
   ISR_HANDLER isr_common_handler
-  
+
   ;; 3: Breakpoint trap
 isr3:
   push qword 0                   ; dummy value
   push qword 3                   ; isr number
   ISR_HANDLER isr_common_handler
-  
+
   ;; 4: Overflow trap
 isr4:
   push qword 0                   ; dummy value
@@ -276,13 +276,13 @@ isr28:
   push qword 0
   push qword 28                   ; isr number
   ISR_HANDLER isr_common_handler
-  
+
   ;; 29: Intel reserved. Do not use.
 isr29:
   push qword 0
   push qword 29                   ; isr number
   ISR_HANDLER isr_common_handler
-  
+
   ;; 30: Intel reserved. Do not use.
 isr30:
   push qword 0
@@ -294,7 +294,7 @@ isr31:
   push qword 0
   push qword 31                   ; isr number
   ISR_HANDLER isr_common_handler
-  
+
   ;; 32: PIT Interrupt
 isr32:
   push qword 0
@@ -302,7 +302,7 @@ isr32:
 
   ;; Does nothing special for now
   ISR_HANDLER isr_pit_channel_0_handler
-  
+
   ;; 33: Keyboard Interrupt
 isr33:
   push qword 0

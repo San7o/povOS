@@ -59,14 +59,14 @@ int kernel_main(void)
     vga_print(0, "Error initializing uart", VGA_STYLE_BW);
     return EXIT_FAILURE;
   }
-  
+
   // Checks successfull
 
   // Setup memory management
   // -----------------------
-  
+
   debug_print_memory_map_uart();
-  
+
   pmmgr_init();
   // debug_print_pmmgr_bitfield();
 
@@ -81,12 +81,12 @@ int kernel_main(void)
   void* some_mem = kmalloc(1024);
   (void) some_mem;
   // debug_print_pmmgr_bitfield();
-  
+
   // Setup interrupts
   // ----------------
-  
+
   pit_set_count(1193); // one tick per millisecond
-  
+
   pic_remap();  // Chage overlapping IRQ numbers
 
   idt_set();    // Setup the IDT
@@ -95,9 +95,9 @@ int kernel_main(void)
   // -------------
   //
   // We do this manually until the device model fully implemented
- 
+
   void* hpet_base   = NULL;
-  
+
   struct acpi_rsdp* acpi_rsdp = acpi_locate_rsdp();
   if (!acpi_rsdp) {
     kerr("Could not find ACPI RSDP table\n");
@@ -107,7 +107,7 @@ int kernel_main(void)
     struct page_entry_flags page_flags = { .rw = 1 };
 
     // HPET setup
-    
+
     struct hpet_acpi_sdt *hpet =
       acpi_locate_sdt(acpi_rsdp, HPET_ACPI_SIGNATURE);
 
@@ -115,7 +115,7 @@ int kernel_main(void)
       kerr("Could not find HPET timer\n");
     } else {
       kinfo("Found HPET timer, register at address: %x\n", hpet->address);
-      
+
       // Identity map
       hpet_base = MM_PHYS_TO_VIRT(hpet->address);
       paging_add_entry((void*)hpet->address, hpet_base, page_flags);
@@ -133,7 +133,7 @@ int kernel_main(void)
       kinfo("Found I/O APIC from ACPI\n");
 
       struct ioapic_record_header* record_it = &ioapic_base->records[0];
-      
+
       while ((u64_t)record_it < (u64_t)ioapic_base + ioapic_base->header.length) {
         u8_t type = record_it->entry_type;
         switch (type)
@@ -199,12 +199,12 @@ int kernel_main(void)
   debug_dump_regs_uart();
   debug_dump_regs_uart2();
   // breakpoint();
-  
+
   // Setup tty
   // ---------
-  
+
   vga_init();
-  
+
   struct textbuffer_entry buff[VGA_TEXT_BUFFER_SIZE] = {0};
   struct textbuffer textbuffer;
   textbuffer_init(&textbuffer, buff,
@@ -212,10 +212,10 @@ int kernel_main(void)
 
   struct tty tty;
   tty_init(&tty, &textbuffer, TEXTBUFFER_STYLE_BW, &glob_vga_console);
-  
+
   struct input input;
   input_init(&input, &input_keymap_us, &tty);
-  
+
   struct keyboard keyboard;
   keyboard_init(&keyboard, KEYBOARD_TYPE_PS2_SET1, &input);
   keyboard_set_active(&keyboard);
@@ -230,7 +230,7 @@ int kernel_main(void)
 
   // Scheduler
   // ---------
-  
+
   // Test Task A
   u64_t *stack_top_a = (u64_t*)((u64_t)kmalloc(4096) + 4096);
   struct cpu_regs regs_a;
@@ -257,11 +257,11 @@ int kernel_main(void)
     if (c == '\r') c = '\n';
     printk("%c", c);
   }
-  
+
   // Read and print keyboard input
   //debug_dump_input_loop(&input, (void*)hpet_base);
 
   sched_loop();
-  
+
   return EXIT_SUCCESS;
 }

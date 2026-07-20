@@ -25,12 +25,12 @@ bool edu_init(struct edu_device *edu, struct pcie_acpi_sdt *pcie_sdt)
   void* virt_addr = (void*)phys_addr;
   struct page_entry_flags page_flags = { .rw = 1, .pcd = 1 };
   paging_add_entry((void*)phys_addr, virt_addr, page_flags);
-  
+
   struct pcie_common_config_space_header *pcie_hdr = virt_addr;
   u8_t layout = pcie_hdr->header_type & PCIE_CONFIG_SPACE_HEADER_TYPE_MASK;
   if (layout != PCIE_CONFIG_SPACE_HEADER_TYPE0)
     return false;
-  
+
   edu->header = (struct pcie_type0_config_space_header*)virt_addr;
 
   u32_t bar0_raw = edu->header->base_address_regs[0];
@@ -41,7 +41,7 @@ bool edu_init(struct edu_device *edu, struct pcie_acpi_sdt *pcie_sdt)
 
   // Enable interrupts
   edu->header->command &= ~PCIE_CONFIG_SPACE_CMD_INT_DISABLE;
-  
+
   return edu_check_liveness(edu);
 }
 
@@ -51,7 +51,7 @@ bool edu_check_liveness(struct edu_device *edu)
     return false;
 
   volatile u32_t test_val = 0x123;
-  
+
   edu->mmio[1] = test_val;
   sleep_ticks(200);
   return edu->mmio[1] == ~test_val;

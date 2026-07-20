@@ -11,7 +11,7 @@ void input_init(struct input *input, input_keymap_t *keymap, void *tty)
 {
   if (!input)
     return;
-  
+
   memset((void*)input, 0, sizeof(struct input));
   input->keymap = keymap;
   input->tty = tty;
@@ -29,7 +29,7 @@ void input_events_add(struct input *input, struct input_event event)
 
   tty_write_input((struct tty*) input->tty, event);
   tty_flush((struct tty*) input->tty);
-    
+
   return;
 }
 
@@ -48,7 +48,7 @@ struct input_event input_events_get(struct input *input)
     (input->events_rb.reader_index + 1) % INPUT_EVENTS_RB_SIZE;
 
   return event;
-  
+
  exit:
   return (struct input_event) {
     .type = INPUT_EVENT_TYPE_NONE,

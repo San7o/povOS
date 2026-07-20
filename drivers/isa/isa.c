@@ -29,7 +29,7 @@ static u8_t isa_key_lfsr(u8_t val)
 //  - activate all Plug-and-Play ISA cards and remove them from
 //    configuration mode
 //
-// The BIOS shoud automatically do this for us, but we should not rely
+// The BIOS should automatically do this for us, but we should not rely
 // on that.
 //
 // Refer to the specification section 2.2 for this procedure.
@@ -43,7 +43,7 @@ void isa_pnp_set_config_mode(void)
   port_outb(ISA_PNP_ADDRESS_PORT, 0);
   volatile u8_t key = ISA_INIT_KEY;
   for (int i = 0; i < 32; ++i) {
-    port_outb(ISA_PNP_ADDRESS_PORT, key);    
+    port_outb(ISA_PNP_ADDRESS_PORT, key);
     key = isa_key_lfsr(key);
   }
 

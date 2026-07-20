@@ -1,10 +1,10 @@
 
   global gdt_flush
-  
+
 gdt_flush:
     ; 0x08 is the offset of the Code Segment in the GDT. This jump
     ; reloads CS and clears the instruction pipeline
-    push 0x08                   
+    push 0x08
     lea rax, [rel .reload_cs]
     push rax
     retfq                       ; Far Return (effectively a far jump)

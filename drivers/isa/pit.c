@@ -17,7 +17,7 @@ u16_t pit_read_count(void)
   u16_t count = 0;
   count  = port_inb(PIT_CHANNEL_0_DATA_PORT);       // low byte
   count |= port_inb(PIT_CHANNEL_0_DATA_PORT) << 8;  // high byte
-  
+
   enable_interrupts();
 
   return count;

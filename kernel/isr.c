@@ -20,13 +20,13 @@ void isr_common_handler(u8_t  isr_number,
                         u64_t* sp)
 {
   uart_write_str(uart_port1, "[isr] ");
-  
+
   if (isr_number < ISR_EXCEPTION_COUNT) {
     uart_write_str(uart_port1, isr_exception_string[isr_number]);
   } else {
     uart_write_hex(uart_port1, isr_number);
   }
-  
+
   uart_write_str(uart_port1, ", error code: ");
   uart_write_hex(uart_port1, error_code);
   uart_putc(uart_port1, '\n');
@@ -55,7 +55,7 @@ void isr_common_handler(u8_t  isr_number,
   ct_regs.rsp    = sp[20];
   ct_regs.cr3    = regs_get_cr3();
   debug_dump_regs_uart3(ct_regs);
-  
+
   pic_ack();
   return;
 }
@@ -71,11 +71,11 @@ void isr_keyboard_handler(u8_t  isr_number,
   struct keyboard *keyboard;
   struct keyboard_event event;
   u8_t scancode;
-  
+
   keyboard = keyboard_get_active();
   if (!keyboard)
     goto exit;
-  
+
   scancode = ps2_read_data();
   event = keyboard_event_from_scancode(keyboard, scancode);
   if (event.key == KEY_NONE)
@@ -83,7 +83,7 @@ void isr_keyboard_handler(u8_t  isr_number,
 
   // Update the keyboard
   keyboard_update(keyboard, event);
-  
+
   // Debug print via UART
   // debug_dump_keyboard_event_uart(event);
 
@@ -99,9 +99,9 @@ void isr_pit_channel_0_handler(u8_t  isr_number,
   UNUSED(isr_number);
   UNUSED(error_code);
   UNUSED(sp);
-  
+
   struct cpu_regs* ct_regs;
-  
+
   glob_time_ms++;
   pic_ack();
 
@@ -111,7 +111,7 @@ void isr_pit_channel_0_handler(u8_t  isr_number,
   static u64_t last_sched_time_ms = 0;
   if (glob_time_ms - last_sched_time_ms > SCHED_FREQ * 1000) {
     // Call the scheduler
-    
+
     // Save registers of the current task
     ct_regs = &glob_scheduler.tasks[glob_current_task].task.regs;
     // These need to match the assembly code
@@ -134,13 +134,13 @@ void isr_pit_channel_0_handler(u8_t  isr_number,
     ct_regs->rflags = sp[19];
     ct_regs->rsp    = sp[20];
     ct_regs->cr3     = regs_get_cr3();
-    
+
     last_sched_time_ms = glob_time_ms;
-    
+
     sched_switch_next();
 
     // Unreachable
   }
-  
+
   return;
 }

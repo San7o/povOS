@@ -17,10 +17,10 @@ struct page_table *paging_pml4t_init(void)
   // Kernel high-half map
   //
   // Maps 1GB of physical 0x0 to virtual KERNEL_BASE_ADDR
-  
+
   struct page_table *pd_kernel = (void*) pmmgr_alloc_page();
   memset(pd_kernel, 0, PAGE_SIZE);  // Zero the whole table
-  
+
   for (int i = 0; i < 512; ++i) {
     pd_kernel->entries[i].address = (i * HUGE_PAGE_SIZE) >> 12; 
     pd_kernel->entries[i].present = 1;
@@ -30,7 +30,7 @@ struct page_table *paging_pml4t_init(void)
 
   struct page_table *pdpt_kernel = (void*) pmmgr_alloc_page();
   memset(pdpt_kernel, 0, PAGE_SIZE);
-  
+
   pdpt_kernel->entries[PDPT_INDEX(KERNEL_BASE_ADDR)].address = ((u64_t)pd_kernel) >> 12;
   pdpt_kernel->entries[PDPT_INDEX(KERNEL_BASE_ADDR)].present = 1;
   pdpt_kernel->entries[PDPT_INDEX(KERNEL_BASE_ADDR)].rw = 1;
@@ -42,11 +42,11 @@ struct page_table *paging_pml4t_init(void)
   // HHDM Map
   //
   // Map 4GM physical 0x0 to MM_HHDM_OFFSET
-  
+
   // Map 4 GB of physical ram to MM_HHDM_OFFSET
   struct page_table *pdpt_hhdm = (void*) pmmgr_alloc_page();
   memset(pdpt_hhdm, 0, PAGE_SIZE);
-  
+
   pml4t->entries[PML4T_INDEX(MM_HHDM_OFFSET)].address = (u64_t)pdpt_hhdm >> 12;
   pml4t->entries[PML4T_INDEX(MM_HHDM_OFFSET)].present = 1;
   pml4t->entries[PML4T_INDEX(MM_HHDM_OFFSET)].rw = 1;
@@ -68,11 +68,11 @@ struct page_table *paging_pml4t_init(void)
   }
 
   // Setup recursive trick mapping
-  
+
   pml4t->entries[RECURSIVE_SLOT].address = (phys_addr_t)pml4t >> 12;
   pml4t->entries[RECURSIVE_SLOT].present = 1;
   pml4t->entries[RECURSIVE_SLOT].rw = 1;
-  
+
   return pml4t;
 }
 
@@ -91,14 +91,14 @@ void paging_add_entry(void *phys_addr,
   struct page_table* pdpt  = (struct page_table*) GET_PDPT_VADDR(virt);
   struct page_table* pd    = (struct page_table*) GET_PD_VADDR(virt);
   struct page_table* pt    = (struct page_table*) GET_PT_VADDR(virt);
-  
+
   struct page_entry *pml4e = &pml4t->entries[pml4_idx];
   if (!pml4e->present) {
     phys_addr_t new_pdpt = pmmgr_alloc_page();
     pml4e->address = new_pdpt >> 12;
     pml4e->present = 1;
     pml4e->rw      = 1;
-    
+
     memset(MM_PHYS_TO_VIRT(new_pdpt), 0, PAGE_SIZE);
   }
 

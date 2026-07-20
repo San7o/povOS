@@ -47,7 +47,7 @@ static struct range get_next_avail_range(struct range range_bounds,
       // We only check available memory regions
       if (mmap[i].type != BIOS_MMAP_TYPE_AVAILABLE)
         continue;
-      
+
       u64_t base =
         (u64_t)mmap[i].base_low | ((u64_t) mmap[i].base_high << 32);
       u64_t length =
@@ -66,17 +66,17 @@ static struct range get_next_avail_range(struct range range_bounds,
         // We only check available memory regions
         if (mmap[i].type != BIOS_MMAP_TYPE_AVAILABLE)
           continue;
-        
+
         u64_t start =
           (u64_t)mmap[i].base_low | ((u64_t) mmap[i].base_high << 32);
-      
+
         if (start < next_range.start && start >= range_bounds.start)
           next_range.start = start;
       }
     }
 
     // Check if start is reserved
-  
+
     bool is_reserved = false;
     for (size_t i = 0; i < ARRAY_SIZE(reserved_ranges); ++i) {
       if (next_range.start >= reserved_ranges[i].start
@@ -87,7 +87,7 @@ static struct range get_next_avail_range(struct range range_bounds,
         next_range.start   = reserved_ranges[i].end;
 
         is_reserved = true;
-        
+
         // We break, assuming there are not overlaps in reserved_ranges,
         // so we don't need to check the other reserved ranges
         break;
@@ -105,7 +105,7 @@ static struct range get_next_avail_range(struct range range_bounds,
     // We only check available memory regions
     if (mmap[i].type != BIOS_MMAP_TYPE_AVAILABLE)
       continue;
-        
+
     u64_t base =
       (u64_t)mmap[i].base_low | ((u64_t) mmap[i].base_high << 32);
     u64_t length =
@@ -131,7 +131,7 @@ static struct range get_next_avail_range(struct range range_bounds,
       break;
     }
   }
-  
+
   return next_range;
 }
 
@@ -144,7 +144,7 @@ int pmmgr_init(void)
 
   if (!mmap || !mmap_num_entries)
     return -1;
-  
+
   // Get minimum and maximum available address
   size_t max_addr = 0;
   size_t min_addr = (size_t) (void*) -1;
@@ -171,7 +171,7 @@ int pmmgr_init(void)
   if (bitfield_len_bytes % PAGE_SIZE != 0) bitfield_pages++;
 
   // Find a range in physical memory bit enough to store the bitfield
-  
+
   struct range range_candidate;
   while (true) {
     range_candidate = get_next_avail_range(bitfield_range,
@@ -209,7 +209,7 @@ int pmmgr_init(void)
         // We only check unavailable memory regions
         if (mmap[i].type == BIOS_MMAP_TYPE_AVAILABLE)
           continue;
-            
+
         u64_t base =
           (u64_t)mmap[i].base_low | ((u64_t) mmap[i].base_high << 32);
         u64_t length =
@@ -239,7 +239,7 @@ int pmmgr_init(void)
         glob_pmmgr.bitfield[i] |= (1 << bit);
     }
   }
-  
+
   return 0;
 }
 
@@ -250,7 +250,6 @@ phys_addr_t pmmgr_alloc_page(void)
     for (unsigned int bit = 0; bit < 8; ++bit) {
       if (bitfield[i] & (1 << bit)) {
         // Free page found
-        
         bitfield[i] &= ~(1 << bit);
         void* addr = (void*)(u64_t)((i * 8 + bit) * PAGE_SIZE);
         return (phys_addr_t)addr;

@@ -25,5 +25,4 @@ u8_t  port_inb(port_t port);
 u16_t port_inw(port_t port);
 u32_t port_indw(port_t port);
 
-
 #endif // POVOS_KERNEL_PORT_H

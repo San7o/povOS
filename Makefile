@@ -3,11 +3,11 @@
 # Mail:    giovanni.santini@proton.me
 # Github:  @San7o
 
-include config.mk
-include rules.mk
-include $(SUBPROJECTS_MAKE_CONF)
-
 all: povos
+
+include config.mk
+include $(SUBPROJECTS_MAKE_CONF)
+include rules.mk
 
 ##@ Build
 

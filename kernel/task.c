@@ -8,12 +8,12 @@
 
 struct task task_create(struct cpu_regs regs, struct vmmgr *vmmgr,
                         const char name[TASK_NAME_LEN])
-{  
+{
   struct task task = {
     .regs  = regs,
     .vmmgr = vmmgr,
   };
   strncpy(&task.name[0], name, TASK_NAME_LEN);
-  
+
   return task;
 }

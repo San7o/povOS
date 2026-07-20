@@ -14,9 +14,9 @@
   ;; 
 
   [bits 64]
-  
+
   global kernel_entry
-  
+
   extern kernel_main
   extern vga_get_memory_map
   extern vga_clear
@@ -32,19 +32,19 @@
   extern pic_remap
   extern idt_set
   extern debug_dump_regs_uart
-  
+
   section .startup
-  
+
   ;; Entry point, the bootloader will jump here
 kernel_entry:
-  
+
   ;; Triggers breakpoint exception (for debugging)
   ;;   int3
 
   call kernel_main
   cmp rax, 0
   jne .kernel_error
-  
+
   .exit:
   hlt
   jmp .exit
@@ -52,21 +52,21 @@ kernel_entry:
   .kernel_error:
   ;; The kernel already prints an error message, so do nothing
   jmp .exit
- 
+
   .vga_memory_map_error:
-  
+
   ;; Clean the screen
   mov rdi, 0x4F                 ; style
   call vga_clear
-  
+
   mov rdx, 0xF                 ; style
   mov rsi, vga_memory_map_error_str ; string
   mov rdi, 0                     ; position
   call vga_print
   jmp .exit
-  
+
   .vga_alphanumeric_error:
-  
+
   ;; Clean the screen
   mov rdi, 0x4F
   call vga_clear
@@ -88,9 +88,9 @@ kernel_entry:
   mov rdi, 0                     ; position
   call vga_print
   jmp .exit
-   
+
   ;; Strings
-  
+
 greet_str:                   db `Hello, from povOS!`, 0
 vga_uart_init_error_str:     db `Error initializing UART`, 0
 kernel_main_error_str:       db `Kernel exited with error`, 0

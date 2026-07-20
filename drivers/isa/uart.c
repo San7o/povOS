@@ -34,7 +34,7 @@ bool uart_init_port(struct uart_port* uart_port)
   port_outb(uart_port->port + UART_REGISTER_FIFO_CONTROL_INDEX, 0xC7);
   // IRQs enable, RTS, RSR set
   port_outb(uart_port->port + UART_REGISTER_MODEM_CONTROL_INDEX, 0x0B);
-  
+
   // Test
 
   u8_t test_byte = 0xAE;
@@ -47,7 +47,7 @@ bool uart_init_port(struct uart_port* uart_port)
     port_inb(uart_port->port + UART_REGISTER_RECEIVE_BUF_INDEX);
   if (received_byte != test_byte)
     return false;
-  
+
   // If serial is not faulty, set it in normal operation mode
   port_outb(uart_port->port + UART_REGISTER_MODEM_CONTROL_INDEX, 0x0F);
 
@@ -59,13 +59,13 @@ bool uart_is_transmit_ready(struct uart_port uart_port)
 {
   if (!uart_port.initialized)
     return false;
-  
+
   u16_t line_status =
     port_inw(uart_port.port + UART_REGISTER_LINE_STATUS_INDEX);
-  
+
   if ((line_status & (1 << 5)) == 0)
     return false;
-  
+
   return true;
 }
 
@@ -73,13 +73,13 @@ void uart_putc(struct uart_port uart_port, u8_t c)
 {
   if (!uart_port.initialized)
     return;
-  
+
   // Wait for transmission to be available
   while(!uart_is_transmit_ready(uart_port))
     {}
 
   port_outb(uart_port.port + UART_REGISTER_TRANSMIT_BUF_INDEX, c);
-  
+
   return;
 }
 
@@ -87,7 +87,7 @@ void uart_write_str(struct uart_port uart_port, const char *str)
 {
   if (!uart_port.initialized)
     return;
-  
+
   while (*str != '\0') {
     uart_putc(uart_port, *str);
     ++str;
@@ -99,10 +99,10 @@ void uart_write_hex(struct uart_port uart_port, u64_t num)
 {
   if (!uart_port.initialized)
     return;
-  
+
   uart_putc(uart_port, '0');
   uart_putc(uart_port, 'x');
-  
+
   for (unsigned long i = 0; i < sizeof(num) * 2; ++i) {
     u8_t hex = (num >> (sizeof(num) * 8 - 4 * i - 4)) & 0xF;
     if (hex > 9) {
@@ -119,7 +119,7 @@ int uart_printf(struct uart_port uart_port, const char* fmt, ...)
 {
   if (!uart_port.initialized)
     return 0;
-  
+
   va_list list;
   va_start(list, fmt);
   int ret = uart_vprintf(uart_port, fmt, list);
@@ -132,7 +132,7 @@ int uart_vprintf(struct uart_port uart_port, const char* fmt, va_list args)
 {
   if (!uart_port.initialized)
     return 0;
-  
+
   while (*fmt) {
     if (*fmt == '%') {
       fmt++;
@@ -166,7 +166,7 @@ int uart_vprintf(struct uart_port uart_port, const char* fmt, va_list args)
       case 's': {
         char* s = va_arg(args, char*);
         if (!s) s = "(null)";
-        uart_write_str(uart_port, s);        
+        uart_write_str(uart_port, s);
         break;
       }
       case 'f': {

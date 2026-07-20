@@ -45,7 +45,7 @@ struct pci_device_vendor {
   #define PCI_DEVICE_VENDOR_NONE 0xFFFF
   u16_t vendor_id;
   u16_t device_id;
-  
+
   char* vendor_name;
   char* device_name;
 };
