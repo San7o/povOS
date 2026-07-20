@@ -1,9 +1,9 @@
-  global port_outb
-  global port_outw
-  global port_outdw
-  global port_inb
-  global port_inw
-  global port_indw
+  global _port_outb
+  global _port_outw
+  global _port_outdw
+  global _port_inb
+  global _port_inw
+  global _port_indw
 
   ;; 
   ;; out - x86_64
@@ -21,7 +21,7 @@
 
   ;; -----------------------------------------------------------------
   ;; Writes `sil` value into port `di`
-port_outb:
+_port_outb:
 
   push rax
   push rdx
@@ -39,7 +39,7 @@ port_outb:
 
   ;; -----------------------------------------------------------------
   ;; Writes `si` value into port `dx`
-port_outw:
+_port_outw:
 
   push rax
   push rdx
@@ -57,7 +57,7 @@ port_outw:
 
   ;; -----------------------------------------------------------------
   ;; Writes `esi` value into port `dx`
-port_outdw:
+_port_outdw:
 
   push rax
   push rdx
@@ -90,7 +90,7 @@ port_outdw:
 
   ;; -----------------------------------------------------------------
   ;; Returns in `al` the value from port `di`
-port_inb:
+_port_inb:
 
   push rdx
 
@@ -105,7 +105,7 @@ port_inb:
 
   ;; -----------------------------------------------------------------
   ;; Returns in `ax` the value from port `di`
-port_inw:
+_port_inw:
 
   push rdx
 
@@ -121,7 +121,7 @@ port_inw:
 
   ;; -----------------------------------------------------------------
   ;; Returns in `eax` the value from port `di`
-port_indw:
+_port_indw:
 
   push rdx
 
